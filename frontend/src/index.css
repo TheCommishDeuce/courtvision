@@ -1,0 +1,528 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --bone: #f5f1e8;
+  --bone-2: #efe8d8;
+  --bone-3: #e6dcc6;
+
+  --ink: #1f1b18;
+  --ink-2: #4a423c;
+  --mute: #8a8078;
+  --rule: #d9cdb8;
+
+  --clay: #c8552e;
+  --clay-deep: #9c3f1f;
+  --clay-soft: #e8b89c;
+
+  --surface-clay: #c66a3a;
+  --surface-grass: #4d8b4f;
+  --surface-hard: #2e6f9e;
+
+  /* Surface tag ink (was hardcoded hex in .ba-surface-* / SurfaceTag) */
+  --clay-ink: #6a2e12;
+  --grass-ink: #1f4a22;
+  --hard-ink: #163f5e;
+
+  --paper: var(--bone);
+  --paper-2: var(--bone);
+  --paper-3: var(--bone-2);
+  --primary: var(--clay);
+  --secondary: var(--clay-deep);
+}
+
+/* ============================================================
+   Canonical scales — DO NOT inline-override these on pages.
+   Typography:  .ba-display > .ba-h2 > .ba-h3   (Fraunces, mixed-case)
+                .ba-stat / .ba-stat-sm          (big numerals)
+                .ba-kicker / .ba-eyebrow / .ba-label  (mono, uppercase)
+                body / .ba-body / .ba-body-sm   (Inter)
+   Spacing:     page sections  -> space-y-10
+                hero/KPI grid   -> gap-6
+                card grid       -> gap-4
+                tight lists     -> gap-2
+                section header  -> hairline rule + pb-3 mb-6 (use <SectionHeader>)
+   ============================================================ */
+
+@layer base {
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--bone);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bone);
+  color: var(--ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+:where(a) {
+  color: var(--clay-deep);
+  text-decoration: none;
+}
+
+:where(a):hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+::selection {
+  background: var(--clay);
+  color: var(--bone);
+}
+
+}  /* end @layer base */
+
+/* ============================================================
+   Bone & Clay primitives (.ba-*)
+   Wrapped in @layer components so Tailwind utilities (e.g. an
+   intentional text-[26px] on the nav logo) win when present, while
+   bare usage (`ba-display`) inherits the canonical scale.
+   ============================================================ */
+
+@layer components {
+
+/* --- Display + headings: Fraunces, mixed-case, lighter --- */
+.ba-display {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: inherit;
+}
+
+.ba-h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.ba-h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  color: inherit;
+}
+
+/* Big numerals (KPI / hero stats) */
+.ba-stat {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: currentColor;
+}
+
+.ba-stat-sm {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: currentColor;
+}
+
+/* Legacy aliases — point at the new scale so un-migrated usages stay sane */
+.ba-hero-num {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: currentColor;
+}
+.ba-section-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.ba-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.ba-body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.ba-body-sm {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.ba-kicker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* Mono mini-titles / meta labels (replaces tiny ba-section-title overrides) */
+.ba-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.ba-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+/* KPI — terracotta hot-spot */
+.ba-kpi {
+  position: relative;
+  background: var(--clay);
+  color: var(--bone);
+  padding: 2rem 2rem 1.75rem;
+  border: 0;
+  box-shadow: 3px 3px 0 var(--ink);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ba-kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 120%, color-mix(in oklab, var(--clay-deep) 60%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% -20%, color-mix(in oklab, white 12%, transparent) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ba-kpi-hero {
+  padding: 3rem 2.5rem 2.5rem;
+}
+
+/* Muted KPI — lives on canvas */
+.ba-kpi-muted {
+  background: var(--bone-2);
+  color: var(--ink);
+  border-top: 3px solid var(--ink);
+  padding: 1.25rem 1.25rem 1.1rem;
+}
+
+/* Cards */
+.ba-card {
+  background: var(--bone-2);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--ink);
+  padding: 1.25rem;
+}
+
+.ba-card-flat {
+  background: var(--bone-2);
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+}
+
+/* Tables */
+.ba-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Inter", sans-serif;
+}
+
+.ba-table thead th {
+  border-bottom: 2px solid var(--ink);
+  padding: 0.55rem 0.75rem;
+  color: var(--ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.ba-table tbody td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13.5px;
+}
+
+.ba-table tbody td.num,
+.ba-table thead th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.ba-table tbody tr:hover {
+  background: color-mix(in oklab, var(--clay) 6%, transparent);
+}
+
+/* Dense variant for stat-heavy tables (Tournament leaders, records) */
+.ba-table-dense thead th {
+  padding: 0.4rem 0.5rem;
+  font-size: 10px;
+}
+
+.ba-table-dense tbody td {
+  padding: 0.4rem 0.5rem;
+  font-size: 12.5px;
+}
+
+/* Chips */
+.ba-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--ink);
+  background: var(--bone);
+  color: var(--ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.ba-chip:hover {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+.ba-chip-active {
+  background: var(--clay);
+  color: var(--bone);
+  border-color: var(--clay);
+}
+
+.ba-chip-active:hover {
+  background: var(--clay-deep);
+  border-color: var(--clay-deep);
+  color: var(--bone);
+}
+
+/* Buttons */
+.ba-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.ba-btn-primary {
+  background: var(--clay);
+  color: var(--bone);
+  border-color: var(--clay);
+}
+
+.ba-btn-primary:hover {
+  background: var(--clay-deep);
+  border-color: var(--clay-deep);
+}
+
+.ba-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ba-btn-ghost {
+  background: var(--bone);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.ba-btn-ghost:hover {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+/* Inputs */
+.ba-input,
+.ba-select {
+  background: var(--bone);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 0.45rem 0.65rem;
+  font-family: "Inter", sans-serif;
+  font-size: 13.5px;
+  transition: border-color 120ms ease;
+}
+
+.ba-input:focus,
+.ba-select:focus {
+  outline: none;
+  border-color: var(--clay);
+  box-shadow: inset 0 -2px 0 0 var(--clay);
+}
+
+.ba-btn:focus-visible,
+.ba-chip:focus-visible,
+.ba-link:focus-visible,
+.ba-input:focus-visible,
+.ba-select:focus-visible,
+:where(nav a, button, [role="button"]):focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+}
+
+.ba-input::placeholder {
+  color: var(--mute);
+}
+
+/* Rules */
+.ba-top-rule {
+  border-top: 3px solid var(--ink);
+}
+
+.ba-clay-rule {
+  border-top: 3px solid var(--clay);
+}
+
+/* Links */
+.ba-link {
+  color: var(--clay-deep);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 120ms ease;
+}
+
+.ba-link:hover {
+  border-bottom-color: var(--clay-deep);
+  text-decoration: none;
+}
+
+/* Surface tags */
+.ba-surface-clay {
+  background: color-mix(in oklab, var(--surface-clay) 22%, var(--bone));
+  color: var(--clay-ink);
+}
+
+.ba-surface-grass {
+  background: color-mix(in oklab, var(--surface-grass) 22%, var(--bone));
+  color: var(--grass-ink);
+}
+
+.ba-surface-hard {
+  background: color-mix(in oklab, var(--surface-hard) 22%, var(--bone));
+  color: var(--hard-ink);
+}
+
+/* Win% heatmap ramp — clay sequential, on-palette (replaces inline blue hex) */
+.ba-heat-1 { background: color-mix(in oklab, var(--clay) 10%, var(--bone)); color: var(--ink); }
+.ba-heat-2 { background: color-mix(in oklab, var(--clay) 28%, var(--bone)); color: var(--ink); }
+.ba-heat-3 { background: color-mix(in oklab, var(--clay) 48%, var(--bone)); color: var(--ink); }
+.ba-heat-4 { background: color-mix(in oklab, var(--clay) 70%, var(--bone)); color: var(--bone); }
+.ba-heat-5 { background: var(--clay-deep); color: var(--bone); }
+
+/* Subtle paper grain */
+.ba-grain {
+  background-image:
+    radial-gradient(circle at 20% 30%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px),
+    radial-gradient(circle at 45% 85%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px);
+  background-size: 220px 220px, 180px 180px, 260px 260px;
+}
+
+/* Reveal animation for hero numerals */
+@keyframes ba-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+    letter-spacing: 0.02em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: -0.03em;
+  }
+}
+
+.ba-reveal {
+  animation: ba-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ba-reveal-delay-1 {
+  animation-delay: 80ms;
+}
+
+.ba-reveal-delay-2 {
+  animation-delay: 160ms;
+}
+
+.ba-reveal-delay-3 {
+  animation-delay: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-reveal {
+    animation: none;
+  }
+
+  .ba-btn,
+  .ba-chip,
+  .ba-link,
+  .ba-input,
+  .ba-select {
+    transition: none;
+  }
+}
+
+
+}

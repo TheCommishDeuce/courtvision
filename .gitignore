@@ -1,0 +1,36 @@
+# secrets / environment
+.env
+.venv/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# os / editor / agents
+.DS_Store
+*.swp
+.claude/
+.pi/
+
+# documentation (no markdown in repo)
+*.md
+
+# data + generated artifacts
+data/
+frontend/node_modules/
+frontend/dist/
+
+# excluded folders
+scripts/
+remote_compare/
+
+# one-time / scratch / unused
+test.ipynb
+migrate_checkpoint_names.py
+fix_keys.py
+compare_remote_scraper.sh
+fix_remote_config.sh
+smithery.yaml

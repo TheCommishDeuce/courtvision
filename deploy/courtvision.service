@@ -1,0 +1,18 @@
+[Unit]
+Description=CourtVision Tennis API
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/courtvision
+ExecStart=/opt/courtvision/venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=always
+RestartSec=5
+Environment=TENNIS_DB=/opt/courtvision/data/tennis.duckdb
+Environment=TENNIS_AUTH_DB=/opt/courtvision/data/auth.db
+Environment=TENNIS_DB_THREADS=1
+EnvironmentFile=-/opt/courtvision/.env
+
+[Install]
+WantedBy=multi-user.target
+
