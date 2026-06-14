@@ -15,8 +15,9 @@ __pycache__/
 .claude/
 .pi/
 
-# documentation (no markdown in repo)
+# documentation (no markdown in repo, except the README)
 *.md
+!README.md
 
 # data + generated artifacts
 data/
