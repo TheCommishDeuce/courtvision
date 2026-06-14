@@ -1,11 +1,12 @@
 [Unit]
-Description=CourtVision Tennis API
+Description=CourtVision API
 After=network.target
 
 [Service]
 User=root
 WorkingDirectory=/opt/courtvision
-ExecStart=/opt/courtvision/venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 1
+# Bound to 0.0.0.0 so the external Traefik proxy (separate LAN host) can reach it.
+ExecStart=/opt/courtvision/venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8010
 Restart=always
 RestartSec=5
 Environment=TENNIS_DB=/opt/courtvision/data/tennis.duckdb
