@@ -1,15 +1,22 @@
 """Composite and tournament-analysis endpoints for agent workflows."""
 from __future__ import annotations
 
+from functools import lru_cache
+from io import StringIO
+from time import time
 from typing import Literal, Optional
+import unicodedata
 
 import duckdb
+import pandas as pd
+import requests
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.deps import get_db
 from api.serializers import df_to_records
 from db.queries import (
     q_country_leaders,
+    q_metric_scatter,
     q_match_extremes,
     q_nationality_stage,
     q_tour_level_season_leaders,
@@ -24,6 +31,73 @@ LEVEL_FILTER_DESCRIPTION = (
     "and 'All Dev' for Challenger/ITF plus qualifying rounds. Specific values include "
     "Grand Slam, Masters 1000, ATP 250/500, WTA 500, WTA 250, Challenger, ITF."
 )
+
+SCATTER_METRICS = {
+    "ace_pct", "df_pct", "first_in_pct", "first_win_pct", "second_win_pct",
+    "serve_points_won_pct", "bp_saved_pct", "tb_played", "tb_win_pct",
+    "first_return_win_pct", "second_return_win_pct", "return_points_won_pct",
+    "comeback_wins", "upset_wins", "upset_losses",
+    "bagels_given", "bagels_received", "breadsticks_given", "breadsticks_received",
+}
+
+
+def _clean_live_rank_name(value: str) -> str:
+    return " ".join(unicodedata.normalize("NFKC", str(value)).replace("\xa0", " ").split())
+
+
+@lru_cache(maxsize=8)
+def _live_rankings_cached(tour: str, cache_bucket: int) -> pd.DataFrame:
+    del cache_bucket  # included only to create a simple TTL cache key
+    prefix = "wta" if tour == "F" else "atp"
+    url = f"https://tennisabstract.com/reports/{prefix}Rankings.html"
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+    response.raise_for_status()
+
+    tables = pd.read_html(StringIO(response.text))
+    rankings = max(
+        (t for t in tables if {"Rank", "Player"}.issubset(t.columns)),
+        key=len,
+    ).copy()
+    rankings = rankings.dropna(subset=["Rank", "Player"])
+    rankings["current_rank"] = pd.to_numeric(rankings["Rank"], errors="coerce")
+    rankings = rankings.dropna(subset=["current_rank"])
+    rankings["current_rank"] = rankings["current_rank"].astype(int)
+    rankings["player_name"] = rankings["Player"].map(_clean_live_rank_name)
+    rankings["country"] = rankings["Country"].astype(str) if "Country" in rankings else ""
+    return rankings[["current_rank", "player_name", "country"]]
+
+
+def _live_rankings(tour: str) -> pd.DataFrame:
+    # Refresh roughly hourly without adding another dependency.
+    return _live_rankings_cached(tour, int(time() // 3600)).copy()
+
+
+def _stored_rankings(con: duckdb.DuckDBPyConnection, tour: str) -> pd.DataFrame:
+    """Fallback cohort source when live Tennis Abstract rankings are unavailable."""
+    return con.execute(
+        """
+        SELECT
+            current_rank,
+            name AS player_name,
+            country
+        FROM players
+        WHERE tour = $1
+          AND current_rank IS NOT NULL
+        QUALIFY ROW_NUMBER() OVER (
+            PARTITION BY name, tour
+            ORDER BY historically_ranked DESC, current_rank ASC NULLS LAST
+        ) = 1
+        ORDER BY current_rank
+        """,
+        [tour],
+    ).df()
+
+
+def _cohort_limit(cohort: str) -> int:
+    try:
+        return int(cohort.rsplit("_", 1)[1])
+    except (IndexError, ValueError) as exc:
+        raise ValueError(f"Unsupported cohort: {cohort}") from exc
 
 
 @router.get("/youngest-stage", operation_id="get_youngest_tournament_stage_reached")
@@ -85,6 +159,74 @@ def get_tour_level_season_leaders(
         "filters": data["filters"],
         "wins": df_to_records(data["wins"]),
         "finals": df_to_records(data["finals"]),
+    }
+
+
+@router.get("/comeback-scatter", operation_id="get_comeback_scatter")
+def get_comeback_scatter(
+    tour: Literal["M", "F"] = Query("F", description="Tour: M for ATP men, F for WTA women."),
+    cohort: Literal["live_top_10", "live_top_25", "live_top_50", "live_top_100"] = Query(
+        "live_top_100",
+        description="Live Tennis Abstract ranking cohort.",
+    ),
+    year_min: int = Query(2023, ge=1900, le=2100, description="Earliest season to include."),
+    year_max: Optional[int] = Query(None, ge=1900, le=2100, description="Latest season to include."),
+    surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
+    level: Optional[str] = Query("All Tour", description=LEVEL_FILTER_DESCRIPTION),
+    x_metric: str = Query("ace_pct", description="Metric shown on the chart x-axis."),
+    y_metric: str = Query("serve_points_won_pct", description="Metric shown on the chart y-axis."),
+    con: duckdb.DuckDBPyConnection = Depends(get_db),
+):
+    """Chart-ready total wins vs comeback wins for live-ranked cohorts."""
+    if year_max is not None and year_max < year_min:
+        raise HTTPException(status_code=422, detail="year_max must be >= year_min")
+    if x_metric not in SCATTER_METRICS or y_metric not in SCATTER_METRICS:
+        raise HTTPException(status_code=422, detail="Unsupported scatter metric")
+    if surface == "All":
+        surface = None
+
+    limit = _cohort_limit(cohort)
+    source = "Tennis Abstract live rankings + CourtVision match database"
+    try:
+        rankings = _live_rankings(tour)
+    except Exception:
+        rankings = _stored_rankings(con, tour)
+        source = "Stored player rankings fallback + CourtVision match database"
+
+    targets = rankings[rankings["current_rank"].between(1, limit)].copy()
+
+    df = q_metric_scatter(
+        con,
+        target_players=targets,
+        tour=tour,
+        year_min=year_min,
+        year_max=year_max,
+        surface=surface,
+        level=level,
+    )
+    if df.empty:
+        median = {metric: None for metric in sorted(SCATTER_METRICS)}
+    else:
+        median = {
+            metric: (None if pd.isna(df[metric].median()) else float(df[metric].median()))
+            for metric in sorted(SCATTER_METRICS)
+            if metric in df
+        }
+
+    return {
+        "meta": {
+            "tour": tour,
+            "cohort": cohort,
+            "year_min": year_min,
+            "year_max": year_max,
+            "level": level,
+            "surface": surface,
+            "x_metric": x_metric,
+            "y_metric": y_metric,
+            "median": median,
+            "source": source,
+        },
+        "points": df_to_records(df),
     }
 
 

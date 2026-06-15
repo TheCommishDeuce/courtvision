@@ -9,8 +9,8 @@ const links = [
   { to: '/compare', label: 'compare' },
   { to: '/tournament', label: 'tournament' },
   { to: '/leaders', label: 'leaders' },
-  { to: '/search', label: 'search' },
   { to: '/records', label: 'records' },
+  { to: '/search', label: 'search' },
 ];
 
 function linkClass(isActive: boolean) {

@@ -46,6 +46,7 @@ import {
   fetchNationalityStage,
   fetchCountryLeaders,
   fetchCountries,
+  fetchComebackScatter,
 } from '../api/client';
 import { createQueryHook, STALE } from './createQueryHook';
 
@@ -124,3 +125,4 @@ export const useRelationalMatches = createQueryHook('relationalMatches', fetchRe
 export const useMatchExtremes = createQueryHook('matchExtremes', fetchMatchExtremes);
 export const useNationalityStage = createQueryHook('nationalityStage', fetchNationalityStage);
 export const useCountryLeaders = createQueryHook('countryLeaders', fetchCountryLeaders);
+export const useComebackScatter = createQueryHook('comebackScatter', fetchComebackScatter);

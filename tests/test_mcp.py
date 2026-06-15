@@ -51,6 +51,7 @@ def test_openapi_uses_explicit_operation_ids_for_all_tool_routes() -> None:
         "get_activity_leaders",
         "get_bakery_leaders",
         "get_comeback_leaders",
+        "get_comeback_scatter",
         "get_country_leaders",
         "get_database_stats",
         "get_draw_strength_leaders",

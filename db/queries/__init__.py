@@ -1,7 +1,7 @@
 """Public query-builder API grouped by domain modules."""
 from __future__ import annotations
 
-from .analysis import q_tour_level_season_leaders, q_youngest_stage_reached
+from .analysis import q_comeback_scatter, q_metric_scatter, q_tour_level_season_leaders, q_youngest_stage_reached
 from .compare import q_common_opponents
 from .h2h import q_h2h
 from .leaders import (

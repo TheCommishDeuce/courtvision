@@ -147,6 +147,54 @@ export interface CountryLeadersResponse {
   results: CountryLeaderRow[];
 }
 
+export interface ComebackScatterPoint {
+  current_rank: number;
+  player_name: string;
+  country: string | null;
+  total_matches: number;
+  total_wins: number;
+  ace_pct: number | null;
+  df_pct: number | null;
+  first_in_pct: number | null;
+  first_win_pct: number | null;
+  second_win_pct: number | null;
+  serve_points_won_pct: number | null;
+  bp_saved_pct: number | null;
+  tb_played: number;
+  tb_win_pct: number | null;
+  first_return_win_pct: number | null;
+  second_return_win_pct: number | null;
+  return_points_won_pct: number | null;
+  comeback_wins: number;
+  upset_wins: number;
+  upset_losses: number;
+  bagels_given: number;
+  bagels_received: number;
+  breadsticks_given: number;
+  breadsticks_received: number;
+  is_live_top10: boolean;
+  is_highlight: boolean;
+  is_top10_comebacker: boolean;
+}
+
+export interface ComebackScatterResponse {
+  meta: {
+    tour: string;
+    cohort: string;
+    year_min: number;
+    year_max: number | null;
+    level: string | null;
+    surface: string | null;
+    x_metric: string;
+    y_metric: string;
+    median: {
+      [metric: string]: number | null;
+    };
+    source: string;
+  };
+  points: ComebackScatterPoint[];
+}
+
 export interface MatchRow {
   date: string;
   tournament: string;

@@ -8,6 +8,7 @@ import Spinner from '../components/ui/Spinner';
 import EmptyState from '../components/ui/EmptyState';
 import QueryError from '../components/ui/QueryError';
 import MatchStatsPanel, { type SideStats } from '../components/ui/MatchStatsPanel';
+import { MetricScatterSection } from './AnalysisPage';
 import type { MatchExtremeRow } from '../types/tennis';
 import { lastName } from '../utils';
 
@@ -71,6 +72,7 @@ function MatchRecords() {
   const [yMin, setYMin] = useState(String(THIS_YEAR - 2));
   const [yMax, setYMax] = useState(String(THIS_YEAR));
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const m = METRICS[metricIdx];
 
   const { data, isFetching, isError, refetch } = useMatchExtremes({
@@ -81,23 +83,29 @@ function MatchRecords() {
     year_min: yMin ? Number(yMin) : undefined,
     year_max: yMax ? Number(yMax) : undefined,
     limit: 25,
-  }, true);
+  }, submitted);
 
   const unit = m.metric === 'duration' ? 'min' : m.metric === 'rank_upset' ? 'gap' : '';
 
   return (
     <Card kicker="Match · Records" title={<>Match <span className="text-[var(--clay)]">Superlatives</span></>}>
       <div className="flex flex-wrap gap-2 items-center">
-        <select value={tour} onChange={e => setTour(e.target.value)} className="ba-input">
+        <select value={tour} onChange={e => { setTour(e.target.value); setSubmitted(false); }} className="ba-input">
           {TOURS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
-        <select value={metricIdx} onChange={e => setMetricIdx(Number(e.target.value))} className="ba-input">
+        <select value={metricIdx} onChange={e => { setMetricIdx(Number(e.target.value)); setSubmitted(false); }} className="ba-input">
           {METRICS.map((mm, i) => <option key={mm.label} value={i}>{mm.label}</option>)}
         </select>
-        <select value={level} onChange={e => setLevel(e.target.value)} className="ba-input">
+        <select value={level} onChange={e => { setLevel(e.target.value); setSubmitted(false); }} className="ba-input">
           {LEVELS.map(l => <option key={l} value={l}>{l || 'Any level'}</option>)}
         </select>
-        <YearInputs yMin={yMin} yMax={yMax} setYMin={setYMin} setYMax={setYMax} />
+        <YearInputs
+          yMin={yMin}
+          yMax={yMax}
+          setYMin={v => { setYMin(v); setSubmitted(false); }}
+          setYMax={v => { setYMax(v); setSubmitted(false); }}
+        />
+        <button onClick={() => setSubmitted(true)} className="ba-btn ba-btn-primary">Go →</button>
       </div>
       {isFetching && <div className="py-6 flex justify-center"><Spinner /></div>}
       {!isFetching && isError && <QueryError message="Couldn't load match records." onRetry={() => refetch()} />}
@@ -167,12 +175,12 @@ function MatchRecords() {
 }
 
 function NationalityMilestones() {
-  const [country, setCountry] = useState('Russia');
+  const [country, setCountry] = useState('');
   const [tour, setTour] = useState('F');
   const [level, setLevel] = useState('Grand Slam');
   const [stage, setStage] = useState('F');
   const [order, setOrder] = useState('last');
-  const [submitted, setSubmitted] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
 
   const { data, isFetching, isError, refetch } = useNationalityStage({
     country, stage, tour, level: level || undefined, order, limit: 25,
@@ -250,6 +258,7 @@ export default function RecordsPage() {
       </header>
       <MatchRecords />
       <NationalityMilestones />
+      <MetricScatterSection />
     </div>
   );
 }

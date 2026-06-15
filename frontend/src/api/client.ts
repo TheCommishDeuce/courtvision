@@ -40,6 +40,7 @@ import type {
   MatchExtremesResponse,
   NationalityStageResponse,
   CountryLeadersResponse,
+  ComebackScatterResponse,
 } from '../types/tennis';
 
 const api = axios.create({ baseURL: '/api' });
@@ -288,6 +289,20 @@ export interface CountryLeadersParams {
 
 export const fetchCountryLeaders = (params: CountryLeadersParams): Promise<CountryLeadersResponse> =>
   get<CountryLeadersResponse>('/analysis/country-leaders', params);
+
+export interface ComebackScatterParams {
+  tour?: string;
+  cohort?: string;
+  year_min?: number;
+  year_max?: number;
+  surface?: string;
+  level?: string;
+  x_metric?: string;
+  y_metric?: string;
+}
+
+export const fetchComebackScatter = (params: ComebackScatterParams): Promise<ComebackScatterResponse> =>
+  get<ComebackScatterResponse>('/analysis/comeback-scatter', params);
 
 export const fetchCountries = (tour?: string): Promise<CountryInfo[]> =>
   get<{ countries: CountryInfo[] }>('/meta/countries', { tour }).then(d => d.countries);
