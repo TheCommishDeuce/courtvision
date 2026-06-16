@@ -71,7 +71,7 @@ export const fetchRecentUpsets = (tour?: string, limit = 8): Promise<RecentUpset
 export const fetchRecentChampions = (tour?: string, limit = 10): Promise<RecentChampion[]> =>
   get<RecentChampion[]>('/tournament/recent-champions', { tour, limit });
 
-export const fetchStorylines = (limit = 6): Promise<Storyline[]> =>
+export const fetchStorylines = (limit = 4): Promise<Storyline[]> =>
   get<Storyline[]>('/meta/storylines', { limit });
 
 // ── H2H ──────────────────────────────────────────────────────────────────────

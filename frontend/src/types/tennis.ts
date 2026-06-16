@@ -729,6 +729,7 @@ export interface TiebreakLeaderRow {
 
 export interface Storyline {
   type: string;
+  label: string;
   headline: string;
   detail: string;
   player_name: string;

@@ -207,7 +207,7 @@ export default function HomePage() {
                 className="block bg-[var(--bone-2)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)] p-4 hover:border-t-[var(--clay)] hover:bg-[var(--bone-3)] transition-colors"
               >
                 <div className="flex items-baseline justify-between gap-3 mb-2">
-                  <span className="ba-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--clay)]">{s.type.replace('_', ' ')}</span>
+                  <span className="ba-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--clay)]">{s.label ?? s.type.replace('_', ' ')}</span>
                   <span className="ba-stat-sm text-[var(--ink)]">{s.value}</span>
                 </div>
                 <div className="ba-h3">{s.headline}</div>

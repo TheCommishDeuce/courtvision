@@ -117,7 +117,7 @@ def get_recent_upsets(
 
 @router.get("/storylines", operation_id="get_storylines")
 def get_storylines(
-    limit: int = Query(6, ge=1, le=12, description="Maximum number of dashboard storylines to return."),
+    limit: int = Query(4, ge=1, le=12, description="Maximum number of dashboard storylines to return."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     """Return current dashboard storylines generated from recent data."""
