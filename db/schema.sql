@@ -48,11 +48,12 @@ CREATE TABLE IF NOT EXISTS matches_main (
     rank_diff         DOUBLE
 );
 
-CREATE INDEX IF NOT EXISTS idx_winner     ON matches_main(winner_name);
-CREATE INDEX IF NOT EXISTS idx_loser      ON matches_main(loser_name);
-CREATE INDEX IF NOT EXISTS idx_date       ON matches_main(date);
-CREATE INDEX IF NOT EXISTS idx_tour_date  ON matches_main(tour, date);
-CREATE INDEX IF NOT EXISTS idx_tournament ON matches_main(tournament, date);
+-- No secondary indexes: matches_main is a columnar OLAP table (~1M rows).
+-- DuckDB serves the analytical scans/aggregations here in single-digit ms via
+-- columnar storage + zonemaps. Explicit ART indexes on these VARCHAR columns
+-- gave zero query benefit while making the full-reload INSERT pathologically
+-- slow (row-by-row index maintenance) and bloating the DB file. The PRIMARY KEY
+-- on unique_match_key is kept (it backs the incremental INSERT OR IGNORE path).
 
 -- Player perspective view: one row per player per match
 CREATE OR REPLACE VIEW player_match_view AS

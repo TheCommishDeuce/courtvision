@@ -69,24 +69,24 @@ def init_duckdb(db_path: Path, schema_sql_path: Path) -> duckdb.DuckDBPyConnecti
     return con
 
 
-def _create_indexes(con: duckdb.DuckDBPyConnection) -> None:
-    """Create indexes on matches_main for common query filter columns."""
-    indexes = [
-        ("idx_matches_winner",     "CREATE INDEX IF NOT EXISTS idx_matches_winner     ON matches_main(winner_name)"),
-        ("idx_matches_loser",      "CREATE INDEX IF NOT EXISTS idx_matches_loser      ON matches_main(loser_name)"),
-        ("idx_matches_tournament", "CREATE INDEX IF NOT EXISTS idx_matches_tournament ON matches_main(tournament)"),
-        ("idx_matches_tour",       "CREATE INDEX IF NOT EXISTS idx_matches_tour       ON matches_main(tour)"),
-        ("idx_matches_year",       "CREATE INDEX IF NOT EXISTS idx_matches_year       ON matches_main(year)"),
-        ("idx_matches_surface",    "CREATE INDEX IF NOT EXISTS idx_matches_surface    ON matches_main(surface)"),
-        ("idx_matches_level",      "CREATE INDEX IF NOT EXISTS idx_matches_level      ON matches_main(level_name)"),
-        ("idx_matches_round",      "CREATE INDEX IF NOT EXISTS idx_matches_round      ON matches_main(round)"),
-    ]
-    for name, sql in indexes:
-        try:
-            con.execute(sql)
-            logger.debug(f"Index {name} ready")
-        except Exception as exc:
-            logger.warning(f"Could not create index {name}: {exc}")
+def _drop_stale_secondary_indexes(con: duckdb.DuckDBPyConnection) -> None:
+    """Drop any secondary indexes left on matches_main by older schema versions.
+
+    These VARCHAR ART indexes provided no measurable query benefit (DuckDB serves
+    the analytical scans via columnar storage + zonemaps) but made the full-reload
+    INSERT pathologically slow and bloated the DB file. Existing DB files still
+    physically carry them, so we remove them before loading to keep reloads fast.
+    The PRIMARY KEY index is part of the table definition and is left intact.
+    """
+    rows = con.execute(
+        """
+        SELECT index_name FROM duckdb_indexes()
+        WHERE table_name = 'matches_main' AND is_primary = false
+        """
+    ).fetchall()
+    for (name,) in rows:
+        con.execute(f'DROP INDEX IF EXISTS "{name}"')
+        logger.info(f"Dropped stale secondary index {name}")
 
 
 def load_parquet_to_duckdb(
@@ -102,6 +102,7 @@ def load_parquet_to_duckdb(
     """
     where = "WHERE winner_name IS NOT NULL AND loser_name IS NOT NULL AND tour IS NOT NULL"
     if mode == 'full':
+        _drop_stale_secondary_indexes(con)
         con.execute("DELETE FROM matches_main")
         con.execute(
             f"INSERT INTO matches_main SELECT * FROM read_parquet(?) {where}",
@@ -114,7 +115,9 @@ def load_parquet_to_duckdb(
         )
     count = con.execute("SELECT COUNT(*) FROM matches_main").fetchone()[0]
     logger.info(f"matches_main now has {count} rows")
-    _create_indexes(con)
+    # Flush the WAL into the main DB file so the database is not left held open
+    # by a lingering .wal and disk space from the prior DELETE is reclaimed.
+    con.execute("CHECKPOINT")
     return count
 
 
