@@ -10,7 +10,6 @@ ExecStart=/opt/courtvision/venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8
 Restart=always
 RestartSec=5
 Environment=TENNIS_DB=/opt/courtvision/data/tennis.duckdb
-Environment=TENNIS_AUTH_DB=/opt/courtvision/data/auth.db
 Environment=TENNIS_DB_THREADS=1
 EnvironmentFile=-/opt/courtvision/.env
 

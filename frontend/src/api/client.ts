@@ -43,7 +43,10 @@ import type {
   ComebackScatterResponse,
 } from '../types/tennis';
 
-const api = axios.create({ baseURL: '/api' });
+const api = axios.create({
+  baseURL: '/api',
+  headers: { 'X-CourtVision-Client': 'dashboard' },
+});
 
 const get = <T,>(path: string, params?: object): Promise<T> =>
   api.get<T>(path, { params }).then(r => r.data);
@@ -214,11 +217,6 @@ export function _flattenSearchParams(params: SearchParams): Record<string, strin
 
 export const fetchSearchMatches = (params: SearchParams): Promise<SearchResponse> =>
   get<SearchResponse>('/search/matches', _flattenSearchParams(params));
-
-export const searchMatchesCsvUrl = (params: SearchParams): string => {
-  const q = new URLSearchParams(_flattenSearchParams(params));
-  return `/api/search/matches/csv?${q.toString()}`;
-};
 
 // ── Relational search & analysis ───────────────────────────────────────────────
 

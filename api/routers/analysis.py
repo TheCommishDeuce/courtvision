@@ -1,4 +1,4 @@
-"""Composite and tournament-analysis endpoints for agent workflows."""
+"""Composite and tournament-analysis endpoints for the dashboard."""
 from __future__ import annotations
 
 from functools import lru_cache
@@ -19,8 +19,6 @@ from db.queries import (
     q_metric_scatter,
     q_match_extremes,
     q_nationality_stage,
-    q_tour_level_season_leaders,
-    q_youngest_stage_reached,
 )
 
 router = APIRouter(tags=["analysis"])
@@ -98,68 +96,6 @@ def _cohort_limit(cohort: str) -> int:
         return int(cohort.rsplit("_", 1)[1])
     except (IndexError, ValueError) as exc:
         raise ValueError(f"Unsupported cohort: {cohort}") from exc
-
-
-@router.get("/youngest-stage", operation_id="get_youngest_tournament_stage_reached")
-def get_youngest_stage_reached(
-    stage: Literal["R16", "QF", "SF", "F"] = Query("QF", description="Minimum stage reached: R16, QF, SF, or F."),
-    tour: Optional[Literal["M", "F"]] = Query(None, description="Tour filter: M for ATP men, F for WTA women."),
-    level: Optional[str] = Query("Grand Slam", description=LEVEL_FILTER_DESCRIPTION),
-    surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
-    year_min: Optional[int] = Query(None, description="Earliest tournament year to include."),
-    year_max: Optional[int] = Query(None, description="Latest tournament year to include."),
-    limit: int = Query(20, ge=1, le=100, description="Maximum number of players/events to return."),
-    con: duckdb.DuckDBPyConnection = Depends(get_db),
-):
-    """Find the youngest players to reach a tournament stage under tour, level, surface, and year filters."""
-    try:
-        df = q_youngest_stage_reached(
-            con,
-            stage=stage,
-            tour=tour,
-            level=level,
-            surface=surface,
-            year_min=year_min,
-            year_max=year_max,
-            limit=limit,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-    return {
-        "filters": {
-            "stage": stage,
-            "tour": tour,
-            "level": level,
-            "surface": surface,
-            "year_min": year_min,
-            "year_max": year_max,
-        },
-        "results": df_to_records(df),
-    }
-
-
-@router.get("/tour-level-season-leaders", operation_id="get_tour_level_season_leaders")
-def get_tour_level_season_leaders(
-    year: int = Query(..., description="Season year to analyze, e.g. 2025."),
-    tour: Optional[Literal["M", "F"]] = Query(None, description="Tour filter: M for ATP men, F for WTA women."),
-    surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
-    limit: int = Query(20, ge=1, le=100, description="Maximum rows to return in each leaderboard."),
-    con: duckdb.DuckDBPyConnection = Depends(get_db),
-):
-    """Return combined All Tour season leaders for match wins and finals reached in one call."""
-    data = q_tour_level_season_leaders(
-        con,
-        year=year,
-        tour=tour,
-        surface=surface,
-        limit=limit,
-    )
-    return {
-        "filters": data["filters"],
-        "wins": df_to_records(data["wins"]),
-        "finals": df_to_records(data["finals"]),
-    }
 
 
 @router.get("/comeback-scatter", operation_id="get_comeback_scatter")

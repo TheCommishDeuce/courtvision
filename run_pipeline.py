@@ -33,8 +33,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _require_player_csvs() -> list[Path]:
+    player_csvs = [ATP_PLAYERS_CSV, WTA_PLAYERS_CSV]
+    missing_csvs = [csv for csv in player_csvs if not csv.exists()]
+    if missing_csvs:
+        raise FileNotFoundError(
+            f'Player reference CSV(s) not found: {[str(c) for c in missing_csvs]}. '
+            'Aborting before the database is modified.'
+        )
+    return player_csvs
+
+
 @click.command()
 def main() -> None:
+    player_csvs = _require_player_csvs()
+
     from pipeline.deduplicator import merge_all_tours_from_parquets
     from pipeline.loader import (
         init_duckdb, write_master_parquet, load_parquet_to_duckdb,
@@ -58,7 +71,6 @@ def main() -> None:
     rows = load_parquet_to_duckdb(con, str(MASTER_DIR / 'matches.parquet'), mode='full')
     logger.info(f'DuckDB loaded: {rows:,} rows')
 
-    player_csvs = [csv for csv in [ATP_PLAYERS_CSV, WTA_PLAYERS_CSV] if csv.exists()]
     for i, csv in enumerate(player_csvs):
         load_players_to_duckdb(con, csv, clear=(i == 0))
 

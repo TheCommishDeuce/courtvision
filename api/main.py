@@ -15,19 +15,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from api.auth.middleware import ApiKeyAuthMiddleware
-from api.auth.models import auth_db_connection
-from api.mcp_server import setup_mcp
-from api.routers import analysis, compare, h2h, leaders, meta, player, portal, search, tournament
+from api.dashboard_access import DashboardAccessMiddleware
+from api.routers import analysis, compare, h2h, leaders, meta, player, search, tournament
 from db.connection import get_db as open_tennis_db
 
-app = FastAPI(title="Tennis Abstract API", version="1.0.0")
+app = FastAPI(
+    title="CourtVision",
+    version="1.0.0",
+    openapi_url=None,
+    docs_url=None,
+    redoc_url=None,
+)
 
 DEFAULT_ALLOWED_ORIGINS = (
-    "http://localhost:5173",   # Vite dev server
-    "http://localhost:4173",   # Vite preview
-    "http://192.168.0.122:8010",
-    "https://courtvision.homelab-nn.com",  # production (reverse-proxied to :8010)
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:4173",  # Vite preview
 )
 
 
@@ -45,18 +47,17 @@ def _load_allowed_origins() -> tuple[str, ...]:
 
 ALLOWED_ORIGINS = _load_allowed_origins()
 
-# CORS is added last so it wraps auth responses as well as successful API calls.
+# CORS is added last so it wraps gate rejections as well as successful responses.
 app.add_middleware(
-    ApiKeyAuthMiddleware,
+    DashboardAccessMiddleware,
     allowed_origins=ALLOWED_ORIGINS,
 )
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list(ALLOWED_ORIGINS),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET"],
+    allow_headers=["X-CourtVision-Client"],
 )
 
 app.include_router(meta.router,       prefix="/api/meta")
@@ -67,35 +68,20 @@ app.include_router(tournament.router, prefix="/api/tournament")
 app.include_router(search.router,     prefix="/api/search")
 app.include_router(leaders.router,    prefix="/api/leaders")
 app.include_router(compare.router,    prefix="/api/compare")
-app.include_router(portal.router,     prefix="/api/portal")
 
 
 @app.get("/api/health")
-def health() -> dict:
-    checks: dict[str, str] = {}
+def health() -> dict[str, str]:
+    """Report whether the tennis database is ready to serve requests."""
     try:
         con = open_tennis_db(read_only=True)
         try:
             con.execute("SELECT 1").fetchone()
         finally:
             con.close()
-        checks["duckdb"] = "ok"
     except Exception as exc:
-        checks["duckdb"] = f"error: {exc}"
-
-    try:
-        with auth_db_connection() as con:
-            con.execute("SELECT 1").fetchone()
-        checks["auth_db"] = "ok"
-    except Exception as exc:
-        checks["auth_db"] = f"error: {exc}"
-
-    if any(value != "ok" for value in checks.values()):
-        raise HTTPException(status_code=503, detail={"status": "error", "checks": checks})
-    return {"status": "ok", "checks": checks}
-
-
-setup_mcp(app)
+        raise HTTPException(status_code=503, detail="Service unavailable") from exc
+    return {"status": "ok"}
 
 
 # Serve frontend static files — must be last.
@@ -110,7 +96,8 @@ if _DIST.exists():
 
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str):
-        if full_path == "api" or full_path.startswith("api/"):
+        unavailable = {"api", "mcp", "docs", "redoc", "openapi.json"}
+        if full_path in unavailable or full_path.startswith("api/") or full_path.startswith("mcp/"):
             raise HTTPException(status_code=404, detail="Not Found")
         if full_path:
             candidate = (_DIST / full_path).resolve()

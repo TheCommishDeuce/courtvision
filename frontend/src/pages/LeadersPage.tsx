@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useYearRange } from '../hooks';
 import TourToggle from '../components/filters/TourToggle';
@@ -31,7 +31,10 @@ export default function LeadersPage() {
   const [surface, setSurface] = useState(searchParams.get('surface') ?? 'All');
   const [level, setLevel] = useState(searchParams.get('level') ?? '');
   const [yearRange, setYearRange] = useState<[number, number] | null>(() => parseYearRange(searchParams));
-  const activeYearRange = yearRange ?? ([yr?.year_max ?? 2026, yr?.year_max ?? 2026] as [number, number]);
+  const activeYearRange = useMemo<[number, number]>(
+    () => yearRange ?? [yr?.year_max ?? 2026, yr?.year_max ?? 2026],
+    [yearRange, yr?.year_max],
+  );
   const sharedProps = { tour, surface, level, yearRange: activeYearRange };
   const activeTabDef = TABS.find(t => t.id === tab)!;
 

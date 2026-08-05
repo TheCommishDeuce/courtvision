@@ -1,14 +1,11 @@
-"""Match search endpoints (JSON + CSV download)."""
+"""Dashboard match-search endpoints."""
 from __future__ import annotations
 
-import io
 import math
 from typing import Literal, Optional
 
 import duckdb
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import StreamingResponse
-
 from api.deps import get_db
 from api.serializers import df_to_records
 from db.queries import q_match_search, q_relational_match_search, q_relational_summary
@@ -163,37 +160,3 @@ def search_relational_matches(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return {"total": summary["total"], "shown": len(df), "summary": summary, "matches": df_to_records(df)}
-
-
-@router.get("/matches/csv", operation_id="download_matches_csv")
-def search_matches_csv(
-    request: Request,
-    winner: Optional[str] = Query(None, description="Substring filter for winning player name."),
-    loser: Optional[str] = Query(None, description="Substring filter for losing player name."),
-    tournament: Optional[str] = Query(None, description="Substring filter for tournament name."),
-    surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
-    level: Optional[str] = Query(None, description="Optional tournament level filter such as Grand Slam or Masters 1000."),
-    round_: Optional[str] = Query(None, alias="round", description="Optional round code filter such as F, SF, QF, R16, or R32."),
-    tour: Optional[Literal["M", "F"]] = Query(None, description="Optional tour filter: M for ATP men, F for WTA women."),
-    upsets_only: bool = Query(False, description="When true, return only matches where the winner was lower ranked."),
-    with_stats_only: bool = Query(False, description="When true, return only matches with point-level serve stats."),
-    year_min: Optional[int] = Query(None, description="Earliest match year to include."),
-    year_max: Optional[int] = Query(None, description="Latest match year to include."),
-    limit: int = Query(5000, ge=1, le=50000, description="Maximum number of matches to export."),
-    con: duckdb.DuckDBPyConnection = Depends(get_db),
-):
-    """Download match search results as CSV using the same filters as JSON match search."""
-    stat_filters = _parse_stat_filters(request)
-    df = _run_search(
-        con, winner, loser, tournament, surface, level, round_,
-        tour, upsets_only, with_stats_only, year_min, year_max, limit,
-        stat_filters=stat_filters,
-    )
-    buf = io.StringIO()
-    df.to_csv(buf, index=False)
-    buf.seek(0)
-    return StreamingResponse(
-        iter([buf.getvalue()]),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=matches.csv"},
-    )

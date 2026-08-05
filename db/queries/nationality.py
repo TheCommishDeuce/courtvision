@@ -1,9 +1,4 @@
-"""Nationality-based tournament milestones and country leaderboards.
-
-Answers questions like "who was the last Russian woman to reach a Grand Slam
-final?" and "which country won the most WTA 250 titles in 2024?" by joining
-player_match_view to deduped player attributes (country) from the players table.
-"""
+"""Nationality-based tournament milestones and country leaderboards."""
 from __future__ import annotations
 
 from typing import Optional
@@ -38,7 +33,7 @@ def q_nationality_stage(
     `order='last'` returns the most recent first (e.g. last Russian woman to
     reach a Grand Slam final); `order='first'` returns the earliest first.
     `tournament` is an optional substring filter to isolate one event
-    (e.g. 'Wimbledon') — exposed for MCP/agent queries.
+    (e.g. 'Wimbledon').
     """
     stage_order = STAGE_ORDER.get(stage.upper())
     if stage_order is None:

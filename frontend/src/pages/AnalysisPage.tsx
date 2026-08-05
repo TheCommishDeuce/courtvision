@@ -258,7 +258,7 @@ export function MetricScatterSection() {
 
   const [submitted, setSubmitted] = useState(false);
   const { data, isFetching, isError, refetch } = useComebackScatter(params, submitted);
-  const points = data?.points ?? [];
+  const points = useMemo(() => data?.points ?? [], [data?.points]);
 
   const chartPoints = useMemo<ChartPoint[]>(() => points.map(p => ({
     ...p,

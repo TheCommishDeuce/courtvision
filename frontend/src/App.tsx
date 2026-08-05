@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Link, Route, Routes, useSearchParams } from 'react-router-dom';
+import { Route, Routes, useSearchParams } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import Spinner from './components/ui/Spinner';
@@ -13,9 +13,6 @@ const SearchPage = lazy(() => import('./pages/SearchPage'));
 const RecordsPage = lazy(() => import('./pages/RecordsPage'));
 const LeadersPage = lazy(() => import('./pages/LeadersPage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
-const PricingPage = lazy(() => import('./pages/PricingPage'));
-const DocsPage = lazy(() => import('./pages/DocsPage'));
-const DevPortalPage = lazy(() => import('./pages/DevPortalPage'));
 
 function PlayerPageRoute() {
   const [searchParams] = useSearchParams();
@@ -38,12 +35,9 @@ function Footer() {
           </a>
           . All credit for the underlying data goes to him.
         </span>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ba-mono text-[10px] text-[var(--ink-2)]">
-          <Link to="/docs" className="ba-link">API Docs</Link>
-          <Link to="/pricing" className="ba-link">API Access</Link>
-          <Link to="/dev" className="ba-link">Developer Portal</Link>
-          <span>{stats?.data_through ? `Data through ${stats.data_through.slice(0, 10)}` : 'courtvision'}</span>
-        </div>
+        <span className="ba-mono text-[10px] text-[var(--ink-2)]">
+          {stats?.data_through ? `Data through ${stats.data_through.slice(0, 10)}` : 'courtvision'}
+        </span>
       </div>
     </footer>
   );
@@ -65,9 +59,6 @@ export default function App() {
               <Route path="/leaders"    element={<LeadersPage />} />
               <Route path="/search"     element={<SearchPage />} />
               <Route path="/records"    element={<RecordsPage />} />
-              <Route path="/pricing"    element={<PricingPage />} />
-              <Route path="/docs"       element={<DocsPage />} />
-              <Route path="/dev"        element={<DevPortalPage />} />
               <Route path="*"           element={
                 <div className="text-center py-24">
                   <div className="ba-display text-[var(--clay)] mb-4">404</div>

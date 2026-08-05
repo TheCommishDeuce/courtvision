@@ -9,14 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "audit:prod": "node audit-production.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.21",
-    "axios": "0.30.3",
+    "axios": "1.19.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "7.13.1",
+    "react-router-dom": "7.18.2",
     "recharts": "3.7.0"
   },
   "devDependencies": {

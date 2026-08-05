@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { _flattenSearchParams, searchMatchesCsvUrl } from './client';
+import { _flattenSearchParams } from './client';
 
 describe('_flattenSearchParams', () => {
   it('drops undefined, null, and empty-string values', () => {
@@ -22,13 +22,5 @@ describe('_flattenSearchParams', () => {
 
   it('keeps zero values in stat_filters', () => {
     expect(_flattenSearchParams({ stat_filters: { dfs: { min: 0 } } })).toEqual({ dfs_min: '0' });
-  });
-});
-
-describe('searchMatchesCsvUrl', () => {
-  it('builds the CSV URL with flattened query params', () => {
-    expect(
-      searchMatchesCsvUrl({ winner: 'Iga Swiatek', tour: 'W', stat_filters: { aces: { min: 5 } } }),
-    ).toBe('/api/search/matches/csv?winner=Iga+Swiatek&tour=W&aces_min=5');
   });
 });

@@ -53,12 +53,6 @@ export default function Navbar() {
         </div>
 
         <div className="ba-mono text-[11px] font-medium tracking-[0.12em] uppercase text-[var(--mute)] flex items-center gap-4 whitespace-nowrap">
-          <NavLink
-            to={{ pathname: '/docs', search: navSearch }}
-            className={({ isActive }) => linkClass(isActive)}
-          >
-            API
-          </NavLink>
           <div className="flex items-center gap-2">
             <span>Data Through</span>
             <span className="text-[var(--ink-2)]">{dataThrough}</span>
