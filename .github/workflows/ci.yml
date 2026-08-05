@@ -34,6 +34,7 @@ jobs:
 
   frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: frontend
@@ -46,7 +47,7 @@ jobs:
         run: npm install --global npm@11.17.0 --no-audit --no-fund
       - name: Install frontend dependencies
         run: |
-          npm install --ignore-scripts --no-audit --no-fund
+          npm install --ignore-scripts --no-audit --no-fund --loglevel=verbose --fetch-retries=1 --fetch-timeout=30000
           git diff --exit-code -- package-lock.json
       - run: npm test
       - run: npm run lint -- --max-warnings=0
