@@ -42,7 +42,7 @@ run_pipeline.py ──► data/parquet/master/matches.parquet
 ## Prerequisites
 
 - Python 3.12+
-- Node.js 20+
+- Node.js 20+ (CI uses Node.js 24)
 - A populated `data/tennis.duckdb`
 
 ## Local setup
