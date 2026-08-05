@@ -27,7 +27,7 @@ fi
 printf '%s\n' "Building frontend..."
 (
     cd "$ROOT/frontend"
-    npm ci
+    npm ci --no-audit --no-fund
     npm run build
 )
 
