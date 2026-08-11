@@ -1,3 +1,5 @@
+import FilterField from './FilterField';
+
 const LEVELS_ATP: Record<string, string> = {
   All: '',
   'All ATP': 'All Tour',
@@ -36,17 +38,12 @@ interface Props {
 export default function LevelSelect({ tour, value, onChange }: Props) {
   const map = tour === 'F' ? LEVELS_WTA : LEVELS_ATP;
   return (
-    <div className="flex flex-col gap-1 w-full sm:w-auto">
-      <label className="ba-kicker">Level</label>
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        className="ba-select text-sm px-2 py-1.5 w-full"
-      >
+    <FilterField label="Level">
+      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select w-full">
         {Object.entries(map).map(([label, code]) => (
           <option key={label} value={code}>{label}</option>
         ))}
       </select>
-    </div>
+    </FilterField>
   );
 }

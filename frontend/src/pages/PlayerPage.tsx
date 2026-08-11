@@ -111,7 +111,7 @@ export default function PlayerPage() {
   const hasLoaded = submitted && !!summary && !!matchData && matchData.total > 0;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-5">
       <PlayerHeader player={player} submitted={submitted} summary={summary} />
       {yr && (
         <PlayerFilterPanel
@@ -132,17 +132,29 @@ export default function PlayerPage() {
         />
       )}
 
-      {isLoading && <div className="py-12 flex justify-center"><Spinner /></div>}
+      {isLoading && <Spinner />}
       {!isLoading && (errorSummary || errorMatches) && (
         <QueryError
-          message="Couldn't load this player's profile. The API may be unavailable."
+          title="This profile did not load"
+          message="The request failed. Retry, or check the player's name."
           onRetry={() => { if (errorSummary) refetchSummary(); if (errorMatches) refetchMatches(); }}
         />
       )}
-      {!isLoading && submitted && matchData && matchData.total === 0 && <EmptyState title="No player dossier" message="No matches found for this player with the selected filters." />}
+      {!isLoading && !submitted && (
+        <EmptyState
+          title="Pick a player"
+          message="Type a name above and select Load profile to see their career, form, serve and return."
+        />
+      )}
+      {!isLoading && submitted && matchData && matchData.total === 0 && (
+        <EmptyState
+          title="No matches under these filters"
+          message="Widen the surface, level or year range — this player has no matches in the current selection."
+        />
+      )}
 
       {!isLoading && hasLoaded && summary && matchData && (
-        <div className="space-y-10">
+        <div className="space-y-6">
           <KpiDossier filteredWins={filteredWins} filteredLosses={filteredLosses} filteredWinPct={filteredWinPct} summary={summary} topN={topN} playerForm={playerForm} />
           <FormSection playerForm={playerForm} tour={tour} />
           <CareerPulseSection matchData={matchData} rankHistory={rankHistory} summary={summary} />

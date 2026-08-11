@@ -3,12 +3,16 @@ interface Props {
   message?: string;
 }
 
-export default function EmptyState({ title = 'No Data', message = 'No data available.' }: Props) {
+/** An empty screen is an invitation to act — say what to change. */
+export default function EmptyState({
+  title = 'Nothing here yet',
+  message = 'Widen the filters or pick a different player to see results.',
+}: Props) {
   return (
-    <div className="text-center py-16 text-[var(--mute)] ba-card-flat border-t-2 border-t-[var(--ink)]">
-      <div className="ba-kicker mb-2">Empty view</div>
-      <div className="ba-h2 mb-2 text-[var(--ink-2)]">{title}</div>
-      <p className="text-sm px-4 pb-4 max-w-xl mx-auto">{message}</p>
+    <div className="ba-card-flat border-t-2 border-t-[var(--ink)] py-10 text-center">
+      <div className="ba-eyebrow mb-1.5">No results</div>
+      <div className="ba-h3 mb-1 text-[var(--ink)]">{title}</div>
+      <p className="text-[13px] text-[var(--ink-2)] px-4 max-w-md mx-auto">{message}</p>
     </div>
   );
 }

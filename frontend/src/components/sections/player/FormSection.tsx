@@ -6,9 +6,9 @@ export function FormSection({ playerForm, tour }: { playerForm?: PlayerForm; tou
   if (!playerForm) return null;
   return (
     <section>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <ProfileTable
-          title="Recent Top-50 Wins"
+          title="Recent top-50 wins"
           headers={['Date', 'Opponent', 'Rank', 'Tournament', 'Round']}
           rows={(playerForm.top_wins_recent ?? []).map(r => [
             r.date,
@@ -19,7 +19,7 @@ export function FormSection({ playerForm, tour }: { playerForm?: PlayerForm; tou
           ])}
         />
         <ProfileTable
-          title="Recent Upset Losses"
+          title="Recent upset losses"
           headers={['Date', 'Opponent', 'Rank', 'Tournament', 'Round']}
           rows={(playerForm.upset_losses_recent ?? []).map(r => [
             r.date,

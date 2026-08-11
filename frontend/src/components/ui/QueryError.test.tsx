@@ -6,7 +6,7 @@ describe('QueryError', () => {
   it('renders the message', () => {
     render(<QueryError message="API is down." />);
     expect(screen.getByText('API is down.')).toBeInTheDocument();
-    expect(screen.getByText("Couldn't Load")).toBeInTheDocument();
+    expect(screen.getByText('This data did not load')).toBeInTheDocument();
   });
 
   it('fires the retry callback', () => {

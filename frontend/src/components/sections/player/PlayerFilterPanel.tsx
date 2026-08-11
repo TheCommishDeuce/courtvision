@@ -3,8 +3,8 @@ import SurfaceSelect from '../../filters/SurfaceSelect';
 import LevelSelect from '../../filters/LevelSelect';
 import YearRangeSlider from '../../filters/YearRangeSlider';
 import PlayerAutocomplete from '../../filters/PlayerAutocomplete';
-import FilterPanel from '../../ui/FilterPanel';
 
+/** Same recessed well as Records and Versus, so the pages read as one system. */
 export function PlayerFilterPanel({
   tour,
   player,
@@ -37,18 +37,16 @@ export function PlayerFilterPanel({
   onSubmit: () => void;
 }) {
   return (
-    <FilterPanel
-      kicker="Player filters"
-      summary={`${tour === 'M' ? 'ATP' : 'WTA'} · ${surface}${level ? ` · ${level}` : ''} · ${yearRange[0]}–${yearRange[1]}`}
-      actions={(
-        <button onClick={onSubmit} disabled={!player} className="ba-btn ba-btn-primary">
-          Load Profile →
-        </button>
-      )}
-    >
-      <TourToggle value={tour} onChange={onTourChange} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(16rem,1.25fr)_auto_auto_minmax(20rem,1.4fr)] gap-4 items-end">
-        <PlayerAutocomplete label="Player" value={player} onChange={onPlayerChange} players={players} />
+    <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
+        <PlayerAutocomplete
+          label="Player"
+          value={player}
+          onChange={onPlayerChange}
+          players={players}
+          width="w-full sm:w-64"
+        />
+        <TourToggle value={tour} onChange={onTourChange} />
         <SurfaceSelect value={surface} onChange={onSurfaceChange} />
         <LevelSelect tour={tour} value={level} onChange={onLevelChange} />
         <YearRangeSlider
@@ -58,7 +56,15 @@ export function PlayerFilterPanel({
           value={yearRange}
           onChange={onYearRangeChange}
         />
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!player}
+          className="ba-btn ba-btn-primary ml-auto"
+        >
+          Load profile
+        </button>
       </div>
-    </FilterPanel>
+    </section>
   );
 }

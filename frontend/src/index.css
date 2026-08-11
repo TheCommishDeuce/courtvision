@@ -1,138 +1,168 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..600&family=Fraunces:opsz,wght@9..144,400..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-:root {
-  --bone: #f5f1e8;
-  --bone-2: #efe8d8;
-  --bone-3: #e6dcc6;
-
-  --ink: #1f1b18;
-  --ink-2: #4a423c;
-  --mute: #8a8078;
-  --rule: #d9cdb8;
-
-  --clay: #c8552e;
-  --clay-deep: #9c3f1f;
-  --clay-soft: #e8b89c;
-
-  --surface-clay: #c66a3a;
-  --surface-grass: #4d8b4f;
-  --surface-hard: #2e6f9e;
-
-  /* Surface tag ink (was hardcoded hex in .ba-surface-* / SurfaceTag) */
-  --clay-ink: #6a2e12;
-  --grass-ink: #1f4a22;
-  --hard-ink: #163f5e;
-
-  --paper: var(--bone);
-  --paper-2: var(--bone);
-  --paper-3: var(--bone-2);
-  --primary: var(--clay);
-  --secondary: var(--clay-deep);
-}
-
 /* ============================================================
-   Canonical scales — DO NOT inline-override these on pages.
-   Typography:  .ba-display > .ba-h2 > .ba-h3   (Fraunces, mixed-case)
-                .ba-stat / .ba-stat-sm          (big numerals)
-                .ba-kicker / .ba-eyebrow / .ba-label  (mono, uppercase)
-                body / .ba-body / .ba-body-sm   (Inter)
-   Spacing:     page sections  -> space-y-10
-                hero/KPI grid   -> gap-6
-                card grid       -> gap-4
-                tight lists     -> gap-2
-                section header  -> hairline rule + pb-3 mb-6 (use <SectionHeader>)
+   BONE & CLAY — design tokens
+   Warm bone paper, dark ink, one terracotta accent. Depth runs the
+   warm way round: a card is slightly *deeper* than the page, the way
+   stacked paper is, rather than lighter.
    ============================================================ */
+
+:root {
+  /* --- Bone: three depths only ---------------------------------- */
+  --paper:        #f5f1e8;  /* the page field */
+  --paper-raised: #efe8d8;  /* boards, cards, tables */
+  --paper-sunken: #e6dcc6;  /* recessed wells: table heads, filter bars */
+
+  /* --- Ink ------------------------------------------------------ */
+  --ink:   #1f1b18;  /* warm near-black */
+  --ink-2: #4a423c;  /* secondary text */
+  --mute:  #6f6660;  /* labels, meta, captions — 4.97:1 on bone */
+
+  /* --- Rules ---------------------------------------------------- */
+  --rule:      #d9cdb8;  /* hairline between rows */
+  --rule-mid:  #c4b393;  /* hairline between blocks */
+  --rule-ink:  var(--ink); /* the heavy rule — section and masthead only */
+  --leader:    color-mix(in oklab, var(--ink) 22%, transparent); /* dot leaders */
+
+  /* --- Accent: terracotta, used sparingly -----------------------
+     Deepened just enough from the original #c8552e to clear 4.5:1 on
+     bone and on a card, so small clay labels and figures stay legible. */
+  --clay:       #b4441f;  /* 4.92:1 on bone, 4.54:1 on a card */
+  --clay-deep:  #92351a;  /* 6.78:1 — links, hover */
+  --clay-wash:  color-mix(in oklab, var(--clay) 8%, var(--paper-raised));
+  --clay-tint:  color-mix(in oklab, var(--clay) 16%, var(--paper-raised));
+
+  /* Text sitting on a clay fill. Bone, not white — white goes cold
+     against terracotta and the page has no pure white in it. */
+  --on-clay:      #f8f4ec;  /* 5.05:1 on clay */
+  --on-clay-soft: #f3e5db;  /* 4.55:1 — labels inside a clay block */
+
+  /* --- Court surfaces ------------------------------------------- */
+  --surface-clay:  #c66a3a;
+  --surface-grass: #4d8b4f;
+  --surface-hard:  #2e6f9e;
+  --clay-ink:  #6a2e12;
+  --grass-ink: #1f4a22;
+  --hard-ink:  #163f5e;
+
+  /* --- Canonical table density ---------------------------------
+     One spec, three steps. Pages never hand-tune padding; they pick
+     a step by adding .ba-table-dense or .ba-table-agate. Each step
+     only overrides these variables, so row height, padding, and type
+     size can never drift apart.                                   */
+  --t-row-h:   30px;
+  --t-cell-px: 10px;
+  --t-cell-py: 5px;
+  --t-cell-fs: 13px;
+  --t-head-fs: 9.5px;
+
+  /* Board rows are always agate — a board is a results column. */
+  --board-row-h: 23px;
+  --board-rows:  10;
+
+}
 
 @layer base {
 
-* {
-  box-sizing: border-box;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-html {
-  background-color: var(--bone);
-}
+  html {
+    background-color: var(--paper);
+  }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--bone);
-  color: var(--ink);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-feature-settings: "ss01", "cv11";
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-#root {
-  min-height: 100vh;
-}
+  #root {
+    min-height: 100vh;
+  }
 
-:where(a) {
-  color: var(--clay-deep);
-  text-decoration: none;
-}
+  :where(a) {
+    color: var(--clay-deep);
+    text-decoration: none;
+  }
 
-:where(a):hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
+  :where(a):hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 
-::selection {
-  background: var(--clay);
-  color: var(--bone);
-}
+  ::selection {
+    background: var(--clay);
+    color: var(--on-clay);
+  }
 
 }  /* end @layer base */
 
 /* ============================================================
-   Bone & Clay primitives (.ba-*)
-   Wrapped in @layer components so Tailwind utilities (e.g. an
-   intentional text-[26px] on the nav logo) win when present, while
-   bare usage (`ba-display`) inherits the canonical scale.
+   Primitives (.ba-*)
+   In @layer components so a deliberate Tailwind utility on a page
+   still wins, while bare usage inherits the canonical scale.
    ============================================================ */
 
 @layer components {
 
-/* --- Display + headings: Fraunces, mixed-case, lighter --- */
+/* ------------------------------------------------------------
+   TYPE — four roles, and one rule about figures.
+   EB Garamond    : words that carry the page's voice (display, h2, h3)
+   Fraunces       : display figures — .ba-stat, .ba-stat-sm, SplitRecord
+   Inter          : body copy
+   JetBrains Mono : data figures and every label
+
+   The figure rule: a number that stands alone as a headline is set in
+   Fraunces. A number that sits in a column next to other numbers —
+   table cells, .ba-figure, board rows — is mono and tabular, because
+   that is the only way a column of them lines up.
+   ------------------------------------------------------------ */
+
 .ba-display {
-  font-family: "Fraunces", Georgia, serif;
-  font-optical-sizing: auto;
+  font-family: "EB Garamond", Georgia, serif;
   font-weight: 500;
-  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
-  line-height: 1;
-  letter-spacing: -0.015em;
+  /* EB Garamond has a small x-height, so display sizes run larger
+     than the equivalent grotesque to read at the same optical size. */
+  font-size: clamp(2.75rem, 5.5vw, 4.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.018em;
   color: inherit;
 }
 
 .ba-h2 {
-  font-family: "Fraunces", Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-family: "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
   color: inherit;
 }
 
 .ba-h3 {
-  font-family: "Fraunces", Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-size: 1.125rem;
-  line-height: 1.2;
+  font-family: "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 1.1875rem;
+  line-height: 1.18;
+  letter-spacing: -0.006em;
   color: inherit;
 }
 
-/* Big numerals (KPI / hero stats) */
+/* Display figures — Fraunces, tabular where the face supports it. */
 .ba-stat {
   font-family: "Fraunces", Georgia, serif;
   font-optical-sizing: auto;
   font-weight: 500;
-  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  font-size: clamp(2.375rem, 5vw, 3.5rem);
   line-height: 0.95;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums lining-nums;
@@ -143,32 +173,21 @@ body {
   font-family: "Fraunces", Georgia, serif;
   font-optical-sizing: auto;
   font-weight: 500;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-size: clamp(1.5rem, 2.4vw, 1.875rem);
   line-height: 1;
   letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums lining-nums;
   color: currentColor;
 }
 
-/* Legacy aliases — point at the new scale so un-migrated usages stay sane */
-.ba-hero-num {
-  font-family: "Fraunces", Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-size: clamp(2.5rem, 5.5vw, 4rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+/* Agate figure — the inline number inside a dense row. */
+.ba-figure {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 12px;
   font-variant-numeric: tabular-nums lining-nums;
-  color: currentColor;
-}
-.ba-section-title {
-  font-family: "Fraunces", Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
-  line-height: 1.1;
   letter-spacing: -0.01em;
-  color: inherit;
+  color: var(--ink);
 }
 
 .ba-mono {
@@ -190,184 +209,443 @@ body {
   color: var(--ink-2);
 }
 
+/* Mono label family — three sizes, one voice. */
 .ba-kicker {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--mute);
 }
 
-/* Mono mini-titles / meta labels (replaces tiny ba-section-title overrides) */
 .ba-label {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   color: var(--mute);
 }
 
 .ba-eyebrow {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--clay);
 }
 
-/* KPI — terracotta hot-spot */
-.ba-kpi {
-  position: relative;
-  background: var(--clay);
-  color: var(--bone);
-  padding: 2rem 2rem 1.75rem;
-  border: 0;
-  box-shadow: 3px 3px 0 var(--ink);
-  overflow: hidden;
-  isolation: isolate;
+
+/* ------------------------------------------------------------
+   RULES — hierarchy is carried by rule weight, not by color.
+   hairline < mid < ink < double
+   ------------------------------------------------------------ */
+
+.ba-top-rule   { border-top: 2px solid var(--ink); }
+.ba-clay-rule  { border-top: 2px solid var(--clay); }
+
+/* Double rule: heavy over hairline, broadsheet nameplate style.
+   Reserved for the masthead and top-level page headers. */
+.ba-double-rule {
+  border-bottom: 1px solid var(--ink);
+  box-shadow: 0 3px 0 -1px var(--rule-mid);
 }
 
-.ba-kpi::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 120%, color-mix(in oklab, var(--clay-deep) 60%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% -20%, color-mix(in oklab, white 12%, transparent) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: -1;
-}
+/* ------------------------------------------------------------
+   SURFACES — cards, wells, boards
+   ------------------------------------------------------------ */
 
-.ba-kpi-hero {
-  padding: 3rem 2.5rem 2.5rem;
-}
-
-/* Muted KPI — lives on canvas */
-.ba-kpi-muted {
-  background: var(--bone-2);
-  color: var(--ink);
-  border-top: 3px solid var(--ink);
-  padding: 1.25rem 1.25rem 1.1rem;
-}
-
-/* Cards */
 .ba-card {
-  background: var(--bone-2);
+  background: var(--paper-raised);
   border: 1px solid var(--rule);
   border-top: 2px solid var(--ink);
-  padding: 1.25rem;
+  padding: 1rem 1.125rem;
 }
 
 .ba-card-flat {
-  background: var(--bone-2);
+  background: var(--paper-raised);
   border: 1px solid var(--rule);
-  padding: 1.25rem;
+  padding: 1rem 1.125rem;
 }
 
-/* Tables */
+/* A well sits *below* the page — filter bars, table heads, panels. */
+.ba-well {
+  background: var(--paper-sunken);
+  border: 1px solid var(--rule);
+}
+
+/* ------------------------------------------------------------
+   KPI — the one place clay fills a whole block.
+   Flat: no gradient, no drop shadow. Newsprint has no depth.
+   ------------------------------------------------------------ */
+
+.ba-kpi {
+  background: var(--clay);
+  color: var(--on-clay);
+  padding: 1.25rem 1.375rem 1.125rem;
+  border: 0;
+}
+
+.ba-kpi-hero {
+  padding: 1.75rem 1.75rem 1.5rem;
+}
+
+.ba-kpi-muted {
+  background: var(--paper-raised);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--ink);
+  padding: 0.875rem 1rem 0.75rem;
+}
+
+/* ------------------------------------------------------------
+   TABLES — driven entirely by the density variables.
+   .ba-table          comfortable (default)
+   .ba-table-dense    stat-heavy pages
+   .ba-table-agate    results columns, long lists
+   ------------------------------------------------------------ */
+
 .ba-table {
   width: 100%;
   border-collapse: collapse;
   font-family: "Inter", sans-serif;
 }
 
+.ba-table-dense {
+  --t-row-h:   26px;
+  --t-cell-px: 8px;
+  --t-cell-py: 3px;
+  --t-cell-fs: 12.5px;
+  --t-head-fs: 9px;
+}
+
+.ba-table-agate {
+  --t-row-h:   23px;
+  --t-cell-px: 6px;
+  --t-cell-py: 2px;
+  --t-cell-fs: 12px;
+  --t-head-fs: 9px;
+}
+
 .ba-table thead th {
-  border-bottom: 2px solid var(--ink);
-  padding: 0.55rem 0.75rem;
+  height: var(--t-row-h);
+  padding: var(--t-cell-py) var(--t-cell-px);
+  background: var(--paper-sunken);
+  border-bottom: 1px solid var(--ink);
   color: var(--ink);
   font-family: "JetBrains Mono", monospace;
-  font-size: 10.5px;
+  font-size: var(--t-head-fs);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   text-align: left;
+  white-space: nowrap;
+}
+
+.ba-table tbody tr {
+  height: var(--t-row-h);
 }
 
 .ba-table tbody td {
-  padding: 0.65rem 0.75rem;
+  padding: var(--t-cell-py) var(--t-cell-px);
   border-bottom: 1px solid var(--rule);
-  font-size: 13.5px;
+  font-size: var(--t-cell-fs);
+  line-height: 1.3;
+}
+
+.ba-table tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .ba-table tbody td.num,
 .ba-table thead th.num {
   text-align: right;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-family: "JetBrains Mono", monospace;
 }
 
 .ba-table tbody tr:hover {
-  background: color-mix(in oklab, var(--clay) 6%, transparent);
+  background: var(--clay-wash);
 }
 
-/* Dense variant for stat-heavy tables (Tournament leaders, records) */
-.ba-table-dense thead th {
-  padding: 0.4rem 0.5rem;
-  font-size: 10px;
+/* Row flagged as notable (upset, record) — clay tick in the margin,
+   not a filled row. Keeps a long table calm. */
+.ba-table tbody tr.flag td:first-child {
+  box-shadow: inset 2px 0 0 var(--clay);
 }
 
-.ba-table-dense tbody td {
-  padding: 0.4rem 0.5rem;
-  font-size: 12.5px;
+/* ------------------------------------------------------------
+   STAT BOARD — a fixed top-10 results column.
+   Height is computed from --board-rows, so a grid of boards is
+   dimensionally identical whether a board has 10 rows or 3. The
+   grid can never reflow when a filter changes the result count.
+   ------------------------------------------------------------ */
+
+.ba-board {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--ink);
 }
 
-/* Chips */
-.ba-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid var(--ink);
-  background: var(--bone);
-  color: var(--ink);
-  font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.ba-board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem 0.35rem;
+  background: var(--paper-sunken);
+  border-bottom: 1px solid var(--ink);
+  text-align: left;
+  width: 100%;
+}
+
+/* Header is a button when the board opens a full table. */
+button.ba-board-head {
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
 
+button.ba-board-head:hover {
+  background: var(--clay-tint);
+}
+
+button.ba-board-head:hover .ba-board-more {
+  color: var(--clay-deep);
+}
+
+.ba-board-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ba-board-more {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+/* min-height reserves the ten slots; flex:1 sends any extra height handed
+   down by a stretching grid row into the body rather than past the border. */
+.ba-board-body {
+  min-height: calc(var(--board-rows) * var(--board-row-h));
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* One row of a results column: hanging rank · name · figure.
+   The rank numeral hangs in its own narrow column in clay, the way a
+   newspaper results table sets its ordinals, and a faint dot leader
+   carries the eye from the name across to the figure. */
+.ba-board-row {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+  height: var(--board-row-h);
+  padding: 0 0.5rem;
+  background: var(--paper-raised);
+  border-bottom: 1px solid var(--rule);
+}
+
+.ba-board-row:last-child {
+  border-bottom: 0;
+}
+
+a.ba-board-row:hover,
+.ba-board-row.is-hoverable:hover {
+  background: var(--clay-wash);
+}
+
+.ba-board-rank {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--clay);
+}
+
+/* Leader dots sit behind the row; the name and figure carry the row
+   background forward to mask them. */
+.ba-board-name {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.ba-board-name::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.34em;
+  border-bottom: 1px dotted var(--leader);
+}
+
+.ba-board-name > span {
+  position: relative;
+  background: inherit;
+  padding-right: 4px;
+}
+
+.ba-board-row .ba-board-name,
+.ba-board-row .ba-board-figure {
+  background: inherit;
+}
+
+.ba-board-figure {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+  padding-left: 4px;
+  white-space: nowrap;
+}
+
+.ba-board-sub {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  color: var(--mute);
+  padding-left: 3px;
+}
+
+/* Placeholder rows keep the box height when results run short. */
+.ba-board-row.is-empty .ba-board-name::before {
+  border-bottom-color: color-mix(in oklab, var(--ink) 7%, transparent);
+}
+
+.ba-board-foot {
+  padding: 0.3rem 0.5rem;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-sunken);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ------------------------------------------------------------
+   ADAPTIVE TABLE — wide tables scroll horizontally with the first
+   column pinned; narrow viewports get stacked cards instead.
+   ------------------------------------------------------------ */
+
+.ba-scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.ba-table-pinned thead th:first-child,
+.ba-table-pinned tbody td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--paper-raised);
+  /* hairline standing in for the column edge while scrolled */
+  box-shadow: 1px 0 0 var(--rule);
+}
+
+.ba-table-pinned thead th:first-child {
+  z-index: 2;
+  background: var(--paper-sunken);
+}
+
+.ba-table-pinned tbody tr:hover td:first-child {
+  background: var(--clay-wash);
+}
+
+/* A record rendered as a stacked card on narrow screens. */
+.ba-record-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--ink);
+  padding: 0.625rem 0.75rem;
+}
+
+.ba-record-card.flag {
+  border-left-color: var(--clay);
+}
+
+.ba-record-field {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.125rem 0;
+}
+
+/* ------------------------------------------------------------
+   CONTROLS — chips, buttons, inputs. Square, flat, mono.
+   ------------------------------------------------------------ */
+
+.ba-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--rule-mid);
+  background: var(--paper-raised);
+  color: var(--ink-2);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
 .ba-chip:hover {
-  background: var(--ink);
-  color: var(--bone);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .ba-chip-active {
-  background: var(--clay);
-  color: var(--bone);
-  border-color: var(--clay);
+  background: var(--ink);
+  color: var(--paper-raised);
+  border-color: var(--ink);
 }
 
 .ba-chip-active:hover {
   background: var(--clay-deep);
   border-color: var(--clay-deep);
-  color: var(--bone);
+  color: var(--on-clay);
 }
 
-/* Buttons */
 .ba-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.55rem 1rem;
+  padding: 0.45rem 0.9rem;
   font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .ba-btn-primary {
   background: var(--clay);
-  color: var(--bone);
+  color: var(--on-clay);
   border-color: var(--clay);
 }
 
@@ -382,26 +660,31 @@ body {
 }
 
 .ba-btn-ghost {
-  background: var(--bone);
+  background: var(--paper-raised);
   color: var(--ink);
-  border-color: var(--ink);
+  border-color: var(--rule-mid);
 }
 
 .ba-btn-ghost:hover {
   background: var(--ink);
-  color: var(--bone);
+  color: var(--paper-raised);
+  border-color: var(--ink);
 }
 
-/* Inputs */
+.ba-btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .ba-input,
 .ba-select {
-  background: var(--bone);
+  background: var(--paper-raised);
   color: var(--ink);
-  border: 1px solid var(--rule);
+  border: 1px solid var(--rule-mid);
   border-radius: 0;
-  padding: 0.45rem 0.65rem;
+  padding: 0.375rem 0.6rem;
   font-family: "Inter", sans-serif;
-  font-size: 13.5px;
+  font-size: 13px;
   transition: border-color 120ms ease;
 }
 
@@ -412,30 +695,25 @@ body {
   box-shadow: inset 0 -2px 0 0 var(--clay);
 }
 
+.ba-input::placeholder {
+  color: var(--mute);
+}
+
 .ba-btn:focus-visible,
 .ba-chip:focus-visible,
 .ba-link:focus-visible,
 .ba-input:focus-visible,
 .ba-select:focus-visible,
-:where(nav a, button, [role="button"]):focus-visible {
+.ba-board-head:focus-visible,
+:where(nav a, button, [role="button"], a.ba-board-row):focus-visible {
   outline: 2px solid var(--clay);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
-.ba-input::placeholder {
-  color: var(--mute);
-}
+/* ------------------------------------------------------------
+   LINKS & TAGS
+   ------------------------------------------------------------ */
 
-/* Rules */
-.ba-top-rule {
-  border-top: 3px solid var(--ink);
-}
-
-.ba-clay-rule {
-  border-top: 3px solid var(--clay);
-}
-
-/* Links */
 .ba-link {
   color: var(--clay-deep);
   text-decoration: none;
@@ -448,81 +726,85 @@ body {
   text-decoration: none;
 }
 
-/* Surface tags */
 .ba-surface-clay {
-  background: color-mix(in oklab, var(--surface-clay) 22%, var(--bone));
+  background: color-mix(in oklab, var(--surface-clay) 16%, var(--paper-raised));
   color: var(--clay-ink);
 }
 
 .ba-surface-grass {
-  background: color-mix(in oklab, var(--surface-grass) 22%, var(--bone));
+  background: color-mix(in oklab, var(--surface-grass) 16%, var(--paper-raised));
   color: var(--grass-ink);
 }
 
 .ba-surface-hard {
-  background: color-mix(in oklab, var(--surface-hard) 22%, var(--bone));
+  background: color-mix(in oklab, var(--surface-hard) 16%, var(--paper-raised));
   color: var(--hard-ink);
 }
 
-/* Win% heatmap ramp — clay sequential, on-palette (replaces inline blue hex) */
-.ba-heat-1 { background: color-mix(in oklab, var(--clay) 10%, var(--bone)); color: var(--ink); }
-.ba-heat-2 { background: color-mix(in oklab, var(--clay) 28%, var(--bone)); color: var(--ink); }
-.ba-heat-3 { background: color-mix(in oklab, var(--clay) 48%, var(--bone)); color: var(--ink); }
-.ba-heat-4 { background: color-mix(in oklab, var(--clay) 70%, var(--bone)); color: var(--bone); }
-.ba-heat-5 { background: var(--clay-deep); color: var(--bone); }
+/* Win% ramp — clay sequential on white. Steps 1–3 keep ink text,
+   4–5 flip to paper to hold contrast. */
+.ba-heat-1 { background: color-mix(in oklab, var(--clay) 8%,  var(--paper-raised)); color: var(--ink); }
+.ba-heat-2 { background: color-mix(in oklab, var(--clay) 24%, var(--paper-raised)); color: var(--ink); }
+.ba-heat-3 { background: color-mix(in oklab, var(--clay) 44%, var(--paper-raised)); color: var(--ink); }
+.ba-heat-4 { background: color-mix(in oklab, var(--clay) 74%, var(--paper-raised)); color: var(--on-clay); }
+.ba-heat-5 { background: var(--clay-deep); color: var(--on-clay); }
 
-/* Subtle paper grain */
-.ba-grain {
-  background-image:
-    radial-gradient(circle at 20% 30%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px),
-    radial-gradient(circle at 70% 60%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px),
-    radial-gradient(circle at 45% 85%, color-mix(in oklab, var(--ink) 2%, transparent) 0 1px, transparent 1px);
-  background-size: 220px 220px, 180px 180px, 260px 260px;
-}
+/* ------------------------------------------------------------
+   MOTION — one reveal, used on the masthead figure only.
+   ------------------------------------------------------------ */
 
-/* Reveal animation for hero numerals */
 @keyframes ba-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(0.6em);
-    letter-spacing: 0.02em;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    letter-spacing: -0.03em;
-  }
+  from { opacity: 0; transform: translateY(0.35em); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.ba-reveal {
-  animation: ba-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.ba-reveal          { animation: ba-reveal 500ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.ba-reveal-delay-1  { animation-delay: 70ms; }
+.ba-reveal-delay-2  { animation-delay: 140ms; }
+.ba-reveal-delay-3  { animation-delay: 210ms; }
+
+/* Loading sweep — a rule filling, not a ring spinning. */
+@keyframes ba-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
 
-.ba-reveal-delay-1 {
-  animation-delay: 80ms;
+.ba-sweep-track {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 220px;
+  height: 2px;
+  background: var(--rule);
+  overflow: hidden;
 }
 
-.ba-reveal-delay-2 {
-  animation-delay: 160ms;
-}
-
-.ba-reveal-delay-3 {
-  animation-delay: 240ms;
+.ba-sweep-bar {
+  height: 100%;
+  width: 33.333%;
+  background: var(--clay);
+  animation: ba-sweep 1.1s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ba-reveal {
+  .ba-reveal { animation: none; }
+
+  .ba-sweep-bar {
     animation: none;
+    width: 100%;
+    opacity: 0.45;
   }
 
   .ba-btn,
   .ba-chip,
   .ba-link,
   .ba-input,
-  .ba-select {
+  .ba-select,
+  .ba-board-head,
+  .ba-board-row,
+  .ba-table tbody tr {
     transition: none;
   }
 }
 
 
-}
+}  /* end @layer components */

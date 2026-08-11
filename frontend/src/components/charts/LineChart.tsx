@@ -1,7 +1,7 @@
 import {
-  ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
+  LineChart as RcLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
-import { CHART, monoTick } from './theme';
+import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS } from './theme';
 
 interface LineChartProps {
   data: { x: string | number; y: number; wins?: number; total?: number }[];
@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   if (!d) return null;
   const y = typeof item.value === 'number' ? item.value : d.y;
   return (
-    <div className="bg-[var(--bone)] border border-[var(--ink)] px-3 py-2 text-[12px]">
+    <div className={TOOLTIP_CLASS}>
       <div className="ba-mono font-bold text-[var(--ink)] mb-0.5">{d.x}</div>
       <div className="ba-mono text-[var(--ink-2)]">
         Win %: <span className="font-bold text-[var(--clay)]">{y.toFixed(1)}%</span>
@@ -35,30 +35,35 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
 }
 
 export default function LineChart({ data, title, color = CHART.clay, referenceLine }: LineChartProps) {
-  const gradId = 'ba-line-grad';
-
-  if (!data.length) return <p className="text-[var(--mute)] text-sm text-center py-8 ba-mono">No data</p>;
+  if (!data.length) return <p className="ba-kicker text-center py-8">No data</p>;
   return (
     <div>
       {title && <h3 className="ba-h3 mb-2">{title}</h3>}
-      <ResponsiveContainer width="100%" height={260}>
-        <ComposedChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={0.28} />
-              <stop offset="100%" stopColor={color} stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="2 2" stroke={CHART.grid} />
-          <XAxis dataKey="x" tick={monoTick(11, CHART.tickInk)} />
-          <YAxis domain={[0, 100]} tick={monoTick(11, CHART.tickInk)} tickFormatter={v => `${v}%`} />
+      <ResponsiveContainer width="100%" height={240}>
+        <RcLineChart data={data} margin={{ top: 6, right: 16, left: 0, bottom: 4 }}>
+          <CartesianGrid {...GRID_PROPS} />
+          <XAxis dataKey="x" tick={monoTick(10, CHART.tickMute)} {...AXIS_PROPS} />
+          <YAxis
+            domain={[0, 100]}
+            tick={monoTick(10, CHART.tickMute)}
+            tickFormatter={v => `${v}%`}
+            width={34}
+            {...AXIS_PROPS}
+          />
           <Tooltip content={<CustomTooltip />} />
           {referenceLine !== undefined && (
-            <ReferenceLine y={referenceLine} stroke="var(--ink-2)" strokeDasharray="4 4" />
+            <ReferenceLine y={referenceLine} stroke={CHART.mute} strokeDasharray="3 3" />
           )}
-          <Area type="monotone" dataKey="y" stroke="none" fill={`url(#${gradId})`} isAnimationActive={false} legendType="none" />
-          <Line type="monotone" dataKey="y" stroke={color} strokeWidth={2.5} dot={{ r: 3, fill: color, stroke: 'var(--bone)', strokeWidth: 1.5 }} isAnimationActive={false} />
-        </ComposedChart>
+          <Line
+            type="linear"
+            dataKey="y"
+            stroke={color}
+            strokeWidth={LINE_WIDTH}
+            dot={{ r: 2, fill: color, stroke: CHART.paper, strokeWidth: 1 }}
+            activeDot={{ r: 3.5, fill: color, stroke: CHART.paper, strokeWidth: 1.5 }}
+            isAnimationActive={false}
+          />
+        </RcLineChart>
       </ResponsiveContainer>
     </div>
   );

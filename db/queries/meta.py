@@ -168,37 +168,50 @@ def q_recent_upsets(
 # label:  kicker shown on the card
 # tab:    Leaders tab the card links to
 _STORY_STATS = [
-    {'key': 'most_wins',       'source': 'activity', 'sort': 'wins',                 'label': 'Win Leader',  'tab': 'activity',
+    {'key': 'most_wins',       'source': 'activity', 'sort': 'wins',                 'label': 'Win Leader',
      'head': '{name} leads the {tn} in wins', 'detail': 'Most tour-level match wins this season.'},
-    {'key': 'best_win_pct',    'source': 'activity', 'sort': 'win_pct', 'pct': True,  'label': 'Win Rate',    'tab': 'activity',
+    {'key': 'best_win_pct',    'source': 'activity', 'sort': 'win_pct', 'pct': True,  'label': 'Win Rate',
      'head': '{name} has the best {tn} win rate', 'detail': 'Highest tour-level win rate this season.'},
-    {'key': 'most_titles',     'source': 'activity', 'sort': 'titles',               'label': 'Titles',      'tab': 'activity',
-     'head': '{name} is collecting titles', 'detail': 'Most tour-level titles won this season.'},
-    {'key': 'most_finals',     'source': 'activity', 'sort': 'finals',               'label': 'Finals',      'tab': 'activity',
-     'head': '{name} keeps reaching finals', 'detail': 'Most tour-level finals reached this season.'},
-    {'key': 'most_tb_won',     'source': 'activity', 'sort': 'tb_won',               'label': 'Tiebreaks',   'tab': 'activity',
+    {'key': 'most_tb_won',     'source': 'activity', 'sort': 'tb_won',               'label': 'Tiebreaks',
      'head': '{name} thrives in tiebreaks', 'detail': 'Most tiebreaks won this season at tour level.'},
-    {'key': 'most_upsets',     'source': 'activity', 'sort': 'upset_wins',           'label': 'Upsets',      'tab': 'activity',
+    {'key': 'most_upsets',     'source': 'activity', 'sort': 'upset_wins',           'label': 'Upsets',
      'head': '{name} is the giant-killer', 'detail': 'Most upset wins this season at tour level.'},
-    {'key': 'most_comebacks',  'source': 'activity', 'sort': 'comebacks',            'label': 'Comebacks',   'tab': 'activity',
+    {'key': 'most_comebacks',  'source': 'activity', 'sort': 'comebacks',            'label': 'Comebacks',
      'head': '{name} never folds', 'detail': 'Most wins after dropping the first set this season.'},
-    {'key': 'most_aces',       'source': 'serve',    'sort': 'total_aces',           'label': 'Aces',        'tab': 'serve',
+    {'key': 'most_aces',       'source': 'serve',    'sort': 'total_aces',           'label': 'Aces',
      'head': '{name} is the {tn} ace machine', 'detail': 'Most aces struck this season at tour level.'},
-    {'key': 'best_ace_pct',    'source': 'serve',    'sort': 'ace_pct',  'pct': True, 'label': 'Ace Rate',    'tab': 'serve',
+    {'key': 'best_ace_pct',    'source': 'serve',    'sort': 'ace_pct',  'pct': True, 'label': 'Ace Rate',
      'head': '{name} aces at will', 'detail': 'Highest ace rate this season at tour level.'},
-    {'key': 'best_first_win',  'source': 'serve',    'sort': 'first_win_pct', 'pct': True, 'label': 'First Serve', 'tab': 'serve',
+    {'key': 'best_first_win',  'source': 'serve',    'sort': 'first_win_pct', 'pct': True, 'label': 'First Serve',
      'head': '{name} owns the first serve', 'detail': 'Best first-serve points won this season.'},
-    {'key': 'best_bp_saved',   'source': 'serve',    'sort': 'bp_saved_pct', 'pct': True, 'label': 'BP Saved',  'tab': 'serve',
+    {'key': 'best_bp_saved',   'source': 'serve',    'sort': 'bp_saved_pct', 'pct': True, 'label': 'BP Saved',
      'head': "{name} won't be broken", 'detail': 'Best break points saved rate this season.'},
-    {'key': 'best_return',     'source': 'return',   'sort': 'first_return_win_pct', 'pct': True, 'label': 'Return', 'tab': 'return',
+    {'key': 'best_return',     'source': 'return',   'sort': 'first_return_win_pct', 'pct': True, 'label': 'Return',
      'head': '{name} is a wall on return', 'detail': 'Best first-serve return points won this season.'},
-    {'key': 'best_bp_conv',    'source': 'return',   'sort': 'bp_converted_pct', 'pct': True, 'label': 'BP Converted', 'tab': 'return',
+    {'key': 'best_bp_conv',    'source': 'return',   'sort': 'bp_converted_pct', 'pct': True, 'label': 'BP Converted',
      'head': '{name} pounces on break points', 'detail': 'Best break-point conversion this season.'},
-    {'key': 'longest_streak',  'source': 'streak',   'sort': 'streak_length',        'label': 'Win Streak',  'tab': 'streaks',
+    {'key': 'longest_streak',  'source': 'streak',   'sort': 'streak_length',        'label': 'Win Streak',
      'head': '{name} is on a roll', 'detail': 'Longest tour-level win streak this season.'},
 ]
 
 _TOUR_NAME = {'M': 'ATP', 'F': 'WTA'}
+
+# Storyline key -> Records board id. Clicking a card opens that board's full
+# table, pre-sorted, instead of dropping the reader on a generic tab.
+_STORY_BOARD = {
+    'most_wins':       'wins',
+    'best_win_pct':    'win_pct',
+    'most_tb_won':     'tb_won',
+    'most_upsets':     'upset_wins',
+    'most_comebacks':  'comebacks',
+    'most_aces':       'total_aces',
+    'best_ace_pct':    'ace_pct',
+    'best_first_win':  'first_win_pct',
+    'best_bp_saved':   'bp_saved_pct',
+    'best_return':     'first_return_win_pct',
+    'best_bp_conv':    'bp_converted_pct',
+    'longest_streak':  'streak',
+}
 
 
 def q_storylines(
@@ -269,7 +282,10 @@ def q_storylines(
                 'player_name': name,
                 'tour': tour,
                 'value': value,
-                'link': f"/leaders?tab={stat['tab']}&tour={tour}&level=All%20Tour&y0={year}&y1={year}",
+                'link': (
+                    f"/records?tab=players&board={_STORY_BOARD.get(stat['key'], 'wins')}"
+                    f"&tour={tour}&level=All%20Tour&y0={year}&y1={year}"
+                ),
             })
             break
 

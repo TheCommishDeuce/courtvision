@@ -1,7 +1,14 @@
+/**
+ * Loading is a hairline rule that sweeps left to right, not a spinning ring —
+ * nothing else in this system is round.
+ */
 export default function Spinner() {
   return (
-    <div className="flex justify-center items-center py-12">
-      <div className="w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+    // w-full so the track keeps its width inside a flex or grid parent.
+    <div className="w-full py-10" role="status" aria-label="Loading">
+      <div className="ba-sweep-track">
+        <div className="ba-sweep-bar" />
+      </div>
     </div>
   );
 }

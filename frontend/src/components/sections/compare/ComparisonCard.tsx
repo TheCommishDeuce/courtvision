@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { CHART } from '../../charts/theme';
+import { lastName } from '../../../utils';
 
+/** A three-column ledger: A's figures, the metric, B's figures. */
 export default function ComparisonCard({
   title,
   playerA,
@@ -15,16 +16,20 @@ export default function ComparisonCard({
   return (
     <div className="ba-card p-0 overflow-hidden">
       {title && (
-        <div className="px-4 py-2 bg-[var(--bone-2)] border-b border-[var(--rule)]">
-          <h3 className="ba-h3">{title}</h3>
+        <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--ink)]">
+          <h3 className="ba-board-title">{title}</h3>
         </div>
       )}
-      <table className="w-full">
+      <table className="ba-table ba-table-dense w-full">
         <thead>
-          <tr className="border-b border-[var(--rule)]">
-            <th className="px-4 py-2 text-right text-[11.5px] font-semibold" style={{ color: CHART.clay }}>{playerA}</th>
-            <th className="px-4 py-2 text-center ba-mono text-[10px] font-bold tracking-[0.12em] uppercase text-[var(--mute)] bg-[var(--bone-3)]">Metric</th>
-            <th className="px-4 py-2 text-left text-[11.5px] font-semibold" style={{ color: CHART.ink }}>{playerB}</th>
+          <tr>
+            <th scope="col" className="text-right text-[var(--clay)]" title={playerA}>
+              {lastName(playerA)}
+            </th>
+            <th scope="col" className="text-center">Metric</th>
+            <th scope="col" className="text-left" title={playerB}>
+              {lastName(playerB)}
+            </th>
           </tr>
         </thead>
         <tbody>{children}</tbody>

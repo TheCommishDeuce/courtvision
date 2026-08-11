@@ -24,14 +24,14 @@ export function ServeReturnSection({
   if (!serveStats && !returnStats && !servePct && !returnPct) return null;
   return (
     <section>
-      <SectionHeader title="Serve & Return" kicker="Profile vs. tour percentiles" />
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
-        <div className="lg:col-span-3 space-y-6">
-          {servePct && Object.keys(servePct).length > 0 && <div className="ba-card"><ServeRadarChart percentiles={servePct} labelA={lastName(player)} title="Serve Profile" tour={tour} /></div>}
-          {returnPct && Object.keys(returnPct).length > 0 && <div className="ba-card"><ReturnRadarChart percentiles={returnPct} labelA={lastName(player)} title="Return Profile" tour={tour} /></div>}
+      <SectionHeader title="Serve and return" kicker="Against the rest of the tour" />
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 items-stretch">
+        <div className="lg:col-span-3 space-y-3">
+          {servePct && Object.keys(servePct).length > 0 && <div className="ba-card"><ServeRadarChart percentiles={servePct} labelA={lastName(player)} title="Serve" tour={tour} /></div>}
+          {returnPct && Object.keys(returnPct).length > 0 && <div className="ba-card"><ReturnRadarChart percentiles={returnPct} labelA={lastName(player)} title="Return" tour={tour} /></div>}
         </div>
         <div className="lg:col-span-2 flex flex-col">
-          <StatTable stretch title="Serve &amp; Return Stats" rows={[
+          <StatTable stretch title="Serve and return" rows={[
             ...(serveStats && Object.keys(serveStats).length > 0 ? [
               { label: 'Ace %', value: serveStats['ace%'] != null ? `${serveStats['ace%']}%` : null },
               { label: 'Double Fault %', value: serveStats['df%'] != null ? `${serveStats['df%']}%` : null },

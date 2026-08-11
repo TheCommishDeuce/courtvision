@@ -22,13 +22,14 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full sm:min-w-[320px] sm:w-auto">
-      <label className="ba-kicker">
-        Years: {local[0]} – {local[1]}
-      </label>
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+    <div className="flex flex-col gap-0.5 w-full sm:min-w-[280px] sm:w-auto">
+      <span className="ba-label">
+        Years <span className="text-[var(--ink)]">{local[0]}–{local[1]}</span>
+      </span>
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
         <input
           type="range"
+          aria-label="Start year"
           min={min}
           max={max}
           value={local[0]}
@@ -36,11 +37,12 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
             const v = Number(e.target.value);
             if (v <= local[1]) handleChange([v, local[1]]);
           }}
-          className="w-full accent-[var(--primary)]"
+          className="w-full h-6 accent-[var(--clay)]"
         />
-        <span className="ba-mono text-xs text-[var(--mute)]">to</span>
+        <span className="ba-mono text-[10px] text-[var(--mute)]">to</span>
         <input
           type="range"
+          aria-label="End year"
           min={min}
           max={max}
           value={local[1]}
@@ -48,7 +50,7 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
             const v = Number(e.target.value);
             if (v >= local[0]) handleChange([local[0], v]);
           }}
-          className="w-full accent-[var(--primary)]"
+          className="w-full h-6 accent-[var(--clay)]"
         />
       </div>
     </div>

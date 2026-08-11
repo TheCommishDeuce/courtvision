@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { RankHistoryPoint } from '../../types/tennis';
-import { CHART, monoTick } from './theme';
+import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS } from './theme';
 
 interface Props {
   data: RankHistoryPoint[];
@@ -23,7 +23,7 @@ function CustomTooltip({ active, payload, color }: { active?: boolean; payload?:
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-[var(--bone)] border border-[var(--ink)] px-3 py-2 text-[12px]">
+    <div className={TOOLTIP_CLASS}>
       <div className="text-[var(--mute)] ba-mono text-[10.5px]">{d.date?.slice(0, 10)}</div>
       <div className="font-bold ba-mono" style={{ color }}>Rank #{d.rank}</div>
     </div>
@@ -37,7 +37,7 @@ function toLog(rank: number) {
 export default function RankHistoryChart({
   data,
   careerHigh,
-  title = 'Ranking History',
+  title = 'Ranking history',
   color = CHART.clay,
   label,
 }: Props) {
@@ -63,43 +63,43 @@ export default function RankHistoryChart({
   return (
     <div>
       <h3 className="ba-h3 mb-2">{title}</h3>
-      <ResponsiveContainer width="100%" height={260}>
-        <LineChart data={reduced} margin={{ top: 8, right: 24, bottom: 0, left: 8 }}>
-          <CartesianGrid strokeDasharray="2 2" stroke={CHART.grid} opacity={0.5} />
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={reduced} margin={{ top: 8, right: 20, bottom: 0, left: 4 }}>
+          <CartesianGrid {...GRID_PROPS} />
           <XAxis
             dataKey="date"
             tickFormatter={v => v?.slice(0, 4)}
-            tick={monoTick(10, CHART.tickInk)}
+            tick={monoTick(10, CHART.tickMute)}
             interval="preserveStartEnd"
+            {...AXIS_PROPS}
           />
           <YAxis
             domain={[logMin, logMax]}
             reversed
-            tick={monoTick(10, CHART.tickInk)}
+            tick={monoTick(10, CHART.tickMute)}
             ticks={rankTicks.map(toLog)}
-            tickFormatter={v => {
-              const r = Math.round(Math.pow(10, v));
-              return `#${r}`;
-            }}
-            width={40}
+            tickFormatter={v => `#${Math.round(Math.pow(10, v))}`}
+            width={38}
+            {...AXIS_PROPS}
           />
           {careerHigh && (
             <ReferenceLine
               y={toLog(careerHigh)}
-              stroke="var(--clay-deep)"
-              strokeDasharray="4 2"
-              strokeWidth={1.5}
-              label={{ value: `#${careerHigh}`, position: 'insideTopRight', fontSize: 9, fill: 'var(--clay-deep)', fontFamily: 'JetBrains Mono' }}
+              stroke={CHART.ink}
+              strokeDasharray="3 3"
+              strokeWidth={1}
+              label={{ value: `career high #${careerHigh}`, position: 'insideTopRight', fontSize: 9, fill: CHART.ink, fontFamily: 'JetBrains Mono' }}
             />
           )}
           <Tooltip content={<CustomTooltip color={color} />} />
           <Line
-            type="monotone"
+            type="linear"
             dataKey="logRank"
             name={label ?? 'Rank'}
             stroke={color}
             dot={false}
-            strokeWidth={2.5}
+            strokeWidth={LINE_WIDTH}
+            isAnimationActive={false}
           />
         </LineChart>
       </ResponsiveContainer>

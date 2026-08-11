@@ -24,22 +24,22 @@ export default function PlayerAutocomplete({
 
   return (
     <div className={`flex flex-col gap-1 relative ${width}`}>
-      <label className="ba-kicker">{label}</label>
+      <label className="ba-label">{label}</label>
       <input
         value={value}
         onChange={e => { onChange(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder={placeholder}
-        className="ba-input text-sm px-2 py-1.5 w-full min-w-0"
+        className="ba-input w-full min-w-0"
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute top-full left-0 z-20 bg-[var(--paper)] border border-[var(--rule)] max-h-48 overflow-y-auto w-full text-sm">
+        <ul className="absolute top-full left-0 z-20 bg-[var(--paper-raised)] border border-[var(--ink)] max-h-48 overflow-y-auto w-full text-sm">
           {filtered.map(p => (
             <li
               key={p}
               onMouseDown={() => { onChange(p); setOpen(false); }}
-              className="px-3 py-1.5 hover:bg-[var(--paper-3)] cursor-pointer text-[var(--ink)]"
+              className="px-2.5 py-1 text-[13px] hover:bg-[var(--clay-wash)] cursor-pointer text-[var(--ink)]"
             >
               {p}
             </li>

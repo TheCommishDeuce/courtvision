@@ -7,8 +7,8 @@ export function SimilarProfilesSection({ similarPlayers, similarReturn, tour }: 
   if (!((similarPlayers && similarPlayers.length > 0) || (similarReturn && similarReturn.length > 0))) return null;
   return (
     <section>
-      <SectionHeader title="Similar Profiles" />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <SectionHeader title="Closest profiles" kicker="Nearest serve and return fingerprints on tour" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {similarPlayers && similarPlayers.length > 0 && (
           <ProfileTable title="Serve" headers={['#', 'Player', 'Ace%', '1st In%', '1st W%', '2nd W%', 'BP Saved%']} rows={similarPlayers.map((r: SimilarPlayerRow, i) => [
             <span key="rank" className="ba-mono text-[var(--mute)]">{i + 1}</span>,

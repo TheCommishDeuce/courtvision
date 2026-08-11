@@ -8,27 +8,56 @@ function fmtDate(value?: string | null) {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function PlayerHeader({ player, submitted, summary }: { player: string; submitted: boolean; summary?: PlayerSummary }) {
+/** Surname in clay — the one place the accent lands on a name. */
+export function PlayerHeader({
+  player,
+  submitted,
+  summary,
+}: {
+  player: string;
+  submitted: boolean;
+  summary?: PlayerSummary;
+}) {
+  const given = player.split(' ').slice(0, -1).join(' ');
+  const surname = player.split(' ').slice(-1)[0];
+
+  const facts = [
+    summary?.birthdate ? fmtDate(summary.birthdate) : null,
+    summary?.age != null ? `${summary.age} yrs` : null,
+    summary?.height != null ? `${summary.height} cm` : null,
+    summary?.hand
+      ? summary.hand === 'R'
+        ? 'Right-handed'
+        : summary.hand === 'L'
+        ? 'Left-handed'
+        : summary.hand
+      : null,
+  ].filter(Boolean) as string[];
+
   return (
-    <header className="border-b border-[var(--rule)] pb-4">
-      <div className="ba-kicker mb-2">Player · Profile</div>
+    <header className="ba-double-rule pb-2">
+      <div className="ba-eyebrow mb-1">Player</div>
       <h1 className="ba-display break-words">
         {player ? (
           <>
-            {player.split(' ').slice(0, -1).join(' ')}{' '}
-            <span className="text-[var(--clay)]">{player.split(' ').slice(-1)[0]}</span>
+            {given && `${given} `}
+            <span className="text-[var(--clay)]">{surname}</span>
           </>
         ) : (
-          <span className="text-[var(--mute)]">Select a Player</span>
+          <span className="text-[var(--mute)]">No player selected</span>
         )}
       </h1>
-      {submitted && summary && (summary.country || summary.birthdate || summary.hand || summary.height) && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 ba-mono text-[12px] text-[var(--ink-2)]">
-          {summary.country && <span className="font-bold text-[var(--ink)]">{countryDisplay(summary.country)}</span>}
-          {summary.birthdate && <><span className="text-[var(--rule)]">·</span><span>{fmtDate(summary.birthdate)}</span></>}
-          {summary.age != null && <><span className="text-[var(--rule)]">·</span><span>{summary.age} yrs</span></>}
-          {summary.height != null && <><span className="text-[var(--rule)]">·</span><span>{summary.height} cm</span></>}
-          {summary.hand && <><span className="text-[var(--rule)]">·</span><span>{summary.hand === 'R' ? 'Right-handed' : summary.hand === 'L' ? 'Left-handed' : summary.hand}</span></>}
+      {submitted && summary && (summary.country || facts.length > 0) && (
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 ba-mono text-[11.5px] text-[var(--ink-2)]">
+          {summary.country && (
+            <span className="font-bold text-[var(--ink)]">{countryDisplay(summary.country)}</span>
+          )}
+          {facts.map(fact => (
+            <span key={fact} className="flex items-center gap-2.5">
+              <span className="text-[var(--rule-mid)]">·</span>
+              {fact}
+            </span>
+          ))}
         </div>
       )}
     </header>

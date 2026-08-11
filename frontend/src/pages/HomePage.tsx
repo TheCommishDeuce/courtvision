@@ -1,251 +1,259 @@
-import { Link, useNavigate } from 'react-router-dom';
-import type { ReactNode } from 'react';
-import { useMetaStats, useRecentUpsets, useRecentChampions, useStorylines } from '../hooks';
+import { Link } from 'react-router-dom';
+import {
+  useMetaStats,
+  useRecentChampions,
+  useRecentUpsets,
+  useStorylines,
+} from '../hooks';
 import Spinner from '../components/ui/Spinner';
-import KPIBlock from '../components/ui/KPIBlock';
-import type { RecentUpset, RecentChampion } from '../types/tennis';
-import { surfaceClass } from '../utils';
 import QueryError from '../components/ui/QueryError';
 import SectionHeader from '../components/ui/SectionHeader';
+import SurfaceTag from '../components/ui/SurfaceTag';
+import type { RecentChampion, RecentUpset } from '../types/tennis';
 
-const NAV_CARDS = [
-  { to: '/h2h',        num: '01', title: 'Head-to-Head',      desc: 'Two players, every match, every surface. Filter by level and era.' },
-  { to: '/player',     num: '02', title: 'Player Profile',    desc: 'Career arcs, ranking history, serve & return fingerprints.' },
-  { to: '/compare',    num: '03', title: 'Comparison',        desc: 'Side-by-side metrics with radar profiles and title splits.' },
-  { to: '/tournament', num: '04', title: 'Tournament Recap',  desc: 'Draw results, upsets, and stat leaders for any event.' },
-  { to: '/leaders',    num: '05', title: 'Stat Leaders',      desc: 'Editorial leaderboards across wins, serve, return, streaks.' },
-  { to: '/search',     num: '06', title: 'Match Search',      desc: 'Filter any match by anything. Export to CSV.' },
-];
+function Ledger() {
+  const { data: stats } = useMetaStats();
+  const fmt = (n?: number) => (n != null ? n.toLocaleString() : '—');
 
-function StatRow({ label, value, last = false }: { label: string; value: ReactNode; last?: boolean }) {
+  const cells = [
+    { label: 'Matches', value: fmt(stats?.total_matches), lead: true },
+    { label: 'Players', value: fmt(stats?.total_players) },
+    { label: 'Tournaments', value: fmt(stats?.total_tournaments) },
+    { label: 'Points played', value: fmt(stats?.total_points_played) },
+  ];
+
   return (
-    <div className={`flex items-baseline justify-between gap-4 px-1 py-3 flex-1 ${last ? '' : 'border-b border-[var(--rule)]'}`}>
-      <span className="ba-mono text-[11px] font-medium tracking-[0.12em] uppercase text-[var(--mute)]">{label}</span>
-      <span className="ba-stat-sm text-[var(--ink)]">{value}</span>
+    // gap-px over a rule-coloured ground: the gaps *are* the hairlines, so the
+    // grid rules itself correctly at every wrap point.
+    <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rule)]
+                   border-t-2 border-[var(--ink)] border-b border-[var(--rule)]">
+      {cells.map(c => (
+        <div key={c.label} className="bg-[var(--paper)] px-3 py-2.5">
+          <dt className="ba-label mb-1">{c.label}</dt>
+          <dd className={`ba-stat-sm ${c.lead ? 'text-[var(--clay)]' : 'text-[var(--ink)]'}`}>
+            {c.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/**
+ * One tour's biggest recent upsets.
+ *
+ * Sorted by ranking gap rather than date: the endpoint returns the most recent
+ * upsets, and on any given week most of those are a #693 beating a #419 in a
+ * Challenger qualifier. Ranking them by gap surfaces the ones worth reading.
+ */
+function UpsetsColumn({ tour, label }: { tour: string; label: string }) {
+  const { data, isLoading, isError, refetch } = useRecentUpsets(tour);
+
+  const rows = [...(data ?? [])]
+    .sort((a, b) => (b.rank_diff ?? 0) - (a.rank_diff ?? 0))
+    .slice(0, 6);
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-1 mb-1.5">
+        <h3 className="ba-board-title">{label}</h3>
+        <Link to={`/records?tab=matches&tour=${tour}`} className="ba-board-more ba-link">
+          All {label} upsets →
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <Spinner />
+      ) : isError ? (
+        <QueryError
+          title="Upsets did not load"
+          message="The recent-upsets request failed."
+          onRetry={() => refetch()}
+        />
+      ) : (
+        <table className="ba-table ba-table-dense">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Winner</th>
+              <th scope="col">Beat</th>
+              <th scope="col" className="num" title="Ranking places between the two players">
+                Gap
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((u: RecentUpset, i) => (
+              <tr key={`${u.date}-${u.winner_name}-${i}`}>
+                <td className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+                  {u.date?.slice(0, 10)}
+                </td>
+                <td className="whitespace-nowrap">
+                  <Link
+                    to={`/player?p=${encodeURIComponent(u.winner_name)}&tour=${tour}`}
+                    className="font-semibold text-[var(--ink)] hover:text-[var(--clay-deep)]"
+                  >
+                    {u.winner_name}
+                  </Link>
+                  {u.winner_rank && (
+                    <span className="ba-mono text-[10px] text-[var(--mute)] ml-1">#{u.winner_rank}</span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap">
+                  <Link
+                    to={`/player?p=${encodeURIComponent(u.loser_name)}&tour=${tour}`}
+                    className="text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+                  >
+                    {u.loser_name}
+                  </Link>
+                  {u.loser_rank && (
+                    <span className="ba-mono text-[10px] text-[var(--mute)] ml-1">#{u.loser_rank}</span>
+                  )}
+                </td>
+                <td className="num font-bold text-[var(--clay)]">
+                  {u.rank_diff != null ? Math.round(u.rank_diff) : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
 
-function ChampionsFeed({ tour, label }: { tour: string; label: string }) {
-  const { data: champions, isLoading, isError, refetch } = useRecentChampions(tour);
-  const navigate = useNavigate();
+function StorylinesRow() {
+  const { data: storylines } = useStorylines();
+  if (!storylines?.length) return null;
 
   return (
     <section>
-      <header className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-3">
-        <h3 className="ba-h2">
-          {label} <span className="text-[var(--clay)]">Champions</span>
-        </h3>
-        <Link to={`/tournament?tour=${tour}`} className="ba-kicker hover:text-[var(--clay)] transition-colors">
-          Browse →
-        </Link>
-      </header>
-      {isLoading ? (
-        <div className="py-6"><Spinner /></div>
-      ) : isError ? (
-        <QueryError message="Couldn't load recent champions." onRetry={() => refetch()} />
-      ) : (
-        <ul className="divide-y divide-[var(--rule)]">
-          {(champions ?? []).slice(0, 6).map((c: RecentChampion, i) => (
-            <li
-              key={i}
-              className="py-2.5 cursor-pointer group"
-              onClick={() => navigate(`/tournament?t=${encodeURIComponent(c.tournament)}&year=${c.year}&tour=${tour}`)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  navigate(`/tournament?t=${encodeURIComponent(c.tournament)}&year=${c.year}&tour=${tour}`);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="text-[15px]">
-                    <Link
-                      to={`/player?p=${encodeURIComponent(c.winner_name)}&tour=${tour}`}
-                      className="font-semibold text-[var(--ink)] group-hover:text-[var(--clay-deep)]"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {c.winner_name}
-                    </Link>
-                    <span className="mx-2 text-[var(--mute)] text-xs ba-mono">def</span>
-                    <Link
-                      to={`/player?p=${encodeURIComponent(c.loser_name)}&tour=${tour}`}
-                      className="text-[var(--ink-2)] text-sm hover:underline"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {c.loser_name}
-                    </Link>
-                  </div>
-                  <div className="text-xs text-[var(--mute)] mt-1 flex items-center gap-2 flex-wrap">
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 ba-mono uppercase tracking-wider ${surfaceClass(c.surface, 'ba-surface-hard')}`}>
-                      {c.surface}
-                    </span>
-                    <span className="truncate">{c.tournament}</span>
-                    <span className="ba-mono text-[10px] text-[var(--ink-2)]">{c.score}</span>
-                  </div>
-                </div>
-                <div className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap pt-1">{c.date?.slice(0, 10)}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SectionHeader title="Data stories" kicker="Found in this week's data" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
+        {storylines.slice(0, 4).map((s, i) => (
+          <Link
+            key={`${s.type}-${i}`}
+            to={s.link}
+            className="block bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)]
+                       px-3 py-2.5 transition-colors hover:border-t-[var(--clay)] hover:bg-[var(--clay-wash)]"
+          >
+            <div className="flex items-baseline justify-between gap-2 mb-0.5">
+              <span className="ba-eyebrow">{s.label ?? s.type.replace(/_/g, ' ')}</span>
+              <span className="ba-stat-sm text-[var(--ink)]">{s.value}</span>
+            </div>
+            <div className="ba-h3">{s.headline}</div>
+            <p className="text-[12.5px] leading-snug text-[var(--ink-2)] mt-0.5">{s.detail}</p>
+          </Link>
+        ))}
+      </div>
     </section>
   );
 }
 
-function UpsetsFeed({ tour, label }: { tour: string; label: string }) {
-  const { data: upsets, isLoading, isError, refetch } = useRecentUpsets(tour);
+function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
+  const { data: champions, isLoading, isError, refetch } = useRecentChampions(tour);
 
   return (
-    <section>
-      <header className="flex items-baseline justify-between border-b border-[var(--rule)] pb-2 mb-3">
-        <h3 className="ba-h2">
-          {label} <span className="text-[var(--clay)]">Upsets</span>
-        </h3>
-        <Link to="/search?upsets_only=true" className="ba-kicker hover:text-[var(--clay)] transition-colors">
-          All →
+    <div>
+      <div className="flex items-baseline justify-between border-b border-[var(--rule)] pb-1 mb-1.5">
+        <h3 className="ba-board-title">{label}</h3>
+        <Link to={`/tournament?tour=${tour}`} className="ba-board-more ba-link">
+          Browse {label} events →
         </Link>
-      </header>
+      </div>
+
       {isLoading ? (
-        <div className="py-6"><Spinner /></div>
+        <Spinner />
       ) : isError ? (
-        <QueryError message="Couldn't load recent upsets." onRetry={() => refetch()} />
+        <QueryError
+          title="Champions did not load"
+          message="The recent-champions request failed."
+          onRetry={() => refetch()}
+        />
       ) : (
-        <ul className="divide-y divide-[var(--rule)]">
-          {(upsets ?? []).slice(0, 6).map((u: RecentUpset, i) => (
-            <li key={i} className="py-2.5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="text-[15px]">
-                    <Link to={`/player?p=${encodeURIComponent(u.winner_name)}&tour=${tour}`} className="font-semibold text-[var(--ink)] hover:text-[var(--clay-deep)]">
-                      {u.winner_name}
-                    </Link>
-                    {u.winner_rank && <span className="text-[var(--mute)] text-[11px] ml-1 ba-mono">#{u.winner_rank}</span>}
-                    <span className="mx-2 text-[var(--mute)] text-xs ba-mono">def</span>
-                    <Link to={`/player?p=${encodeURIComponent(u.loser_name)}&tour=${tour}`} className="text-[var(--ink-2)] text-sm hover:underline">
-                      {u.loser_name}
-                    </Link>
-                    {u.loser_rank && <span className="text-[var(--mute)] text-[11px] ml-1 ba-mono">#{u.loser_rank}</span>}
-                    {u.rank_diff && (
-                      <span className="ml-2 inline-flex items-center gap-1 ba-mono text-[10px] text-[var(--clay)] font-bold">
-                        Δ{Math.round(u.rank_diff)}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-[var(--mute)] mt-1 truncate">
-                    <Link
-                      to={`/tournament?t=${encodeURIComponent(u.tournament)}&year=${u.date?.slice(0, 4)}&tour=${tour}`}
-                      className="hover:text-[var(--clay-deep)]"
-                    >
-                      {u.tournament}
-                    </Link>
-                    <span className="mx-1.5 text-[var(--rule)]">·</span>
-                    {u.round}
-                    <span className="mx-1.5 text-[var(--rule)]">·</span>
-                    <span className="ba-mono text-[var(--ink-2)]">{u.score}</span>
-                  </div>
-                </div>
-                <div className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap pt-1">{u.date?.slice(0, 10)}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <table className="ba-table ba-table-dense">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Event</th>
+              <th scope="col">Surf</th>
+              <th scope="col">Champion</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(champions ?? []).slice(0, 6).map((c: RecentChampion, i) => (
+              <tr key={i}>
+                <td className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+                  {c.date?.slice(0, 10)}
+                </td>
+                <td className="max-w-[160px] truncate">
+                  <Link
+                    to={`/tournament?t=${encodeURIComponent(c.tournament)}&year=${c.year}&tour=${tour}`}
+                    className="text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+                  >
+                    {c.tournament}
+                  </Link>
+                </td>
+                <td>
+                  <SurfaceTag surface={c.surface} />
+                </td>
+                <td className="font-semibold whitespace-nowrap">
+                  <Link
+                    to={`/player?p=${encodeURIComponent(c.winner_name)}&tour=${tour}`}
+                    className="text-[var(--ink)] hover:text-[var(--clay-deep)]"
+                  >
+                    {c.winner_name}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
-    </section>
+    </div>
   );
 }
 
 export default function HomePage() {
   const { data: stats } = useMetaStats();
-  const { data: storylines } = useStorylines();
-  const fmt = (n?: number) => (n != null ? n.toLocaleString() : '—');
+  const era = stats ? `${stats.year_min} to ${stats.year_max}` : 'the open era to today';
 
   return (
-    <div className="space-y-10">
-      {/* ============ MASTHEAD ============ */}
-      <section className="border-b border-[var(--rule)] pb-10">
-        <div className="ba-kicker mb-4">Vol. 01 · ATP + WTA · Est. 2026</div>
-        <h1 className="ba-display text-[clamp(52px,10vw,112px)] tracking-[-0.02em] ba-reveal">
-          courtvision
+    <div className="space-y-8">
+      {/* Lede — what this is, in one sentence, over the counts that prove it. */}
+      <section>
+        <div className="ba-eyebrow mb-2">ATP + WTA match archive</div>
+        <h1 className="ba-display max-w-3xl ba-reveal">
+          Every match on record, both tours.
         </h1>
-        <p className="mt-6 max-w-2xl text-[17px] text-[var(--ink-2)] leading-relaxed">
-          A reading room for tennis data. Rivalries, careers, upsets, and every serve held or broken — indexed across both tours, searchable, and printable.
+        <p className="ba-body mt-3 max-w-2xl">
+          Rivalries, careers, upsets, and every serve held or broken — indexed from {era},
+          filterable down to a single match, and exportable.
         </p>
       </section>
 
-      {/* ============ HERO STATS ============ */}
-      <section className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        <div className="md:col-span-7">
-          <KPIBlock
-            variant="hero"
-            label="Matches Indexed · All-Time"
-            value={fmt(stats?.total_matches)}
-            sub={stats?.data_through ? <span>Data through {stats.data_through.slice(0, 10)}</span> : undefined}
-            reveal
-          />
-        </div>
-        <div className="md:col-span-5 flex flex-col justify-between border-t-2 border-[var(--ink)]">
-          <StatRow label="Players"        value={fmt(stats?.total_players)} />
-          <StatRow label="Tournaments"    value={fmt(stats?.total_tournaments)} />
-          <StatRow label="Points Played"  value={fmt(stats?.total_points_played)} last />
-        </div>
-      </section>
+      <Ledger />
 
-      {/* ============ STORYLINES ============ */}
-      {storylines && storylines.length > 0 && (
-        <section>
-          <SectionHeader title="Data Stories" kicker="Fresh from the feed" />
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {storylines.map((s, i) => (
-              <Link
-                key={`${s.type}-${i}`}
-                to={s.link}
-                className="block bg-[var(--bone-2)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)] p-4 hover:border-t-[var(--clay)] hover:bg-[var(--bone-3)] transition-colors"
-              >
-                <div className="flex items-baseline justify-between gap-3 mb-2">
-                  <span className="ba-mono text-[10px] font-bold tracking-[0.14em] uppercase text-[var(--clay)]">{s.label ?? s.type.replace('_', ' ')}</span>
-                  <span className="ba-stat-sm text-[var(--ink)]">{s.value}</span>
-                </div>
-                <div className="ba-h3">{s.headline}</div>
-                <p className="text-[13px] text-[var(--ink-2)] leading-snug">{s.detail}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <StorylinesRow />
 
-      {/* ============ EXPLORE GRID ============ */}
       <section>
-        <SectionHeader title="Explore" kicker="Six ways in" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {NAV_CARDS.map(card => (
-            <Link
-              key={card.to}
-              to={card.to}
-              className="group block bg-[var(--bone-2)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)] p-5 hover:border-t-[var(--clay)] hover:bg-[var(--bone-3)] transition-colors"
-            >
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="ba-mono text-[11px] font-bold tracking-[0.15em] text-[var(--clay)]">{card.num}</span>
-                <span className="ba-mono text-[11px] text-[var(--mute)] group-hover:text-[var(--clay)] transition-colors">→</span>
-              </div>
-              <div className="ba-h3">{card.title}</div>
-              <p className="text-[13.5px] text-[var(--ink-2)] leading-snug">{card.desc}</p>
-            </Link>
-          ))}
+        <SectionHeader title="Latest champions" kicker="Most recent finals on record" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+          <ChampionsColumn tour="M" label="ATP" />
+          <ChampionsColumn tour="F" label="WTA" />
         </div>
       </section>
 
-      {/* ============ FEEDS ============ */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <ChampionsFeed tour="M" label="ATP" />
-        <ChampionsFeed tour="F" label="WTA" />
-        <UpsetsFeed tour="M" label="ATP" />
-        <UpsetsFeed tour="F" label="WTA" />
-      </div>
+      <section>
+        <SectionHeader
+          title="Biggest recent upsets"
+          kicker="Ranking places jumped, in the latest results"
+        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+          <UpsetsColumn tour="M" label="ATP" />
+          <UpsetsColumn tour="F" label="WTA" />
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,114 +1,124 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { fmtTime } from '../../../utils';
-import type { DrawStrengthRow, TournamentRecap } from '../../../types/tennis';
 import SectionHeader from '../../ui/SectionHeader';
+import type { DrawStrengthRow, TournamentRecap } from '../../../types/tennis';
 
-export default function Storylines({ recap, drawStrength, tour }: {
+/** A small headed table. Three of these sit side by side. */
+function Panel({
+  title,
+  headers,
+  children,
+  accent = false,
+}: {
+  title: string;
+  headers: string[];
+  children: ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div className="ba-card p-0 overflow-hidden">
+      <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--ink)]">
+        <h3 className={`ba-board-title ${accent ? 'text-[var(--clay)]' : ''}`}>{title}</h3>
+      </div>
+      <div className="ba-scroller">
+        <table className="ba-table ba-table-agate w-full">
+          <thead>
+            <tr>
+              {headers.map(h => (
+                <th key={h} scope="col" className={h === 'Δ' || h.endsWith('.') || h === 'M' || h === 'Best' || h === 'Time' ? 'num' : ''}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>{children}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+const playerLink = (name: string, tour: string, cls: string) => (
+  <Link to={`/player?p=${encodeURIComponent(name)}&tour=${tour}`} className={cls}>
+    {name}
+  </Link>
+);
+
+const WINNER_CLASS = 'font-semibold text-[var(--ink)] hover:text-[var(--clay-deep)]';
+const LOSER_CLASS = 'text-[var(--ink-2)] hover:text-[var(--clay-deep)]';
+
+export default function Storylines({
+  recap,
+  drawStrength,
+  tour,
+}: {
   recap: TournamentRecap;
   drawStrength?: DrawStrengthRow[];
   tour: string;
 }) {
-  if (!(recap.longest_matches.length > 0 || recap.biggest_upsets.length > 0 || (drawStrength && drawStrength.length > 0))) {
-    return null;
-  }
+  const hasLongest = recap.longest_matches.length > 0;
+  const hasUpsets = recap.biggest_upsets.length > 0;
+  const draws = drawStrength ?? [];
+  const hasDraws = draws.length > 0;
+
+  if (!hasLongest && !hasUpsets && !hasDraws) return null;
+
   return (
     <section>
-      <SectionHeader title="Storylines" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        {recap.longest_matches.length > 0 && (
-          <div className="ba-card p-0 overflow-hidden">
-            <div className="px-2 py-1.5 bg-[var(--bone-2)] border-b border-[var(--rule)]">
-              <h3 className="ba-label">Longest Matches</h3>
-            </div>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[var(--rule)]">
-                  {['Rnd', 'Winner', 'Loser', 'Time', 'Score'].map(h => (
-                    <th key={h} className="px-1.5 py-1 text-left ba-mono text-[9px] font-bold tracking-[0.08em] uppercase text-[var(--ink)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {recap.longest_matches.slice(0, 5).map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--rule)] last:border-b-0">
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] text-[var(--mute)] align-top">{r.round as string}</td>
-                    <td className="px-1.5 py-1 text-[10.5px] leading-tight align-top">
-                      <Link to={`/player?p=${encodeURIComponent(r.winner_name as string)}&tour=${tour}`} className="ba-link font-medium">{r.winner_name as string}</Link>
-                    </td>
-                    <td className="px-1.5 py-1 text-[10.5px] leading-tight text-[var(--ink-2)] align-top">
-                      <Link to={`/player?p=${encodeURIComponent(r.loser_name as string)}&tour=${tour}`} className="hover:underline">{r.loser_name as string}</Link>
-                    </td>
-                    <td className="px-1.5 py-1 ba-mono text-[10px] whitespace-nowrap align-top">{fmtTime(r.time as number)}</td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] leading-tight text-[var(--ink-2)] align-top">{r.score as string}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <SectionHeader title="Storylines" kicker="The week's outliers" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
+        {hasLongest && (
+          <Panel title="Longest matches" headers={['Rnd', 'Winner', 'Beat', 'Time']}>
+            {recap.longest_matches.slice(0, 5).map((r, i) => (
+              <tr key={i}>
+                <td className="ba-mono text-[10px] text-[var(--mute)]">{r.round as string}</td>
+                <td className="text-[11.5px]">{playerLink(r.winner_name as string, tour, WINNER_CLASS)}</td>
+                <td className="text-[11.5px]">{playerLink(r.loser_name as string, tour, LOSER_CLASS)}</td>
+                <td className="num font-semibold text-[var(--clay)] whitespace-nowrap">
+                  {fmtTime(r.time as number)}
+                </td>
+              </tr>
+            ))}
+          </Panel>
         )}
 
-        {recap.biggest_upsets.length > 0 && (
-          <div className="ba-card p-0 overflow-hidden">
-            <div className="px-2 py-1.5 bg-[var(--bone-2)] border-b border-[var(--rule)]">
-              <h3 className="ba-label text-[var(--clay)]">Biggest Upsets</h3>
-            </div>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[var(--rule)]">
-                  {['Rnd', 'Winner', 'WR', 'Loser', 'LR', 'Δ'].map(h => (
-                    <th key={h} className="px-1.5 py-1 text-left ba-mono text-[9px] font-bold tracking-[0.08em] uppercase text-[var(--ink)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {recap.biggest_upsets.slice(0, 5).map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--rule)] last:border-b-0">
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] text-[var(--mute)] align-top">{r.round as string}</td>
-                    <td className="px-1.5 py-1 text-[10.5px] leading-tight align-top">
-                      <Link to={`/player?p=${encodeURIComponent(r.winner_name as string)}&tour=${tour}`} className="text-[var(--clay)] font-semibold hover:underline">{r.winner_name as string}</Link>
-                    </td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] whitespace-nowrap align-top">{r.winner_rank ? `#${r.winner_rank}` : '—'}</td>
-                    <td className="px-1.5 py-1 text-[10.5px] leading-tight text-[var(--ink-2)] align-top">
-                      <Link to={`/player?p=${encodeURIComponent(r.loser_name as string)}&tour=${tour}`} className="hover:underline">{r.loser_name as string}</Link>
-                    </td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] whitespace-nowrap align-top">{r.loser_rank ? `#${r.loser_rank}` : '—'}</td>
-                    <td className="px-1.5 py-1 ba-mono text-[10.5px] font-bold text-[var(--clay)] align-top whitespace-nowrap">{r.rank_diff ? Math.round(r.rank_diff as number) : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {hasUpsets && (
+          <Panel title="Biggest upsets" headers={['Rnd', 'Winner', 'Beat', 'Δ']} accent>
+            {recap.biggest_upsets.slice(0, 5).map((r, i) => (
+              <tr key={i}>
+                <td className="ba-mono text-[10px] text-[var(--mute)]">{r.round as string}</td>
+                <td className="text-[11.5px] whitespace-nowrap">
+                  {playerLink(r.winner_name as string, tour, WINNER_CLASS)}
+                  {r.winner_rank ? (
+                    <span className="ba-mono text-[9.5px] text-[var(--mute)] ml-1">#{r.winner_rank as number}</span>
+                  ) : null}
+                </td>
+                <td className="text-[11.5px] whitespace-nowrap">
+                  {playerLink(r.loser_name as string, tour, LOSER_CLASS)}
+                  {r.loser_rank ? (
+                    <span className="ba-mono text-[9.5px] text-[var(--mute)] ml-1">#{r.loser_rank as number}</span>
+                  ) : null}
+                </td>
+                <td className="num font-bold text-[var(--clay)]">
+                  {r.rank_diff ? Math.round(r.rank_diff as number) : '—'}
+                </td>
+              </tr>
+            ))}
+          </Panel>
         )}
 
-        {drawStrength && drawStrength.length > 0 && (
-          <div className="ba-card p-0 overflow-hidden">
-            <div className="px-2 py-1.5 bg-[var(--bone-2)] border-b border-[var(--rule)]">
-              <h3 className="ba-label">Toughest Draws</h3>
-            </div>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[var(--rule)]">
-                  {['#', 'Player', 'M', 'Avg', 'Best', 'Worst'].map(h => (
-                    <th key={h} className="px-1.5 py-1 text-left ba-mono text-[9px] font-bold tracking-[0.08em] uppercase text-[var(--ink)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {drawStrength.slice(0, 5).map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--rule)] last:border-b-0">
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] text-[var(--mute)] align-top">{i + 1}</td>
-                    <td className="px-1.5 py-1 text-[10.5px] leading-tight align-top">
-                      <Link to={`/player?p=${encodeURIComponent(r.player_name)}&tour=${tour}`} className="ba-link font-medium">{r.player_name}</Link>
-                    </td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] align-top">{r.matches_played}</td>
-                    <td className="px-1.5 py-1 ba-mono text-[10.5px] text-[var(--clay)] font-bold align-top whitespace-nowrap">#{r.avg_opp_rank}</td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] whitespace-nowrap align-top">#{r.best_opp_rank}</td>
-                    <td className="px-1.5 py-1 ba-mono text-[9.5px] whitespace-nowrap text-right align-top">#{r.worst_opp_rank}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {hasDraws && (
+          <Panel title="Toughest draws" headers={['Player', 'M', 'Avg opp.', 'Best']}>
+            {draws.slice(0, 5).map((r, i) => (
+              <tr key={i}>
+                <td className="text-[11.5px]">{playerLink(r.player_name, tour, WINNER_CLASS)}</td>
+                <td className="num text-[var(--mute)]">{r.matches_played}</td>
+                <td className="num font-bold text-[var(--clay)] whitespace-nowrap">#{r.avg_opp_rank}</td>
+                <td className="num text-[var(--ink-2)] whitespace-nowrap">#{r.best_opp_rank}</td>
+              </tr>
+            ))}
+          </Panel>
         )}
       </div>
     </section>

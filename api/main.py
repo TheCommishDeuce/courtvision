@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from api.dashboard_access import DashboardAccessMiddleware
-from api.routers import analysis, compare, h2h, leaders, meta, player, search, tournament
+from api.routers import analysis, compare, h2h, leaders, meta, player, query, search, tournament
 from db.connection import get_db as open_tennis_db
 
 app = FastAPI(
@@ -68,6 +68,7 @@ app.include_router(tournament.router, prefix="/api/tournament")
 app.include_router(search.router,     prefix="/api/search")
 app.include_router(leaders.router,    prefix="/api/leaders")
 app.include_router(compare.router,    prefix="/api/compare")
+app.include_router(query.router,      prefix="/api/query")
 
 
 @app.get("/api/health")

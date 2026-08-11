@@ -70,9 +70,9 @@ const STAGE_OR_LATER = [
 
 function RoundSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="ba-kicker">Round</label>
-      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select text-sm px-2 py-1.5">
+    <div className="flex flex-col gap-0.5">
+      <label className="ba-label">Round</label>
+      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select">
         <option value="">All</option>
         <optgroup label="Exact round">
           {EXACT_ROUNDS.map(r => <option key={r.value} value={`round:${r.value}`}>{r.label}</option>)}
@@ -87,9 +87,9 @@ function RoundSelect({ value, onChange }: { value: string; onChange: (v: string)
 
 function SituationSelect({ value, onChange, showBo5 }: { value: string; onChange: (v: string) => void; showBo5: boolean }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="ba-kicker">Match situation</label>
-      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select text-sm px-2 py-1.5">
+    <div className="flex flex-col gap-0.5">
+      <label className="ba-label">Match situation</label>
+      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select">
         <option value="">Any situation</option>
         <optgroup label="Any format">
           {SITUATIONS_BASE.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
@@ -106,8 +106,8 @@ function SituationSelect({ value, onChange, showBo5 }: { value: string; onChange
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="ba-mono text-[10px] font-medium tracking-[0.12em] uppercase text-[var(--mute)]">{label}</label>
+    <div className="flex flex-col gap-0.5">
+      <label className="ba-label">{label}</label>
       {children}
     </div>
   );
@@ -285,7 +285,7 @@ export default function RelationalSearch({ tour }: Props) {
                   return (
                     <Fragment key={i}>
                       <tr
-                        className={`border-b border-[var(--rule)] cursor-pointer ${isOpen ? 'bg-[var(--bone-2)]' : 'hover:bg-[var(--bone-2)]'}`}
+                        className={`border-b border-[var(--rule)] cursor-pointer ${isOpen ? 'bg-[var(--clay-wash)]' : 'hover:bg-[var(--clay-wash)]'}`}
                         onClick={() => setExpandedIdx(isOpen ? null : i)}
                         aria-expanded={isOpen}
                       >

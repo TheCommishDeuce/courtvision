@@ -71,7 +71,7 @@ export const lastName = (name: string): string => name.split(' ').pop() ?? name;
  */
 export function surfaceClass(
   surface?: string,
-  fallback = 'bg-[var(--bone-3)] text-[var(--ink-2)]',
+  fallback = 'bg-[var(--paper-sunken)] text-[var(--ink-2)]',
 ): string {
   const s = (surface || '').toLowerCase();
   if (s.includes('clay')) return 'ba-surface-clay';
@@ -80,9 +80,10 @@ export function surfaceClass(
   return fallback;
 }
 
+/** Kept for callers that key off the surface name directly. */
 export const SURFACE_COLOR: Record<string, string> = {
-  Hard: 'bg-[#d8edf8] text-[#0a6fa4]',
-  Clay: 'bg-[#f3dfd3] text-[#a9552b]',
-  Grass: 'bg-[#dcead9] text-[#3e7340]',
-  Carpet: 'bg-[var(--paper-3)] text-[var(--ink-2)]',
+  Hard: 'ba-surface-hard',
+  Clay: 'ba-surface-clay',
+  Grass: 'ba-surface-grass',
+  Carpet: 'bg-[var(--paper-sunken)] text-[var(--ink-2)]',
 };

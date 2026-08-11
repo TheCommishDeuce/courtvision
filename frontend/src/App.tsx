@@ -1,31 +1,37 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes, useSearchParams } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
 import Navbar from './components/ui/Navbar';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import Spinner from './components/ui/Spinner';
 import { useMetaStats } from './hooks';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
-const H2HPage = lazy(() => import('./pages/H2HPage'));
+const VersusPage = lazy(() => import('./pages/VersusPage'));
 const PlayerPage = lazy(() => import('./pages/PlayerPage'));
 const TournamentPage = lazy(() => import('./pages/TournamentPage'));
 const SearchPage = lazy(() => import('./pages/SearchPage'));
 const RecordsPage = lazy(() => import('./pages/RecordsPage'));
-const LeadersPage = lazy(() => import('./pages/LeadersPage'));
-const ComparePage = lazy(() => import('./pages/ComparePage'));
+/** Unlisted design-system specimen — see pages/SpecimenPage.tsx. */
+const SpecimenPage = lazy(() => import('./pages/SpecimenPage'));
 
 function PlayerPageRoute() {
   const [searchParams] = useSearchParams();
   return <PlayerPage key={searchParams.get('p') ?? '__empty__'} />;
 }
 
+/** Keeps the query string when a merged page replaces an old route. */
+function RedirectTo({ to }: { to: string }) {
+  const { search } = useLocation();
+  return <Navigate to={`${to}${search}`} replace />;
+}
+
 function Footer() {
   const { data: stats } = useMetaStats();
   return (
-    <footer className="border-t-2 border-[var(--ink)] bg-[var(--bone)] mt-12">
-      <div className="max-w-7xl mx-auto px-4 py-5 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--mute)]">
-        <span>
-          Data sourced from{' '}
+    <footer className="border-t border-[var(--ink)] bg-[var(--paper)] mt-10">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <p className="text-[12.5px] text-[var(--ink-2)] max-w-2xl">
+          Match data from{' '}
           <a href="https://www.tennisabstract.com" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
             Tennis Abstract
           </a>
@@ -34,8 +40,8 @@ function Footer() {
             Jeff Sackmann's match dataset
           </a>
           . All credit for the underlying data goes to him.
-        </span>
-        <span className="ba-mono text-[10px] text-[var(--ink-2)]">
+        </p>
+        <span className="ba-label">
           {stats?.data_through ? `Data through ${stats.data_through.slice(0, 10)}` : 'courtvision'}
         </span>
       </div>
@@ -43,29 +49,41 @@ function Footer() {
   );
 }
 
+function NotFound() {
+  return (
+    <div className="py-20 text-center">
+      <div className="ba-eyebrow mb-2">No such page</div>
+      <h1 className="ba-h2 mb-1">That address isn't part of this site</h1>
+      <p className="ba-body mb-5 max-w-md mx-auto">
+        Check the link, or start from the home page and pick a section.
+      </p>
+      <a href="/" className="ba-btn ba-btn-ghost">Go to home</a>
+    </div>
+  );
+}
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-[var(--bone)] ba-grain flex flex-col text-[var(--ink)]">
+    <div className="min-h-screen bg-[var(--paper)] flex flex-col text-[var(--ink)]">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 py-8 w-full flex-1">
+      <main className="max-w-7xl mx-auto px-4 py-6 w-full flex-1">
         <ErrorBoundary>
           <Suspense fallback={<Spinner />}>
             <Routes>
               <Route path="/"           element={<HomePage />} />
-              <Route path="/h2h"        element={<H2HPage />} />
+              <Route path="/versus"     element={<VersusPage />} />
               <Route path="/player"     element={<PlayerPageRoute />} />
-              <Route path="/compare"    element={<ComparePage />} />
               <Route path="/tournament" element={<TournamentPage />} />
-              <Route path="/leaders"    element={<LeadersPage />} />
-              <Route path="/search"     element={<SearchPage />} />
               <Route path="/records"    element={<RecordsPage />} />
-              <Route path="*"           element={
-                <div className="text-center py-24">
-                  <div className="ba-display text-[var(--clay)] mb-4">404</div>
-                  <p className="text-[var(--ink-2)] mb-6">Page not found.</p>
-                  <a href="/" className="ba-link font-medium">← Back to home</a>
-                </div>
-              } />
+              <Route path="/search"     element={<SearchPage />} />
+              <Route path="/_specimen"  element={<SpecimenPage />} />
+
+              {/* Old routes, kept so existing links and bookmarks resolve. */}
+              <Route path="/leaders"    element={<RedirectTo to="/records" />} />
+              <Route path="/h2h"        element={<RedirectTo to="/versus" />} />
+              <Route path="/compare"    element={<RedirectTo to="/versus" />} />
+
+              <Route path="*"           element={<NotFound />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

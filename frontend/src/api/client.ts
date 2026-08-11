@@ -384,3 +384,53 @@ export const fetchCommonOpponents = (params: {
   year_max?: number;
 }): Promise<CommonOpponentsResponse> =>
   get<CommonOpponentsResponse>('/compare/common-opponents', params);
+
+// ── Ad-hoc SQL (query builder) ────────────────────────────────────────────────
+
+export interface QuerySchemaColumn {
+  name: string;
+  type: string;
+}
+
+export interface QuerySchemaRelation {
+  name: string;
+  rows: number;
+  columns: QuerySchemaColumn[];
+}
+
+export interface QuerySchema {
+  relations: QuerySchemaRelation[];
+  limits: {
+    display_rows: number;
+    csv_rows: number;
+    timeout_seconds: number;
+  };
+}
+
+export interface QueryResult {
+  columns: string[];
+  rows: (string | number | boolean | null)[][];
+  row_count: number;
+  truncated: boolean;
+  limit: number;
+  elapsed_ms: number;
+}
+
+export const fetchQuerySchema = (): Promise<QuerySchema> =>
+  get<QuerySchema>('/query/schema');
+
+export const runQuery = (sql: string, limit?: number): Promise<QueryResult> =>
+  api.post<QueryResult>('/query', { sql, limit }).then(r => r.data);
+
+/** Downloads the query as CSV. Resolves once the browser has the file. */
+export const downloadQueryCsv = async (sql: string): Promise<void> => {
+  const response = await api.post('/query/csv', { sql }, { responseType: 'blob' });
+  const url = URL.createObjectURL(response.data as Blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'courtvision-query.csv';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};

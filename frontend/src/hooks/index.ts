@@ -47,6 +47,7 @@ import {
   fetchCountryLeaders,
   fetchCountries,
   fetchComebackScatter,
+  fetchQuerySchema,
 } from '../api/client';
 import { createQueryHook, STALE } from './createQueryHook';
 
@@ -83,6 +84,9 @@ export const useTournamentYears = (tournament: string, tour?: string) =>
     enabled: !!tournament,
     staleTime: STALE,
   });
+
+export const useQuerySchema = () =>
+  useQuery({ queryKey: ['querySchema'], queryFn: fetchQuerySchema, staleTime: STALE });
 
 export const useCountries = (tour?: string) =>
   useQuery({ queryKey: ['countries', tour], queryFn: () => fetchCountries(tour), staleTime: STALE });

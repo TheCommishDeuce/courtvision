@@ -11,6 +11,14 @@ type Props = {
   reveal?: boolean;
 };
 
+/** Padding is baked into the CSS classes — no per-page overrides. */
+const BASE: Record<Variant, string> = {
+  hero: 'ba-kpi ba-kpi-hero',
+  clay: 'ba-kpi',
+  muted: 'ba-kpi-muted',
+  plain: 'border-t-2 border-[var(--ink)] pt-2', // sits directly on the page
+};
+
 export default function KPIBlock({
   label,
   value,
@@ -19,31 +27,17 @@ export default function KPIBlock({
   className = '',
   reveal = false,
 }: Props) {
-  // Padding is baked into the CSS classes — no per-page overrides.
-  const base =
-    variant === 'hero'
-      ? 'ba-kpi ba-kpi-hero'
-      : variant === 'clay'
-      ? 'ba-kpi'
-      : variant === 'muted'
-      ? 'ba-kpi-muted'
-      : 'border-t-2 border-[var(--ink)] pt-3'; // plain: lives on canvas
-
   const onClay = variant === 'hero' || variant === 'clay';
 
-  const valueClass = variant === 'hero' ? 'ba-stat block' : 'ba-stat-sm block';
-
-  const labelClass = onClay ? 'ba-kicker mb-2 text-[var(--bone)]/90' : 'ba-kicker mb-2';
-
-  const subClass = onClay
-    ? 'mt-3 text-sm text-[var(--bone)]/90'
-    : 'mt-3 text-sm text-[var(--ink-2)]';
-
   return (
-    <div className={`${base} ${reveal ? 'ba-reveal' : ''} ${className}`}>
-      <div className={labelClass}>{label}</div>
-      <div className={valueClass}>{value}</div>
-      {sub && <div className={subClass}>{sub}</div>}
+    <div className={`${BASE[variant]} ${reveal ? 'ba-reveal' : ''} ${className}`}>
+      <div className={`ba-kicker mb-1.5 ${onClay ? 'text-[var(--on-clay-soft)]' : ''}`}>{label}</div>
+      <div className={variant === 'hero' ? 'ba-stat block' : 'ba-stat-sm block'}>{value}</div>
+      {sub && (
+        <div className={`mt-2 text-[12.5px] ${onClay ? 'text-[var(--on-clay)]' : 'text-[var(--ink-2)]'}`}>
+          {sub}
+        </div>
+      )}
     </div>
   );
 }

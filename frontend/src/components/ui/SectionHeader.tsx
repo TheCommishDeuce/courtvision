@@ -1,31 +1,54 @@
 import type { ReactNode } from 'react';
 
+/**
+ * Rule weight carries the hierarchy:
+ *   page    → double rule (heavy over hairline), once per page
+ *   section → single ink rule
+ *   sub     → hairline
+ */
+type Level = 'page' | 'section' | 'sub';
+
 type Props = {
-  /** Section title — rendered in the canonical .ba-h2 face. */
+  /** Section title — rendered in the canonical EB Garamond face. */
   title: ReactNode;
-  /** Optional mono kicker shown to the right (e.g. "Six ways in"). */
+  /** Small clay label above the title. */
+  eyebrow?: ReactNode;
+  /** Mono note shown to the right. */
   kicker?: ReactNode;
-  /** Optional action node shown to the right (link/button); overrides kicker if both given. */
+  /** Node shown to the right; overrides `kicker` when both are given. */
   action?: ReactNode;
-  /** Heading level for semantics (default h2). */
+  /** Heading level for semantics. Defaults to h2, or h3 at `sub`. */
   as?: 'h2' | 'h3';
+  level?: Level;
   className?: string;
 };
 
-/**
- * Canonical section header: hairline rule + consistent rhythm (pb-3 mb-6).
- * Use everywhere instead of hand-rolled `flex … border-b-2 … pb-2 mb-N` blocks.
- */
-export default function SectionHeader({ title, kicker, action, as = 'h2', className = '' }: Props) {
-  const Heading = as;
+const RULE: Record<Level, string> = {
+  page: 'ba-double-rule pb-2 mb-5',
+  section: 'border-b border-[var(--ink)] pb-1.5 mb-4',
+  sub: 'border-b border-[var(--rule)] pb-1.5 mb-3',
+};
+
+export default function SectionHeader({
+  title,
+  eyebrow,
+  kicker,
+  action,
+  as,
+  level = 'section',
+  className = '',
+}: Props) {
+  const Heading = as ?? (level === 'sub' ? 'h3' : 'h2');
   const right = action ?? (kicker ? <span className="ba-kicker">{kicker}</span> : null);
 
   return (
-    <div
-      className={`flex items-baseline justify-between gap-4 border-b border-[var(--rule)] pb-3 mb-6 ${className}`}
-    >
-      <Heading className={as === 'h3' ? 'ba-h3' : 'ba-h2'}>{title}</Heading>
-      {right}
+    <div className={`${RULE[level]} ${className}`}>
+      {eyebrow && <div className="ba-eyebrow mb-1">{eyebrow}</div>}
+      {/* Wraps rather than crushes: on narrow screens the note drops below the title. */}
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+        <Heading className={Heading === 'h3' ? 'ba-h3' : 'ba-h2'}>{title}</Heading>
+        {right}
+      </div>
     </div>
   );
 }

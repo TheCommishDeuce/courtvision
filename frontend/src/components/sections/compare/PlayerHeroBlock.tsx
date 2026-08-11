@@ -1,5 +1,13 @@
+import { Link } from 'react-router-dom';
+
+/**
+ * The two players keep one identity for the whole page: A is clay-filled,
+ * B is white under an ink rule. Every chart, table and legend below follows
+ * the same pairing, so you never have to re-learn which is which.
+ */
 export default function PlayerHeroBlock({
   name,
+  tour,
   winPct,
   record,
   peakRank,
@@ -7,6 +15,7 @@ export default function PlayerHeroBlock({
   variant,
 }: {
   name: string;
+  tour: string;
   winPct: string;
   record: string;
   peakRank: number | null;
@@ -14,43 +23,47 @@ export default function PlayerHeroBlock({
   variant: 'clay' | 'ink';
 }) {
   const isClay = variant === 'clay';
-  const labelColor = isClay
-    ? 'text-[var(--bone)]/80'
-    : 'text-[var(--mute)]';
-  const valueColor = isClay ? 'text-[var(--bone)]' : 'text-[var(--ink)]';
-  const dividerColor = isClay ? 'border-[var(--bone)]/20' : 'border-[var(--rule)]';
-  const typo = 'font-[\'JetBrains_Mono\',ui-monospace,monospace]';
+  const label = isClay ? 'text-[var(--on-clay-soft)]' : 'text-[var(--mute)]';
+  const value = isClay ? 'text-[var(--on-clay)]' : 'text-[var(--ink)]';
+  const rule = isClay ? 'border-[var(--on-clay)]/30' : 'border-[var(--rule)]';
+
+  const rows = [
+    { k: 'Record', v: record },
+    { k: 'Peak rank', v: peakRank ? `#${peakRank}` : '—' },
+    { k: 'Titles', v: String(titles) },
+  ];
 
   return (
     <div
       className={
         isClay
-          ? 'ba-kpi px-5 py-6 md:px-7 md:py-8 flex flex-col gap-4'
-          : 'bg-[var(--bone-2)] border-2 border-[var(--ink)] px-5 py-6 md:px-7 md:py-8 flex flex-col gap-4'
+          ? 'ba-kpi px-4 py-3.5 flex flex-col gap-2'
+          : 'bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)] px-4 py-3.5 flex flex-col gap-2'
       }
     >
-      <div className={`${typo} text-[10px] font-medium tracking-[0.12em] uppercase ${labelColor}`}>
-        {isClay ? 'Player A' : 'Player B'}
-      </div>
-      <div className={`ba-stat-sm ${valueColor}`}>
+      <div className={`ba-label ${label}`}>{isClay ? 'Player A' : 'Player B'}</div>
+
+      <Link
+        to={`/player?p=${encodeURIComponent(name)}&tour=${tour}`}
+        className={`ba-h3 ${value} hover:underline`}
+      >
         {name}
+      </Link>
+
+      <div className={`flex items-baseline justify-between pt-2 border-t ${rule}`}>
+        <span className={`ba-label ${label}`}>Win rate</span>
+        <span className={`ba-stat-sm ${value}`}>
+          {winPct}
+          <span className="text-[0.6em] ml-0.5">%</span>
+        </span>
       </div>
-      <div className={`flex items-baseline justify-between pt-3 border-t ${dividerColor}`}>
-        <span className={`${typo} text-[10px] font-medium tracking-[0.12em] uppercase ${labelColor}`}>Win Rate</span>
-        <span className={`ba-stat-sm ${valueColor}`}>{winPct}<span className="text-[20px] ml-0.5">%</span></span>
-      </div>
-      <div className={`flex items-baseline justify-between`}>
-        <span className={`${typo} text-[10px] font-medium tracking-[0.12em] uppercase ${labelColor}`}>Record</span>
-        <span className={`ba-mono text-[14px] ${valueColor}`}>{record}</span>
-      </div>
-      <div className={`flex items-baseline justify-between`}>
-        <span className={`${typo} text-[10px] font-medium tracking-[0.12em] uppercase ${labelColor}`}>Peak Rank</span>
-        <span className={`ba-mono text-[14px] ${valueColor}`}>{peakRank ? `#${peakRank}` : '—'}</span>
-      </div>
-      <div className={`flex items-baseline justify-between`}>
-        <span className={`${typo} text-[10px] font-medium tracking-[0.12em] uppercase ${labelColor}`}>Tour Titles</span>
-        <span className={`ba-mono text-[14px] ${valueColor}`}>{titles}</span>
-      </div>
+
+      {rows.map(r => (
+        <div key={r.k} className="flex items-baseline justify-between">
+          <span className={`ba-label ${label}`}>{r.k}</span>
+          <span className={`ba-mono text-[13px] font-medium ${value}`}>{r.v}</span>
+        </div>
+      ))}
     </div>
   );
 }
