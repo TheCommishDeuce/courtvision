@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload, color }: { active?: boolean; payload?:
   const d = payload[0].payload;
   return (
     <div className={TOOLTIP_CLASS}>
-      <div className="text-[var(--mute)] ba-mono text-[10.5px]">{d.date?.slice(0, 10)}</div>
+      <div className="text-[var(--mute)] ba-mono ba-meta">{d.date?.slice(0, 10)}</div>
       <div className="font-bold ba-mono" style={{ color }}>Rank #{d.rank}</div>
     </div>
   );

@@ -12,7 +12,7 @@ interface Props {
 
 function Head({ title }: { title: string }) {
   return (
-    <div className="px-2.5 py-1.5 border-b border-[var(--ink)] bg-[var(--paper-sunken)] shrink-0">
+    <div className="px-2.5 py-1.5 border-b border-[var(--rule-ink)] bg-[var(--paper-sunken)] shrink-0">
       <h3 className="ba-board-title">{title}</h3>
     </div>
   );
@@ -32,7 +32,7 @@ export default function StatTable({ rows, title, stretch = false }: Props) {
                 i < rows.length - 1 ? 'border-b border-[var(--rule)]' : ''
               }`}
             >
-              <span className="text-[12.5px] text-[var(--ink-2)]">{r.label}</span>
+              <span className="ba-cell text-[var(--ink-2)]">{r.label}</span>
               <span className="ba-figure">{r.value ?? '—'}</span>
             </div>
           ))}
@@ -48,7 +48,7 @@ export default function StatTable({ rows, title, stretch = false }: Props) {
         <tbody>
           {rows.map((r, i) => (
             <tr key={i}>
-              <td className="text-[12.5px] text-[var(--ink-2)]">{r.label}</td>
+              <td className="ba-cell text-[var(--ink-2)]">{r.label}</td>
               <td className="num">
                 <span className="ba-figure">{r.value ?? '—'}</span>
               </td>

@@ -25,12 +25,16 @@ export function ServeReturnSection({
   return (
     <section>
       <SectionHeader title="Serve and return" kicker="Against the rest of the tour" />
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 items-stretch">
-        <div className="lg:col-span-3 space-y-3">
+      {/* The two radars sit side by side rather than stacked. Stacked, this one
+          section ran to roughly twice the height of every section around it for
+          no extra information — the two charts are peers and read better as a
+          pair anyway. */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-3 items-stretch">
+        <div className="xl:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {servePct && Object.keys(servePct).length > 0 && <div className="ba-card"><ServeRadarChart percentiles={servePct} labelA={lastName(player)} title="Serve" tour={tour} /></div>}
           {returnPct && Object.keys(returnPct).length > 0 && <div className="ba-card"><ReturnRadarChart percentiles={returnPct} labelA={lastName(player)} title="Return" tour={tour} /></div>}
         </div>
-        <div className="lg:col-span-2 flex flex-col">
+        <div className="xl:col-span-2 flex flex-col">
           <StatTable stretch title="Serve and return" rows={[
             ...(serveStats && Object.keys(serveStats).length > 0 ? [
               { label: 'Ace %', value: serveStats['ace%'] != null ? `${serveStats['ace%']}%` : null },

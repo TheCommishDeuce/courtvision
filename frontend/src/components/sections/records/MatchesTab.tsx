@@ -74,7 +74,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       key: '__rank',
       header: '#',
       hideOnCard: true,
-      cell: (_r, i) => <span className="ba-mono text-[10.5px] text-[var(--mute)]">{i + 1}</span>,
+      cell: (_r, i) => <span className="ba-mono ba-meta text-[var(--mute)]">{i + 1}</span>,
     },
     {
       key: 'metric_value',
@@ -93,7 +93,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: r => (
-        <span className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
           {r.date?.slice(0, 10)}
         </span>
       ),
@@ -117,7 +117,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       key: 'round',
       header: 'Rnd',
       hideOnCard: true,
-      cell: r => <span className="ba-mono text-[11px] text-[var(--ink-2)]">{r.round}</span>,
+      cell: r => <span className="ba-mono ba-meta text-[var(--ink-2)]">{r.round}</span>,
     },
     {
       key: 'winner_name',
@@ -148,7 +148,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
     {
       key: 'score',
       header: 'Score',
-      cell: r => <span className="ba-mono text-[11px] whitespace-nowrap">{r.score}</span>,
+      cell: r => <span className="ba-mono ba-meta whitespace-nowrap">{r.score}</span>,
     },
   ];
 
@@ -156,7 +156,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
     <div className="space-y-4">
       <SectionHeader title="Match extremes" kicker="Top 50 · click a row for point stats" />
 
-      <div className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <label className="flex flex-col gap-0.5">
             <span className="ba-label">Rank by</span>

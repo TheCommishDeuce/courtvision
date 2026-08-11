@@ -37,9 +37,9 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
             const v = Number(e.target.value);
             if (v <= local[1]) handleChange([v, local[1]]);
           }}
-          className="w-full h-6 accent-[var(--clay)]"
+          className="ba-range w-full accent-[var(--clay)]"
         />
-        <span className="ba-mono text-[10px] text-[var(--mute)]">to</span>
+        <span className="ba-mono ba-agate text-[var(--mute)]">to</span>
         <input
           type="range"
           aria-label="End year"
@@ -50,7 +50,7 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
             const v = Number(e.target.value);
             if (v >= local[0]) handleChange([local[0], v]);
           }}
-          className="w-full h-6 accent-[var(--clay)]"
+          className="ba-range w-full accent-[var(--clay)]"
         />
       </div>
     </div>

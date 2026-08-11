@@ -42,7 +42,7 @@ function SurfaceRow({ surface, a, b }: { surface: string; a: number; b: number }
   return (
     <div className="flex items-center gap-2.5 py-1.5 border-b border-[var(--rule)] last:border-b-0">
       <span
-        className={`ba-mono text-[9.5px] font-bold tracking-[0.11em] uppercase w-[52px] text-center px-1 py-[1px] ${surfaceClass(surface, 'ba-surface-hard')}`}
+        className={`ba-mono ba-agate font-bold tracking-[0.11em] uppercase w-[52px] text-center px-1 py-[1px] ${surfaceClass(surface, 'ba-surface-hard')}`}
       >
         {surface}
       </span>
@@ -108,7 +108,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: m => (
-        <span className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
           {m.date?.slice(0, 10)}
         </span>
       ),
@@ -132,12 +132,12 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       key: 'level_name',
       header: 'Level',
       hideOnCard: true,
-      cell: m => <span className="text-[12px] text-[var(--ink-2)]">{m.level_name}</span>,
+      cell: m => <span className="ba-meta text-[var(--ink-2)]">{m.level_name}</span>,
     },
     {
       key: 'round',
       header: 'Rnd',
-      cell: m => <span className="ba-mono text-[11px] text-[var(--ink-2)]">{m.round}</span>,
+      cell: m => <span className="ba-mono ba-meta text-[var(--ink-2)]">{m.round}</span>,
     },
     {
       key: 'winner_name',
@@ -149,14 +149,14 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
           }`}
         >
           {lastName(m.winner_name)}
-          {m.is_retirement && <span className="ba-mono text-[10px] text-[var(--mute)] ml-1">ret.</span>}
+          {m.is_retirement && <span className="ba-mono ba-agate text-[var(--mute)] ml-1">ret.</span>}
         </span>
       ),
     },
     {
       key: 'score',
       header: 'Score',
-      cell: m => <span className="ba-mono text-[11px] whitespace-nowrap">{m.score}</span>,
+      cell: m => <span className="ba-mono ba-meta whitespace-nowrap">{m.score}</span>,
     },
     {
       key: 'time',
@@ -174,10 +174,12 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
         kicker={`${h2h.matches.length} ${h2h.matches.length === 1 ? 'meeting' : 'meetings'}`}
       />
 
-      <div className={`grid grid-cols-1 gap-3 ${showSplit ? 'md:grid-cols-[7fr_5fr]' : ''}`}>
-        {/* The rivalry score. One clay block, the page's single loudest element. */}
-        <div className="ba-kpi px-4 py-4">
-          <div className="flex items-baseline justify-between mb-3">
+      <div className={showSplit ? 'ba-spread' : ''}>
+        {/* The rivalry score. One clay block, the page's single loudest
+            element — and the reason anyone opened this page, so it is set at
+            the hero figure size rather than merely larger than the table. */}
+        <div className="ba-kpi ba-kpi-hero">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 mb-[var(--space-sm)]">
             <span className="ba-label text-[var(--on-clay-soft)]">Rivalry score</span>
             {leader && (
               <span className="ba-label text-[var(--on-clay-soft)]">
@@ -185,26 +187,29 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
               </span>
             )}
           </div>
-          <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-3">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-[var(--space-xs)]">
             <div className="text-right min-w-0">
-              <div className="ba-mono text-[11px] text-[var(--on-clay-soft)] mb-0.5 truncate">
+              <div className="ba-mono ba-meta text-[var(--on-clay-soft)] mb-0.5 truncate">
                 {h2h.summary.player_a}
               </div>
-              <div className="ba-stat text-[var(--on-clay)]">{winsA}</div>
+              <div className="ba-stat-hero text-[var(--on-clay)]">{winsA}</div>
             </div>
-            <div className="ba-stat text-[var(--on-clay-soft)]/60">–</div>
+            {/* Full strength, not 60%: at the hero size the two figures sit far
+                enough apart that a faint dash stopped reading as "16–24" and
+                started reading as two separate numbers. */}
+            <div className="ba-stat text-[var(--on-clay-soft)]">–</div>
             <div className="text-left min-w-0">
-              <div className="ba-mono text-[11px] text-[var(--on-clay-soft)] mb-0.5 truncate">
+              <div className="ba-mono ba-meta text-[var(--on-clay-soft)] mb-0.5 truncate">
                 {h2h.summary.player_b}
               </div>
-              <div className="ba-stat text-[var(--on-clay)]">{winsB}</div>
+              <div className="ba-stat-hero text-[var(--on-clay)]">{winsB}</div>
             </div>
           </div>
         </div>
 
         {showSplit && (
-          <div className="ba-card px-3 py-2.5">
-            <div className="ba-board-title border-b border-[var(--ink)] pb-1.5 mb-1">
+          <div className="ba-card">
+            <div className="ba-board-title border-b border-[var(--rule-ink)] pb-1.5 mb-1">
               Wins by surface
             </div>
             {orderedSurfaces.map(s => (

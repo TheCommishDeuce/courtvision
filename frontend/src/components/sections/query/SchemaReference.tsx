@@ -20,7 +20,7 @@ export default function SchemaReference({
 
   return (
     <section>
-      <div className="ba-label border-b border-[var(--ink)] pb-1 mb-1.5">
+      <div className="ba-label border-b border-[var(--rule-ink)] pb-1 mb-1.5">
         Schema · click a column to add it to SELECT
       </div>
 
@@ -34,21 +34,21 @@ export default function SchemaReference({
                 type="button"
                 onClick={() => setOpen(isOpen ? null : rel.name)}
                 aria-expanded={isOpen}
-                className={`w-full flex items-baseline gap-2 px-2.5 py-1.5 text-left transition-colors ${
+                className={`ba-touch w-full flex items-baseline gap-2 px-2.5 py-1.5 text-left transition-colors ${
                   isOpen ? 'bg-[var(--clay-wash)]' : 'hover:bg-[var(--paper-sunken)]'
                 }`}
               >
-                <span className="ba-mono text-[9px] text-[var(--mute)] w-2">
+                <span className="ba-mono ba-agate text-[var(--mute)] w-2">
                   {isOpen ? '▾' : '▸'}
                 </span>
                 <span
-                  className={`ba-mono text-[11.5px] font-semibold ${
+                  className={`ba-mono ba-meta font-semibold ${
                     isActive ? 'text-[var(--clay)]' : 'text-[var(--ink)]'
                   }`}
                 >
                   {rel.name}
                 </span>
-                <span className="ba-mono text-[10px] text-[var(--mute)] ml-auto">
+                <span className="ba-mono ba-agate text-[var(--mute)] ml-auto">
                   {rel.rows.toLocaleString()} rows · {rel.columns.length} cols
                 </span>
               </button>
@@ -62,7 +62,7 @@ export default function SchemaReference({
                         type="button"
                         onClick={() => onPickColumn(c.name)}
                         title={`${c.name} · ${c.type}`}
-                        className="ba-mono text-[10px] px-1.5 py-[1px] border border-[var(--rule-mid)]
+                        className="ba-touch ba-mono ba-agate px-1.5 py-[1px] border border-[var(--rule-mid)]
                                    bg-[var(--paper-raised)] text-[var(--ink-2)]
                                    hover:border-[var(--clay)] hover:text-[var(--clay-deep)] transition-colors"
                       >

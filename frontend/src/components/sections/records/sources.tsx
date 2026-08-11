@@ -97,7 +97,7 @@ const rankColumn = (): Column<RecordRow> => ({
   key: '__rank',
   header: '#',
   hideOnCard: true,
-  cell: (_r, i) => <span className="ba-mono text-[10.5px] text-[var(--mute)]">{i + 1}</span>,
+  cell: (_r, i) => <span className="ba-mono ba-meta text-[var(--mute)]">{i + 1}</span>,
 });
 
 const playerColumn = (): Column<RecordRow> => ({
@@ -127,12 +127,12 @@ function specToColumn(spec: ColSpec, sort: SortState, highlight: string): Column
       if (spec.fmt === 'date') {
         const v = r[spec.key];
         return (
-          <span className="ba-mono text-[11px] text-[var(--ink-2)]">
+          <span className="ba-mono ba-meta text-[var(--ink-2)]">
             {v ? String(v).slice(0, 10) : 'Active'}
           </span>
         );
       }
-      if (spec.fmt === 'text') return <span className="text-[12px]">{str(r, spec.key)}</span>;
+      if (spec.fmt === 'text') return <span className="ba-meta">{str(r, spec.key)}</span>;
       const text = formatFigure(num(r, spec.key), spec.fmt ?? 'count');
       const lead = spec.key === sort.sortKey;
       return (

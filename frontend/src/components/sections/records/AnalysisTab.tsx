@@ -53,7 +53,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: r => (
-        <span className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
           {r.reached_date?.slice(0, 10)}
         </span>
       ),
@@ -74,7 +74,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
     {
       key: 'country',
       header: 'Ctry',
-      cell: r => <span className="ba-mono text-[11px]">{r.country}</span>,
+      cell: r => <span className="ba-mono ba-meta">{r.country}</span>,
     },
     {
       key: 'tournament',
@@ -93,7 +93,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
     {
       key: 'deepest_round',
       header: 'Reached',
-      cell: r => <span className="ba-mono text-[11px]">{r.deepest_round ?? '—'}</span>,
+      cell: r => <span className="ba-mono ba-meta">{r.deepest_round ?? '—'}</span>,
     },
     {
       key: 'won_title',
@@ -114,7 +114,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
         kicker="Who from a country has reached a given stage"
       />
 
-      <div className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5 mb-3">
+      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5 mb-3">
         <div className="flex flex-wrap gap-3">
           <label className="flex flex-col gap-0.5 w-full sm:w-52">
             <span className="ba-label">Country</span>

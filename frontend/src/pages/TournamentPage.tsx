@@ -63,7 +63,7 @@ export default function TournamentPage() {
         ].filter(Boolean).join(' · ')}
       />
 
-      <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+      <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <label className="flex flex-col gap-0.5 relative w-full sm:w-80">
             <span className="ba-label">Tournament</span>
@@ -74,13 +74,13 @@ export default function TournamentPage() {
               className="ba-input w-full"
             />
             {search && !selected && filtered.length > 0 && (
-              <ul className="absolute top-full left-0 z-20 bg-[var(--paper-raised)] border border-[var(--ink)] max-h-56 overflow-y-auto w-full">
+              <ul className="absolute top-full left-0 z-20 bg-[var(--paper-raised)] border border-[var(--rule-ink)] max-h-56 overflow-y-auto w-full">
                 {filtered.slice(0, 30).map(t => (
                   <li key={t} className="border-b border-[var(--rule)] last:border-b-0">
                     <button
                       type="button"
                       onClick={() => handleSelect(t)}
-                      className="w-full text-left px-2.5 py-1 text-[13px] hover:bg-[var(--clay)] hover:text-[var(--on-clay)]"
+                      className="w-full text-left px-2.5 py-1 ba-cell hover:bg-[var(--clay)] hover:text-[var(--on-clay)]"
                     >
                       {t}
                     </button>
@@ -123,7 +123,7 @@ export default function TournamentPage() {
               onRetry={() => refetchChampions()}
             />
           ) : (
-            <ul className="border border-[var(--rule)] border-t-2 border-t-[var(--ink)] divide-y divide-[var(--rule)]">
+            <ul className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] divide-y divide-[var(--rule)]">
               {(recentChampions ?? []).map((c: RecentChampion, i) => (
                 <li key={i}>
                   <button
@@ -133,17 +133,17 @@ export default function TournamentPage() {
                   >
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                       <SurfaceTag surface={c.surface} />
-                      <span className="text-[13px] font-semibold text-[var(--ink)]">{c.tournament}</span>
-                      <span className="ba-mono text-[11px] text-[var(--mute)]">{c.year}</span>
-                      <span className="ba-mono text-[10.5px] text-[var(--mute)] ml-auto">
+                      <span className="ba-cell font-semibold text-[var(--ink)]">{c.tournament}</span>
+                      <span className="ba-mono ba-meta text-[var(--mute)]">{c.year}</span>
+                      <span className="ba-mono ba-meta text-[var(--mute)] ml-auto">
                         {c.date?.slice(0, 10)}
                       </span>
                     </div>
-                    <div className="text-[12.5px] mt-0.5">
+                    <div className="ba-cell mt-0.5">
                       <span className="font-semibold text-[var(--clay)]">{c.winner_name}</span>
-                      <span className="ba-mono text-[10.5px] text-[var(--mute)] mx-1.5">beat</span>
+                      <span className="ba-mono ba-meta text-[var(--mute)] mx-1.5">beat</span>
                       <span className="text-[var(--ink-2)]">{c.loser_name}</span>
-                      <span className="ba-mono text-[10.5px] text-[var(--mute)] ml-2">{c.score}</span>
+                      <span className="ba-mono ba-meta text-[var(--mute)] ml-2">{c.score}</span>
                     </div>
                   </button>
                 </li>
@@ -177,26 +177,29 @@ export default function TournamentPage() {
                 {recap.meta.year} {recap.meta.tournament} · champion
               </div>
               {champion ? (
+                /* The name is capped a step below the ramp's top: a champion is
+                   a nameplate inside a block, not the page's own headline, and
+                   long names wrap badly at full display size. */
                 <div className="flex flex-col gap-1.5 flex-1 justify-center">
                   <Link
                     to={`/player?p=${encodeURIComponent(champion.winner_name)}&tour=${tour}`}
-                    className="ba-display text-[var(--on-clay)] hover:underline"
+                    className="ba-display ba-touch text-[length:var(--step-4)] text-[var(--on-clay)] hover:underline"
                   >
                     {champion.winner_name}
                   </Link>
-                  <div className="text-[12.5px] text-[var(--on-clay)]">
-                    <span className="ba-mono text-[11px] mr-2">beat</span>
+                  <div className="ba-cell text-[var(--on-clay)]">
+                    <span className="ba-mono ba-meta mr-2">beat</span>
                     <Link
                       to={`/player?p=${encodeURIComponent(champion.loser_name)}&tour=${tour}`}
-                      className="text-[var(--on-clay)] hover:underline underline-offset-2"
+                      className="ba-touch text-[var(--on-clay)] hover:underline underline-offset-2"
                     >
                       {champion.loser_name}
                     </Link>
                     {champion.loser_rank && (
-                      <span className="ba-mono text-[11px] ml-1.5">#{champion.loser_rank}</span>
+                      <span className="ba-mono ba-meta ml-1.5">#{champion.loser_rank}</span>
                     )}
-                    <span className="mx-2 text-[var(--on-clay-soft)]/60">·</span>
-                    <span className="ba-mono text-[11px]">{champion.score}</span>
+                    <span aria-hidden="true" className="mx-2 text-[var(--on-clay-soft)]/60">·</span>
+                    <span className="ba-mono ba-meta">{champion.score}</span>
                   </div>
                 </div>
               ) : (
@@ -204,7 +207,7 @@ export default function TournamentPage() {
               )}
             </div>
 
-            <div className="flex flex-col border-t-2 border-[var(--ink)]">
+            <div className="flex flex-col border-t-2 border-[var(--rule-ink)]">
               <StatRow
                 label="Surface"
                 value={recap.meta.surface ? <SurfaceTag surface={recap.meta.surface} size="md" /> : '—'}

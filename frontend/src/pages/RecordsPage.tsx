@@ -121,11 +121,7 @@ export default function RecordsPage() {
                 }, { replace: true });
               }}
               aria-current={active ? 'page' : undefined}
-              className={`px-3 py-1.5 -mb-px border-b-2 ba-mono text-[11px] font-bold tracking-[0.12em] uppercase transition-colors ${
-                active
-                  ? 'border-[var(--clay)] text-[var(--ink)]'
-                  : 'border-transparent text-[var(--mute)] hover:text-[var(--ink)]'
-              }`}
+              className={`ba-tab ${active ? 'is-active' : ''}`}
             >
               {t.label}
             </button>
@@ -134,7 +130,7 @@ export default function RecordsPage() {
       </div>
 
       {/* Global filter bar — one set of controls for both tabs. */}
-      <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+      <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <TourToggle
             value={tour}

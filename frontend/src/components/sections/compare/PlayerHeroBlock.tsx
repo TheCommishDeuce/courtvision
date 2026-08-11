@@ -38,14 +38,14 @@ export default function PlayerHeroBlock({
       className={
         isClay
           ? 'ba-kpi px-4 py-3.5 flex flex-col gap-2'
-          : 'bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--ink)] px-4 py-3.5 flex flex-col gap-2'
+          : 'bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] px-4 py-3.5 flex flex-col gap-2'
       }
     >
       <div className={`ba-label ${label}`}>{isClay ? 'Player A' : 'Player B'}</div>
 
       <Link
         to={`/player?p=${encodeURIComponent(name)}&tour=${tour}`}
-        className={`ba-h3 ${value} hover:underline`}
+        className={`ba-h3 ba-touch ${value} hover:underline`}
       >
         {name}
       </Link>
@@ -61,7 +61,7 @@ export default function PlayerHeroBlock({
       {rows.map(r => (
         <div key={r.k} className="flex items-baseline justify-between">
           <span className={`ba-label ${label}`}>{r.k}</span>
-          <span className={`ba-mono text-[13px] font-medium ${value}`}>{r.v}</span>
+          <span className={`ba-mono ba-cell font-medium ${value}`}>{r.v}</span>
         </div>
       ))}
     </div>

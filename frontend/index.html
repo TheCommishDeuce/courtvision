@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Applies a stored theme choice before first paint. Without this the
+         page renders in the OS theme and then flips, which on a paper
+         palette is a full-screen flash. -->
+    <script>
+      try {
+        var t = localStorage.getItem('cv-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch (e) { /* private mode — fall back to the OS preference */ }
+    </script>
     <meta name="description" content="courtvision — ATP & WTA tennis stats explorer. H2H records, player profiles, tournament recaps, and all-time leaderboards powered by Jeff Sackmann's dataset." />
     <meta property="og:title" content="courtvision" />
     <meta property="og:description" content="Explore ATP & WTA match data — H2H records, player profiles, tournament recaps, and all-time leaderboards." />
