@@ -3,18 +3,25 @@ import type { PlayerForm, PlayerSummary, TopNRecords } from '../../../types/tenn
 
 function DossierCell({ label, value, sub }: { label: string; value: ReactNode; sub?: ReactNode }) {
   return (
-    <div className="bg-[var(--paper-raised)] px-3 py-2.5 flex flex-col">
+    <div className="bg-[var(--paper-raised)] px-[var(--space-sm)] py-[var(--space-xs)] flex flex-col">
       <div className="ba-label mb-1">{label}</div>
       <div className="ba-stat-sm text-[var(--ink)]">{value}</div>
-      {sub && <div className="ba-mono text-[10.5px] text-[var(--mute)] mt-0.5">{sub}</div>}
+      {sub && <div className="ba-mono ba-agate text-[var(--mute)] mt-0.5">{sub}</div>}
     </div>
   );
 }
 
 /**
- * The dossier: win rate as the one clay block, then nine figures on a hairline
- * grid. Gaps over a rule-coloured ground make the rules, so the grid stays
- * correct however it wraps.
+ * The dossier: win rate as a full-bleed clay panel, then the supporting
+ * figures on a hairline grid beneath it.
+ *
+ * The win rate used to be one cell among five, which made a page of eight
+ * equally sized numbers and no way to tell which one answered the question
+ * the reader arrived with. Giving it the full measure and the hero figure size
+ * is the scale contrast the rest of the page reads against.
+ *
+ * Gaps over a rule-coloured ground make the rules, so the grid stays correct
+ * however it wraps.
  */
 export function KpiDossier({
   filteredWins,
@@ -42,15 +49,19 @@ export function KpiDossier({
       .join(' · ') || undefined;
 
   return (
-    <section className="grid grid-cols-2 lg:grid-cols-5 gap-px bg-[var(--rule)] border-t-2 border-[var(--ink)] border-b border-[var(--rule)]">
-      <div className="col-span-2 lg:col-span-1 lg:row-span-2 ba-kpi px-4 py-4 flex flex-col justify-center">
-        <div className="ba-label text-[var(--on-clay-soft)] mb-1.5">Win rate</div>
-        <div className="ba-stat text-[var(--on-clay)]">{filteredWinPct}%</div>
-        <div className="ba-mono text-[12px] text-[var(--on-clay-soft)] mt-1.5">
+    <section>
+      {/* The figure the reader came for, at the size that says so. */}
+      <div className="ba-kpi ba-kpi-hero flex flex-wrap items-end justify-between gap-x-[var(--space-lg)] gap-y-[var(--space-xs)]">
+        <div>
+          <div className="ba-label text-[var(--on-clay-soft)] mb-1.5">Win rate</div>
+          <div className="ba-stat-hero text-[var(--on-clay)]">{filteredWinPct}%</div>
+        </div>
+        <div className="ba-mono ba-cell text-[var(--on-clay-soft)] pb-1">
           {filteredWins}W – {filteredLosses}L
         </div>
       </div>
 
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--rule)] border-b border-[var(--rule)]">
       <DossierCell
         label="Peak rank"
         value={summary.career_high_rank ? `#${summary.career_high_rank}` : '—'}
@@ -86,6 +97,7 @@ export function KpiDossier({
         sub={playerForm?.last52w.win_pct != null ? `${playerForm.last52w.win_pct}%` : undefined}
       />
       <DossierCell label="Matches" value={summary.total.toLocaleString()} />
+      </div>
     </section>
   );
 }

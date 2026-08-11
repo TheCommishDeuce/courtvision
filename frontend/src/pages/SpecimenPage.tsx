@@ -21,13 +21,27 @@ const TOKENS = [
   ['--paper', 'page field'],
   ['--paper-raised', 'cards, boards, tables'],
   ['--paper-sunken', 'wells, table heads'],
-  ['--ink', 'primary text, heavy rules'],
+  ['--ink', 'primary text'],
   ['--ink-2', 'secondary text'],
   ['--mute', 'labels, meta'],
   ['--rule', 'hairline between rows'],
   ['--rule-mid', 'hairline between blocks'],
-  ['--clay', 'accent — figures, active state'],
+  ['--rule-ink', 'the heavy rule'],
+  ['--clay', 'accent text — ranks, figures'],
   ['--clay-deep', 'links, hover'],
+  ['--clay-fill', 'block fills only'],
+];
+
+/** The fluid ramp. Every size in the app is one of these. */
+const STEPS = [
+  ['--step--2', 'agate, eyebrow', '9 → 10.5'],
+  ['--step--1', 'label, board figure', '10.5 → 12'],
+  ['--step-0', 'table cell, body-sm', '12.5 → 14'],
+  ['--step-1', 'body', '14 → 16.5'],
+  ['--step-2', 'h3', '17 → 21'],
+  ['--step-3', 'h2, stat-sm', '22 → 34'],
+  ['--step-4', 'stat', '30 → 56'],
+  ['--step-5', 'display, masthead, hero figure', '40 → 104'],
 ];
 
 const LEADERS: BoardRow[] = [
@@ -65,13 +79,13 @@ const MATCHES: MatchSample[] = [
 ];
 
 const COLUMNS: Column<MatchSample>[] = [
-  { key: 'date', header: 'Date', cell: r => <span className="ba-mono text-[11px] text-[var(--mute)]">{r.date}</span>, hideOnCard: true },
+  { key: 'date', header: 'Date', cell: r => <span className="ba-mono ba-meta text-[var(--mute)]">{r.date}</span>, hideOnCard: true },
   { key: 'tournament', header: 'Event', cell: r => r.tournament },
   { key: 'surface', header: 'Surf', cell: r => <SurfaceTag surface={r.surface} /> },
-  { key: 'round', header: 'Rnd', cell: r => <span className="ba-mono text-[11px]">{r.round}</span> },
+  { key: 'round', header: 'Rnd', cell: r => <span className="ba-mono ba-meta">{r.round}</span> },
   { key: 'winner', header: 'Winner', cell: r => <span className="font-semibold">{r.winner}</span>, hideOnCard: true },
   { key: 'loser', header: 'Loser', cell: r => <span className="text-[var(--ink-2)]">{r.loser}</span>, hideOnCard: true },
-  { key: 'score', header: 'Score', cell: r => <span className="ba-mono text-[11px]">{r.score}</span> },
+  { key: 'score', header: 'Score', cell: r => <span className="ba-mono ba-meta">{r.score}</span> },
   { key: 'aces', header: 'Aces', num: true, accentHeader: true, cell: r => r.aces },
 ];
 
@@ -83,7 +97,7 @@ function Swatch({ token, use }: { token: string; use: string }) {
         style={{ background: `var(${token})` }}
       />
       <span className="min-w-0">
-        <span className="ba-mono text-[11px] text-[var(--ink)] block">{token}</span>
+        <span className="ba-mono ba-meta text-[var(--ink)] block">{token}</span>
         <span className="ba-label">{use}</span>
       </span>
     </div>
@@ -94,9 +108,9 @@ function DensityDemo({ label, cls, spec }: { label: string; cls: string; spec: s
   return (
     <div>
       <div className="ba-label mb-1">
-        {label} <span className="text-[var(--rule-mid)]">·</span> {spec}
+        {label} <span aria-hidden="true" className="text-[var(--rule-mid)]">·</span> {spec}
       </div>
-      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--ink)]">
+      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
         <table className={`ba-table ${cls}`}>
           <thead>
             <tr>
@@ -131,10 +145,42 @@ export default function SpecimenPage() {
       />
 
       <section>
-        <SectionHeader level="sub" title="Colour" kicker="Ten tokens, no more" />
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+        <SectionHeader
+          level="sub"
+          title="Colour"
+          kicker="Twelve tokens · both themes from the same names"
+        />
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
           {TOKENS.map(([token, use]) => (
             <Swatch key={token} token={token} use={use} />
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <SectionHeader
+          level="sub"
+          title="Scale"
+          kicker="Nothing in the app sets a literal font-size"
+        />
+        <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
+          {STEPS.map(([step, use, range]) => (
+            <div
+              key={step}
+              className="flex flex-wrap items-baseline gap-x-[var(--space-sm)] gap-y-1
+                         px-[var(--space-sm)] py-[var(--space-2xs)]
+                         border-b border-[var(--rule)] last:border-b-0"
+            >
+              <span className="ba-mono ba-meta text-[var(--clay)] w-[7ch] shrink-0">{step}</span>
+              <span
+                className="ba-display leading-none min-w-0 truncate"
+                style={{ fontSize: `var(${step})` }}
+              >
+                Aa
+              </span>
+              <span className="ba-label ml-auto">{use}</span>
+              <span className="ba-mono ba-agate text-[var(--mute)] w-[9ch] text-right">{range}px</span>
+            </div>
           ))}
         </div>
       </section>
@@ -189,13 +235,18 @@ export default function SpecimenPage() {
         <SectionHeader
           level="sub"
           title="Density"
-          kicker="One spec, three steps — pages pick a step, never a padding"
+          kicker="One spec, three steps — and a 44px floor on any touch screen"
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <DensityDemo label="Default" cls="" spec="30px row · 13px" />
-          <DensityDemo label=".ba-table-dense" cls="ba-table-dense" spec="26px row · 12.5px" />
-          <DensityDemo label=".ba-table-agate" cls="ba-table-agate" spec="23px row · 12px" />
+          <DensityDemo label="Default" cls="" spec="32 → 30px row" />
+          <DensityDemo label=".ba-table-dense" cls="ba-table-dense" spec="28px row" />
+          <DensityDemo label=".ba-table-agate" cls="ba-table-agate" spec="24px row" />
         </div>
+        <p className="ba-body-sm mt-[var(--space-xs)] max-w-3xl">
+          Every row height is <code className="ba-mono ba-meta">max(--t-touch, n)</code>. On a fine
+          pointer the floor is zero and the numbers above stand; on a touch screen it lifts to 44px,
+          so a table full of player links is tappable without any page knowing about it.
+        </p>
       </section>
 
       <section>

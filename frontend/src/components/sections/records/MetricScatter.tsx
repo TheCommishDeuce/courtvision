@@ -198,14 +198,14 @@ function ChartTooltip({ active, payload }: TooltipProps) {
   return (
     <div className={TOOLTIP_CLASS}>
       <div className="font-semibold text-[var(--ink)]">{p.player_name}</div>
-      <div className="ba-mono text-[10px] text-[var(--mute)] mb-1">
+      <div className="ba-mono ba-agate text-[var(--mute)] mb-1">
         rank #{p.current_rank}
         {p.country ? ` · ${p.country}` : ''}
       </div>
-      <div className="ba-mono text-[11px]">
+      <div className="ba-mono ba-meta">
         {formatMetricValue(p.x_value, p.x_metric ?? '')} {metricLabel(p.x_metric ?? 'x')}
       </div>
-      <div className="ba-mono text-[11px]">
+      <div className="ba-mono ba-meta">
         {formatMetricValue(p.y_value, p.y_metric ?? '')} {metricLabel(p.y_metric ?? 'y')}
       </div>
     </div>
@@ -341,7 +341,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
         kicker="Two player metrics against each other · click a point to name it"
       />
 
-      <div className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5 mb-3">
+      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5 mb-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex flex-col gap-0.5 sm:w-40">
             <span className="ba-label">Cohort</span>
@@ -387,7 +387,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
       ) : (
         <>
           <div className="flex justify-end mb-1"><Legend /></div>
-          <div className="h-[520px] w-full border border-[var(--rule)] border-t-2 border-t-[var(--ink)] bg-[var(--paper-raised)] pt-3 pr-3">
+          <div className="h-[520px] w-full border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] bg-[var(--paper-raised)] pt-3 pr-3">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 18, right: 24, bottom: 42, left: 8 }}>
                 <CartesianGrid {...GRID_PROPS} />
@@ -459,7 +459,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
               {data?.meta.level ? ` · ${data.meta.level}` : ' · all levels'}
               {data?.meta.surface ? ` · ${data.meta.surface}` : ''}
             </span>
-            <span className="ba-mono text-[10px] text-[var(--mute)]">
+            <span className="ba-mono ba-agate text-[var(--mute)]">
               Median {formatMetricValue(medianX, xMetric)} {metricLabel(xMetric)} ·{' '}
               {formatMetricValue(medianY, yMetric)} {metricLabel(yMetric)}
             </span>

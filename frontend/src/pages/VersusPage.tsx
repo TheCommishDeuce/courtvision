@@ -79,8 +79,11 @@ export default function VersusPage() {
 
       {/* Pair picker. Everything below reads from this one block, so the page is
           a single scroll: the rivalry first, then the two careers behind it. */}
-      <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-3 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3 items-end">
+      <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-3 space-y-3">
+        {/* A face-off, not two fields in a row. The "v" is this page's whole
+            identity, so it holds the centre of the picker at every width
+            rather than disappearing below the tablet breakpoint. */}
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-[var(--space-sm)] gap-y-[var(--space-xs)] items-end">
           <PlayerAutocomplete
             label="Player A"
             value={playerA}
@@ -91,7 +94,12 @@ export default function VersusPage() {
             players={players ?? []}
             width="w-full"
           />
-          <span className="ba-h2 text-[var(--clay)] hidden sm:block pb-0.5">v</span>
+          <span
+            aria-hidden="true"
+            className="ba-display text-[length:var(--step-3)] leading-none text-[var(--clay)] pb-0.5 select-none"
+          >
+            v
+          </span>
           <PlayerAutocomplete
             label="Player B"
             value={playerB}
@@ -145,8 +153,8 @@ export default function VersusPage() {
         <>
           {/* A contents line: this page is long by design, so say what's on it. */}
           <nav aria-label="On this page" className="flex gap-4 border-b border-[var(--rule)] pb-1.5">
-            <a href="#h2h" className="ba-label hover:text-[var(--clay)]">Head to head</a>
-            <a href="#careers" className="ba-label hover:text-[var(--clay)]">The two careers</a>
+            <a href="#h2h" className="ba-label ba-touch hover:text-[var(--clay)]">Head to head</a>
+            <a href="#careers" className="ba-label ba-touch hover:text-[var(--clay)]">The two careers</a>
           </nav>
 
           <H2HSection f={filters} />

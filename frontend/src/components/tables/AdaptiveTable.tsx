@@ -110,11 +110,11 @@ export default function AdaptiveTable<T>({
           const isOpen = openKey === key;
           return (
             <article key={key} className={`ba-record-card ${flag?.(row) ? 'flag' : ''}`}>
-              <div className="text-[13.5px] font-semibold text-[var(--ink)] leading-snug">
+              <div className="ba-cell font-semibold text-[var(--ink)] leading-snug">
                 {cardTitle ? cardTitle(row) : columns[0].cell(row, offset + i)}
               </div>
               {cardMeta && (
-                <div className="ba-mono text-[10.5px] text-[var(--mute)] mt-0.5 mb-1.5">
+                <div className="ba-mono ba-meta text-[var(--mute)] mt-0.5 mb-1.5">
                   {cardMeta(row)}
                 </div>
               )}
@@ -132,7 +132,7 @@ export default function AdaptiveTable<T>({
                     type="button"
                     onClick={() => setOpenKey(isOpen ? null : key)}
                     aria-expanded={isOpen}
-                    className="ba-label mt-1.5 hover:text-[var(--clay)]"
+                    className="ba-label ba-touch mt-1.5 hover:text-[var(--clay)]"
                   >
                     {isOpen ? 'Hide match stats' : 'Show match stats'}
                   </button>
@@ -146,7 +146,7 @@ export default function AdaptiveTable<T>({
 
       {/* Table — wide viewports */}
       <div className={bp.table}>
-        <div className="ba-scroller border border-[var(--rule)] border-t-2 border-t-[var(--ink)]">
+        <div className="ba-scroller border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
           <table
             className={`ba-table ${DENSITY_CLASS[density]} ${pinFirst ? 'ba-table-pinned' : ''}`}
           >
@@ -191,7 +191,7 @@ export default function AdaptiveTable<T>({
                       {columns.map((c, ci) => (
                         <td key={c.key} className={`${c.num ? 'num' : ''} ${c.className ?? ''}`}>
                           {expand && ci === 0 && (
-                            <span className="ba-mono text-[9px] text-[var(--mute)] mr-1">
+                            <span className="ba-mono ba-agate text-[var(--mute)] mr-1">
                               {isOpen ? '▾' : '▸'}
                             </span>
                           )}
@@ -224,7 +224,7 @@ export default function AdaptiveTable<T>({
           >
             ← Prev
           </button>
-          <span className="ba-mono text-[10.5px] text-[var(--mute)]">
+          <span className="ba-mono ba-meta text-[var(--mute)]">
             Page {safePage + 1} / {pages} · {rows.length.toLocaleString()} {unit}
           </span>
           <button

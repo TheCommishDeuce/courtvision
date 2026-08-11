@@ -28,7 +28,7 @@ export default function SortHeader({ label, colKey, sort }: Props) {
       }`}
     >
       {label}
-      {active && <span className="text-[8px]">{sort.sortDir === 'desc' ? '▼' : '▲'}</span>}
+      {active && <span className="ba-agate">{sort.sortDir === 'desc' ? '▼' : '▲'}</span>}
     </button>
   );
 }

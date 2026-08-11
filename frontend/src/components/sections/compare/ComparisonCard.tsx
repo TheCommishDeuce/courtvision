@@ -16,7 +16,7 @@ export default function ComparisonCard({
   return (
     <div className="ba-card p-0 overflow-hidden">
       {title && (
-        <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--ink)]">
+        <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--rule-ink)]">
           <h3 className="ba-board-title">{title}</h3>
         </div>
       )}

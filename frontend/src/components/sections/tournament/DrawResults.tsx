@@ -29,7 +29,7 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
             {m.winner_name}
           </Link>
           {m.winner_rank && (
-            <span className="ba-mono text-[10px] text-[var(--mute)] ml-1.5">#{m.winner_rank}</span>
+            <span className="ba-mono ba-agate text-[var(--mute)] ml-1.5">#{m.winner_rank}</span>
           )}
         </span>
       ),
@@ -47,7 +47,7 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
             {m.loser_name}
           </Link>
           {m.loser_rank && (
-            <span className="ba-mono text-[10px] text-[var(--mute)] ml-1.5">#{m.loser_rank}</span>
+            <span className="ba-mono ba-agate text-[var(--mute)] ml-1.5">#{m.loser_rank}</span>
           )}
         </span>
       ),
@@ -55,7 +55,7 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
     {
       key: 'score',
       header: 'Score',
-      cell: m => <span className="ba-mono text-[11px] whitespace-nowrap">{m.score}</span>,
+      cell: m => <span className="ba-mono ba-meta whitespace-nowrap">{m.score}</span>,
     },
     {
       key: 'time',
@@ -86,7 +86,7 @@ export default function DrawResults({
     <div className="space-y-3">
       {rounds.map(({ round, matches }) => (
         <div key={round}>
-          <h3 className="ba-eyebrow border-b border-[var(--ink)] pb-1 mb-1.5">
+          <h3 className="ba-eyebrow border-b border-[var(--rule-ink)] pb-1 mb-1.5">
             {ROUND_LABEL[round] ?? round}
             <span className="text-[var(--mute)] ml-2">
               {matches.length} {matches.length === 1 ? 'match' : 'matches'}

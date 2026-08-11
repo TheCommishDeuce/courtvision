@@ -48,13 +48,13 @@ export function PlayerHeader({
         )}
       </h1>
       {submitted && summary && (summary.country || facts.length > 0) && (
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 ba-mono text-[11.5px] text-[var(--ink-2)]">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 ba-mono ba-meta text-[var(--ink-2)]">
           {summary.country && (
             <span className="font-bold text-[var(--ink)]">{countryDisplay(summary.country)}</span>
           )}
           {facts.map(fact => (
             <span key={fact} className="flex items-center gap-2.5">
-              <span className="text-[var(--rule-mid)]">·</span>
+              <span aria-hidden="true" className="text-[var(--rule-mid)]">·</span>
               {fact}
             </span>
           ))}

@@ -37,7 +37,7 @@ export function PlayerFilterPanel({
   onSubmit: () => void;
 }) {
   return (
-    <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+    <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
       <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
         <PlayerAutocomplete
           label="Player"

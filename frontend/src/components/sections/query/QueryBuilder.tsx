@@ -28,7 +28,7 @@ function FilterControl({
 }) {
   if (def.kind === 'bool') {
     return (
-      <label className="flex items-center gap-1.5 pb-1.5">
+      <label className="ba-touch flex items-center gap-1.5 pb-1.5">
         <input
           type="checkbox"
           checked={Boolean(value?.on)}
@@ -73,25 +73,27 @@ function FilterControl({
 
   // yearRange and numberRange share one two-input control.
   return (
-    <div className="flex flex-col gap-0.5">
+    // The two fields share whatever the grid cell gives them rather than each
+    // demanding 5.5rem, which together with the "to" overran a 375px column.
+    <div className="flex flex-col gap-0.5 min-w-0">
       <span className="ba-label">{def.label}</span>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 min-w-0">
         <input
           value={value?.min ?? ''}
           onChange={e => onChange({ ...value, min: e.target.value })}
           placeholder="min"
           inputMode="numeric"
           aria-label={`${def.label} minimum`}
-          className="ba-input w-[5.5rem]"
+          className="ba-input flex-1 min-w-0"
         />
-        <span className="ba-mono text-[10px] text-[var(--mute)]">to</span>
+        <span className="ba-mono ba-agate text-[var(--mute)] shrink-0">to</span>
         <input
           value={value?.max ?? ''}
           onChange={e => onChange({ ...value, max: e.target.value })}
           placeholder="max"
           inputMode="numeric"
           aria-label={`${def.label} maximum`}
-          className="ba-input w-[5.5rem]"
+          className="ba-input flex-1 min-w-0"
         />
       </div>
     </div>
@@ -187,7 +189,7 @@ export default function QueryBuilder() {
         cell: (row: Row) => {
           const v = row[i];
           if (v === null) return <span className="text-[var(--rule-mid)]">null</span>;
-          if (typeof v === 'boolean') return <span className="ba-mono text-[11px]">{String(v)}</span>;
+          if (typeof v === 'boolean') return <span className="ba-mono ba-meta">{String(v)}</span>;
           if (typeof v === 'number') return <span className="ba-mono">{v.toLocaleString()}</span>;
           return <span className="whitespace-nowrap">{v}</span>;
         },
@@ -201,7 +203,7 @@ export default function QueryBuilder() {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_18rem] gap-4 items-start">
       <div className="space-y-4 min-w-0">
         {/* Relation */}
-        <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+        <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
           <div className="ba-label mb-1.5">Table</div>
           <div className="flex flex-wrap gap-1.5">
             {RELATIONS.map(r => (
@@ -244,7 +246,7 @@ export default function QueryBuilder() {
                   type="button"
                   onClick={() => setColumns(prev => prev.filter(x => x !== c))}
                   title={`Remove ${c}`}
-                  className="ba-mono text-[10.5px] px-1.5 py-[2px] border border-[var(--ink)]
+                  className="ba-touch ba-mono ba-meta px-1.5 py-[2px] border border-[var(--rule-ink)]
                              bg-[var(--paper-raised)] hover:border-[var(--clay)] hover:text-[var(--clay-deep)]"
                 >
                   {c} <span className="text-[var(--mute)]">×</span>
@@ -255,7 +257,7 @@ export default function QueryBuilder() {
                 <button
                   type="button"
                   onClick={() => setColumns([])}
-                  className="ba-mono text-[10px] text-[var(--mute)] hover:text-[var(--clay)] ml-1"
+                  className="ba-touch ba-mono ba-agate text-[var(--mute)] hover:text-[var(--clay)] ml-1"
                 >
                   clear
                 </button>
@@ -325,7 +327,7 @@ export default function QueryBuilder() {
             spellCheck={false}
             rows={Math.min(16, Math.max(7, sql.split('\n').length + 1))}
             aria-label="SQL query"
-            className="ba-input w-full ba-mono text-[12.5px] leading-relaxed resize-y"
+            className="ba-input w-full ba-mono ba-cell leading-relaxed resize-y"
           />
           {driftsFromFilters && (
             <p className="ba-kicker mt-1">
@@ -364,7 +366,7 @@ export default function QueryBuilder() {
           {error && (
             <div className="ba-card-flat border-t-2 border-t-[var(--clay)] px-3 py-2.5">
               <div className="ba-eyebrow mb-1">Query error</div>
-              <pre className="ba-mono text-[12px] text-[var(--ink)] whitespace-pre-wrap">{error}</pre>
+              <pre className="ba-mono ba-meta text-[var(--ink)] whitespace-pre-wrap">{error}</pre>
             </div>
           )}
 
@@ -404,7 +406,7 @@ export default function QueryBuilder() {
       </div>
 
       {/* Schema reference — the sidebar doubles as the column picker. */}
-      <div className="lg:sticky lg:top-3">
+      <div className="ba-sticky-rail">
         <SchemaReference schema={schema} activeRelation={relationName} onPickColumn={addColumn} />
       </div>
     </div>

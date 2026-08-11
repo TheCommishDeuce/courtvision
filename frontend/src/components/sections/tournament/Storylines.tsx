@@ -18,7 +18,7 @@ function Panel({
 }) {
   return (
     <div className="ba-card p-0 overflow-hidden">
-      <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--ink)]">
+      <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--rule-ink)]">
         <h3 className={`ba-board-title ${accent ? 'text-[var(--clay)]' : ''}`}>{title}</h3>
       </div>
       <div className="ba-scroller">
@@ -72,9 +72,9 @@ export default function Storylines({
           <Panel title="Longest matches" headers={['Rnd', 'Winner', 'Beat', 'Time']}>
             {recap.longest_matches.slice(0, 5).map((r, i) => (
               <tr key={i}>
-                <td className="ba-mono text-[10px] text-[var(--mute)]">{r.round as string}</td>
-                <td className="text-[11.5px]">{playerLink(r.winner_name as string, tour, WINNER_CLASS)}</td>
-                <td className="text-[11.5px]">{playerLink(r.loser_name as string, tour, LOSER_CLASS)}</td>
+                <td className="ba-mono ba-agate text-[var(--mute)]">{r.round as string}</td>
+                <td className="ba-meta">{playerLink(r.winner_name as string, tour, WINNER_CLASS)}</td>
+                <td className="ba-meta">{playerLink(r.loser_name as string, tour, LOSER_CLASS)}</td>
                 <td className="num font-semibold text-[var(--clay)] whitespace-nowrap">
                   {fmtTime(r.time as number)}
                 </td>
@@ -87,17 +87,17 @@ export default function Storylines({
           <Panel title="Biggest upsets" headers={['Rnd', 'Winner', 'Beat', 'Δ']} accent>
             {recap.biggest_upsets.slice(0, 5).map((r, i) => (
               <tr key={i}>
-                <td className="ba-mono text-[10px] text-[var(--mute)]">{r.round as string}</td>
-                <td className="text-[11.5px] whitespace-nowrap">
+                <td className="ba-mono ba-agate text-[var(--mute)]">{r.round as string}</td>
+                <td className="ba-meta whitespace-nowrap">
                   {playerLink(r.winner_name as string, tour, WINNER_CLASS)}
                   {r.winner_rank ? (
-                    <span className="ba-mono text-[9.5px] text-[var(--mute)] ml-1">#{r.winner_rank as number}</span>
+                    <span className="ba-mono ba-agate text-[var(--mute)] ml-1">#{r.winner_rank as number}</span>
                   ) : null}
                 </td>
-                <td className="text-[11.5px] whitespace-nowrap">
+                <td className="ba-meta whitespace-nowrap">
                   {playerLink(r.loser_name as string, tour, LOSER_CLASS)}
                   {r.loser_rank ? (
-                    <span className="ba-mono text-[9.5px] text-[var(--mute)] ml-1">#{r.loser_rank as number}</span>
+                    <span className="ba-mono ba-agate text-[var(--mute)] ml-1">#{r.loser_rank as number}</span>
                   ) : null}
                 </td>
                 <td className="num font-bold text-[var(--clay)]">
@@ -112,7 +112,7 @@ export default function Storylines({
           <Panel title="Toughest draws" headers={['Player', 'M', 'Avg opp.', 'Best']}>
             {draws.slice(0, 5).map((r, i) => (
               <tr key={i}>
-                <td className="text-[11.5px]">{playerLink(r.player_name, tour, WINNER_CLASS)}</td>
+                <td className="ba-meta">{playerLink(r.player_name, tour, WINNER_CLASS)}</td>
                 <td className="num text-[var(--mute)]">{r.matches_played}</td>
                 <td className="num font-bold text-[var(--clay)] whitespace-nowrap">#{r.avg_opp_rank}</td>
                 <td className="num text-[var(--ink-2)] whitespace-nowrap">#{r.best_opp_rank}</td>

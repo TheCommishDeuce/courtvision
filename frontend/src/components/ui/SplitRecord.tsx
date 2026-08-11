@@ -5,11 +5,12 @@ interface Props {
   align?: 'left' | 'right' | 'center';
 }
 
+/** Steps off the shared ramp, so a record scales with everything else. */
 const SIZE_MAP = {
-  sm: 'text-[17px]',
-  md: 'text-[26px]',
-  lg: 'text-[40px]',
-  xl: 'text-[58px]',
+  sm: 'text-[length:var(--step-2)]',
+  md: 'text-[length:var(--step-3)]',
+  lg: 'text-[length:var(--step-4)]',
+  xl: 'text-[length:var(--step-5)]',
 };
 
 /**
@@ -24,7 +25,9 @@ export default function SplitRecord({ wins, losses, size = 'md', align = 'left' 
   return (
     <div className={`inline-flex items-baseline leading-none ${justify}`}>
       <span className={`ba-stat ${cls} text-[var(--clay)]`}>{wins}</span>
-      <span className={`ba-stat ${cls} text-[var(--rule-mid)] px-[0.1em]`}>&ndash;</span>
+      {/* --mute, not --rule-mid: the dash is part of the record being read,
+          not a hairline, and at rule weight it vanished against the card. */}
+      <span className={`ba-stat ${cls} text-[var(--mute)] px-[0.1em]`}>&ndash;</span>
       <span className={`ba-stat ${cls} text-[var(--ink-2)]`}>{losses}</span>
     </div>
   );

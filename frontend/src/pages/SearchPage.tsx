@@ -56,11 +56,7 @@ export default function SearchPage() {
                 update({ tab: t.id });
               }}
               aria-current={isActive ? 'page' : undefined}
-              className={`px-3 py-1.5 -mb-px border-b-2 ba-mono text-[11px] font-bold tracking-[0.12em] uppercase transition-colors ${
-                isActive
-                  ? 'border-[var(--clay)] text-[var(--ink)]'
-                  : 'border-transparent text-[var(--mute)] hover:text-[var(--ink)]'
-              }`}
+              className={`ba-tab ${isActive ? 'is-active' : ''}`}
             >
               {t.label}
             </button>
@@ -72,7 +68,7 @@ export default function SearchPage() {
 
       {tab === 'cohort' && (
         <div className="space-y-4">
-          <section className="ba-well border-t-2 border-t-[var(--ink)] px-3 py-2.5">
+          <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
             <TourToggle
               value={tour}
               onChange={v => {

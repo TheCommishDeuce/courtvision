@@ -65,7 +65,9 @@ function BoardSection({
       <SectionHeader level="sub" title={title} kicker={kicker} />
       {/* Fixed-height boards in a fixed-column grid: changing a filter swaps the
           names inside the boxes and never moves the boxes. */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+      {/* A results column is narrow by nature, so the widest canvas takes a
+          fifth board rather than stretching four. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[var(--space-xs)]">
         {boards.map(b => {
           const src = sources[b.source];
           return (

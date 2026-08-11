@@ -190,11 +190,11 @@ export default function RelationalSearch({ tour }: Props) {
   return (
     <section className="ba-card space-y-5">
       <div className="border-b border-[var(--rule)] pb-2">
-        <div className="ba-kicker text-[10px] mb-1">Player · vs · Cohort</div>
+        <div className="ba-kicker text-[length:var(--step--2)] mb-1">Player · vs · Cohort</div>
         <h2 className="ba-h2">
           Matches <span className="text-[var(--clay)]">Against…</span>
         </h2>
-        <p className="text-[13px] text-[var(--mute)] mt-1">
+        <p className="ba-cell text-[var(--mute)] mt-1">
           Pick a player, then filter their matches by opponent traits — left-handers, compatriots, top-ranked, or younger/older opponents.
         </p>
       </div>
@@ -241,7 +241,7 @@ export default function RelationalSearch({ tour }: Props) {
           Find Matches →
         </button>
         {needsPlayer && !player && (
-          <span className="text-[12px] text-[var(--clay-deep)]">
+          <span className="ba-meta text-[var(--clay-deep)]">
             Compatriot / younger-older filters need a player selected.
           </span>
         )}
@@ -257,14 +257,14 @@ export default function RelationalSearch({ tour }: Props) {
       {submitted && valid && data && data.matches.length > 0 && (
         <div className="space-y-4">
           <SummaryCards s={data.summary} />
-          <div className="ba-kicker text-[10px]">
+          <div className="ba-kicker text-[length:var(--step--2)]">
             {data.total.toLocaleString()} match{data.total !== 1 ? 'es' : ''}
             {data.shown < data.total ? ` · showing latest ${data.shown}` : ''} · tap a row for full match stats
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-[13px] border-collapse">
+            <table className="w-full ba-cell border-collapse">
               <thead>
-                <tr className="border-b border-[var(--rule)] text-left ba-mono text-[10px] uppercase tracking-[0.08em] text-[var(--mute)]">
+                <tr className="border-b border-[var(--rule)] text-left ba-mono ba-agate uppercase tracking-[0.08em] text-[var(--mute)]">
                   <th className="py-1.5 pr-3">Date</th>
                   <th className="py-1.5 pr-3">Tournament</th>
                   <th className="py-1.5 pr-3">Rd</th>
@@ -289,26 +289,26 @@ export default function RelationalSearch({ tour }: Props) {
                         onClick={() => setExpandedIdx(isOpen ? null : i)}
                         aria-expanded={isOpen}
                       >
-                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono text-[11px]">
+                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono ba-meta">
                           <span className="text-[var(--mute)] mr-1">{isOpen ? '▾' : '▸'}</span>{m.date?.slice(0, 10)}
                         </td>
                         <td className="py-1.5 pr-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
                           <Link to={`/tournament?t=${encodeURIComponent(m.tournament)}&year=${m.date?.slice(0, 4)}&tour=${m.tour}`} className="ba-link font-medium">{m.tournament}</Link>
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.round}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.round}</td>
                         <td className={`py-1.5 pr-3 font-bold ${m.result === 'W' ? 'text-[var(--clay-deep)]' : 'text-[var(--mute)]'}`}>
-                          {m.result}{m.is_retirement && <span className="ba-mono text-[9px] text-[var(--mute)] ml-0.5">r</span>}
+                          {m.result}{m.is_retirement && <span className="ba-mono ba-agate text-[var(--mute)] ml-0.5">r</span>}
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.player_age ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.player_rank ?? '—'}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.player_age ?? '—'}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.player_rank ?? '—'}</td>
                         <td className="py-1.5 pr-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
                           <Link to={`/player?p=${encodeURIComponent(m.opponent_name)}&tour=${m.tour}`} className="ba-link font-medium">{m.opponent_name}</Link>
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.opp_hand ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.opp_country ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.opp_age ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono text-[11px]">{m.opponent_rank ?? '—'}</td>
-                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono text-[11px]">
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_hand ?? '—'}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_country ?? '—'}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_age ?? '—'}</td>
+                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opponent_rank ?? '—'}</td>
+                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono ba-meta">
                           {m.score}{m.time ? <span className="text-[var(--mute)] ml-1">· {fmtTime(m.time)}</span> : null}
                         </td>
                       </tr>

@@ -17,7 +17,7 @@ export default function StatRow({
       }`}
     >
       <span className="ba-label">{label}</span>
-      <span className="ba-figure text-[14px] text-right">{value}</span>
+      <span className="ba-figure text-[length:var(--step-0)] text-right">{value}</span>
     </div>
   );
 }

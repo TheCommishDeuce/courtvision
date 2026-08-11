@@ -28,9 +28,9 @@ function RedirectTo({ to }: { to: string }) {
 function Footer() {
   const { data: stats } = useMetaStats();
   return (
-    <footer className="border-t border-[var(--ink)] bg-[var(--paper)] mt-10">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <p className="text-[12.5px] text-[var(--ink-2)] max-w-2xl">
+    <footer className="border-t border-[var(--rule-ink)] bg-[var(--paper)] mt-[var(--space-xl)]">
+      <div className="ba-canvas py-[var(--space-sm)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <p className="ba-cell text-[var(--ink-2)] max-w-2xl">
           Match data from{' '}
           <a href="https://www.tennisabstract.com" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
             Tennis Abstract
@@ -64,9 +64,9 @@ function NotFound() {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[var(--paper)] flex flex-col text-[var(--ink)]">
+    <div className="min-h-dvh bg-[var(--paper)] flex flex-col text-[var(--ink)]">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 py-6 w-full flex-1">
+      <main className="ba-canvas py-[var(--space-md)] w-full flex-1">
         <ErrorBoundary>
           <Suspense fallback={<Spinner />}>
             <Routes>

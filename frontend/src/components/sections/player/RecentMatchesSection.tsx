@@ -40,7 +40,7 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       header: 'Date',
       hideOnCard: true,
       cell: m => (
-        <span className="ba-mono text-[11px] text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
           {m.date?.slice(0, 10)}
         </span>
       ),
@@ -69,17 +69,17 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       key: 'level_name',
       header: 'Level',
       hideOnCard: true,
-      cell: m => <span className="text-[12px] text-[var(--ink-2)]">{m.level_name}</span>,
+      cell: m => <span className="ba-meta text-[var(--ink-2)]">{m.level_name}</span>,
     },
     {
       key: 'round',
       header: 'Rnd',
-      cell: m => <span className="ba-mono text-[11px] text-[var(--ink-2)]">{m.round}</span>,
+      cell: m => <span className="ba-mono ba-meta text-[var(--ink-2)]">{m.round}</span>,
     },
     {
       key: 'score',
       header: 'Score',
-      cell: m => <span className="ba-mono text-[11px] whitespace-nowrap">{m.score}</span>,
+      cell: m => <span className="ba-mono ba-meta whitespace-nowrap">{m.score}</span>,
     },
   ];
 
@@ -127,36 +127,51 @@ export function RecentMatchesSection({
       {/* One row per tournament run, opening to that run's matches. Rendered as
           a list of disclosures rather than nested tables, so it works at any
           width without a table inside a table inside a scroller. */}
-      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--ink)] divide-y divide-[var(--rule)]">
+      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] divide-y divide-[var(--rule)]">
         {groups.map(group => {
           const isOpen = openKey === group.key;
+          const panelId = `run-${group.key.replace(/[^a-zA-Z0-9]+/g, '-')}`;
+          const count = group.matches.length;
           return (
             <div key={group.key}>
-              <button
-                type="button"
-                onClick={() => setOpenKey(isOpen ? null : group.key)}
-                aria-expanded={isOpen}
-                className={`w-full flex flex-wrap items-baseline gap-x-3 gap-y-1 px-2.5 py-1.5 text-left transition-colors ${
-                  isOpen ? 'bg-[var(--clay-wash)]' : 'hover:bg-[var(--paper-sunken)]'
+              {/* Two distinct destinations on one row, so neither is a guess:
+                  the event name goes to that event's own page, and the count
+                  chip opens this player's run inside it. A row-wide button
+                  cannot hold a link — nesting one inside the other is invalid —
+                  so the row is a plain flex container and each affordance is
+                  its own control. */}
+              <div
+                className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 px-2.5 py-1 ${
+                  isOpen ? 'bg-[var(--clay-wash)]' : ''
                 }`}
               >
-                <span className="ba-mono text-[9px] text-[var(--mute)] w-2">
-                  {isOpen ? '▾' : '▸'}
-                </span>
-                <span className="text-[13px] font-semibold text-[var(--ink)]">
+                <Link
+                  to={`/tournament?t=${encodeURIComponent(group.tournament)}&year=${group.year}&tour=${tour}`}
+                  className="ba-touch ba-link-quiet ba-cell font-semibold"
+                >
                   {group.tournament}
-                </span>
-                <span className="ba-mono text-[11px] text-[var(--mute)]">{group.year}</span>
-                <span className="ba-mono text-[11px] font-bold text-[var(--clay)]">
+                </Link>
+                <span className="ba-mono ba-meta text-[var(--mute)]">{group.year}</span>
+                <span className="ba-mono ba-meta font-bold text-[var(--clay)]">
                   {group.result}
                 </span>
-                <span className="ba-mono text-[10.5px] text-[var(--mute)] ml-auto">
+                <span className="ba-mono ba-meta text-[var(--mute)] ml-auto">
                   {group.week}
                 </span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setOpenKey(isOpen ? null : group.key)}
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  className={`ba-chip ba-touch ${isOpen ? 'ba-chip-active' : ''}`}
+                >
+                  {count} {count === 1 ? 'match' : 'matches'}
+                  <span aria-hidden="true">{isOpen ? '▴' : '▾'}</span>
+                </button>
+              </div>
 
               {isOpen && (
-                <div className="px-2.5 pb-2.5 pt-1 bg-[var(--paper-sunken)]">
+                <div id={panelId} className="px-2.5 pb-2.5 pt-1 bg-[var(--paper-sunken)]">
                   <TournamentMatches matches={group.matches} tour={tour} />
                 </div>
               )}
@@ -166,7 +181,7 @@ export function RecentMatchesSection({
       </div>
 
       <p className="ba-kicker mt-1.5">
-        Open a tournament for its matches, then a match for its point stats. Clay tick marks a win.
+        The event name opens that tournament; the match count opens this run. Clay tick marks a win.
       </p>
     </section>
   );

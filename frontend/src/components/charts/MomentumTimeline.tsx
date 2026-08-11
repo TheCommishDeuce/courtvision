@@ -79,7 +79,7 @@ export default function MomentumTimeline({
     <div>
       <div className="flex items-center justify-between mb-2">
         <h3 className="ba-h3">Rivalry momentum</h3>
-        <div className="flex gap-4 ba-mono text-[10.5px] uppercase tracking-[0.08em]">
+        <div className="flex gap-4 ba-mono ba-meta uppercase tracking-[0.08em]">
           <span style={{ color: colorA }}>▲ {nameA} leads</span>
           <span style={{ color: colorB }}>▼ {nameB} leads</span>
         </div>
