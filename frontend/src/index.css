@@ -1222,29 +1222,11 @@ a.ba-board-row:hover,
 .ba-reveal-delay-2  { animation-delay: 140ms; }
 .ba-reveal-delay-3  { animation-delay: 210ms; }
 
-/* Scroll-driven reveal for a run of blocks. Each child is timed off
-   its own position in the viewport, so the stagger falls out of the
-   layout for free — no delay chain to keep in sync with the markup,
-   and no JS. Browsers without view() timelines simply show the
-   content, which is the correct fallback. */
-@supports (animation-timeline: view()) {
-  @media screen and (prefers-reduced-motion: no-preference) {
-    .ba-rise > * {
-      animation: ba-reveal linear both;
-      animation-timeline: view();
-      /* Completes inside the entry range, so a block is fully opaque as soon
-         as it is a quarter of the way into view rather than tracking the
-         scroll all the way up the page. */
-      animation-range: entry 2% entry 55%;
-    }
-  }
-}
-
-/* A reveal that has not fired yet is transparent, which on paper means a
-   blank sheet. Printing never scrolls, so it never fires. */
-@media print {
-  .ba-rise > * { animation: none; opacity: 1; }
-}
+/* There is deliberately no scroll-driven reveal. A `.ba-rise` utility used to
+   fade each top-level block in as it entered the viewport, but it ran on the
+   home page alone — so the one page a reader arrives on behaved unlike every
+   other page in the app, and content below the fold started out invisible.
+   Entry animation is per-component and on mount only: see `.ba-reveal`. */
 
 /* Loading sweep — a rule filling, not a ring spinning. */
 @keyframes ba-sweep {
@@ -1270,8 +1252,6 @@ a.ba-board-row:hover,
 
 @media (prefers-reduced-motion: reduce) {
   .ba-reveal { animation: none; }
-
-  .ba-rise > * { animation: none; }
 
   .ba-sweep-bar {
     animation: none;

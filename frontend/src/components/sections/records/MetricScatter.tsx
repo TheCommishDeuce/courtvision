@@ -363,18 +363,20 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
 
       {!submitted ? (
         <EmptyState
+          eyebrow="Start here"
           title="Choose two metrics"
           message="Pick a cohort and the two axes above, then select Draw chart."
         />
       ) : stale ? (
         <EmptyState
+          eyebrow="Out of date"
           title="Selection changed"
           message="Select Draw chart to plot the new cohort or metrics."
         />
       ) : isError ? (
         <QueryError
           title="The scatter did not load"
-          message="The request failed. Retry, or pick a smaller cohort."
+          message="Retry, or pick a smaller cohort."
           onRetry={() => refetch()}
         />
       ) : isFetching && points.length === 0 ? (

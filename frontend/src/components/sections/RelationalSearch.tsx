@@ -190,7 +190,8 @@ export default function RelationalSearch({ tour }: Props) {
   return (
     <section className="ba-card space-y-5">
       <div className="border-b border-[var(--rule)] pb-2">
-        <div className="ba-kicker text-[length:var(--step--2)] mb-1">Player · vs · Cohort</div>
+        {/* No kicker here: the tab is already labelled "Player vs cohort" and
+            the page header carries its description. */}
         <h2 className="ba-h2">
           Matches <span className="text-[var(--clay)]">Against…</span>
         </h2>
@@ -249,7 +250,7 @@ export default function RelationalSearch({ tour }: Props) {
 
       {submitted && valid && isFetching && <div className="py-8 flex justify-center"><Spinner /></div>}
       {submitted && valid && error && (
-        <QueryError message="Could not load matches for these filters." onRetry={() => refetch()} />
+        <QueryError message="Retry, or widen the opponent filters." onRetry={() => refetch()} />
       )}
       {submitted && valid && !isFetching && data && data.total === 0 && (
         <EmptyState message="No matches found for the selected opponent filters." />

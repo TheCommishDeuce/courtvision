@@ -146,7 +146,7 @@ function FocusedBoard({
       {source.isError ? (
         <QueryError
           title="This leaderboard did not load"
-          message="The request failed. Retry, or widen the filters."
+          message="Retry, or widen the filters."
           onRetry={source.refetch}
         />
       ) : source.isFetching && source.rows.length === 0 ? (

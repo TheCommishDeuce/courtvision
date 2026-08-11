@@ -136,12 +136,13 @@ export default function PlayerPage() {
       {!isLoading && (errorSummary || errorMatches) && (
         <QueryError
           title="This profile did not load"
-          message="The request failed. Retry, or check the player's name."
+          message="Retry, or check the player's name."
           onRetry={() => { if (errorSummary) refetchSummary(); if (errorMatches) refetchMatches(); }}
         />
       )}
       {!isLoading && !submitted && (
         <EmptyState
+          eyebrow="Start here"
           title="Pick a player"
           message="Type a name above and select Load profile to see their career, form, serve and return."
         />

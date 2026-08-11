@@ -74,7 +74,7 @@ export default function VersusPage() {
         level="page"
         eyebrow="Versus"
         title="Two players, end to end"
-        kicker={filters.enabled ? summary : 'Pick two players'}
+        kicker={filters.enabled ? summary : 'No pair selected'}
       />
 
       {/* Pair picker. Everything below reads from this one block, so the page is
@@ -146,8 +146,9 @@ export default function VersusPage() {
 
       {!filters.enabled ? (
         <EmptyState
+          eyebrow="Start here"
           title="Pick two players"
-          message="Choose a name in each field, then select Show the rivalry. You'll get their head-to-head record and match list, with both full careers below it."
+          message="Choose a name in each field, then select Show the rivalry — you'll get their head-to-head and both careers."
         />
       ) : (
         <>

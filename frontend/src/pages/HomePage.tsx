@@ -16,7 +16,7 @@ import type { RecentChampion, RecentUpset } from '../types/tennis';
  * The counts that prove the claim in the lede, set as a hairline strip
  * directly under it — a broadsheet dateline carrying figures.
  */
-function Ledger() {
+function Ledger({ className = '' }: { className?: string }) {
   const { data: stats } = useMetaStats();
   const fmt = (n?: number) => (n != null ? n.toLocaleString() : '—');
 
@@ -30,8 +30,8 @@ function Ledger() {
   return (
     // gap-px over a rule-coloured ground: the gaps *are* the hairlines, so the
     // grid rules itself correctly at every wrap point.
-    <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rule)]
-                   border-t-2 border-[var(--rule-ink)] border-b border-[var(--rule)]">
+    <dl className={`grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rule)]
+                   border-t-2 border-[var(--rule-ink)] border-b border-[var(--rule)] ${className}`}>
       {cells.map(c => (
         <div key={c.label} className="bg-[var(--paper)] px-[var(--space-sm)] py-[var(--space-xs)]">
           <dt className="ba-label mb-1">{c.label}</dt>
@@ -146,7 +146,7 @@ function UpsetsColumn({ tour, label }: { tour: string; label: string }) {
       ) : isError ? (
         <QueryError
           title="Upsets did not load"
-          message="The recent-upsets request failed."
+          message="Retry, or open the full upsets table."
           onRetry={() => refetch()}
         />
       ) : (
@@ -176,7 +176,11 @@ function StorylinesRow() {
 
   return (
     <section>
-      <SectionHeader title="Data stories" kicker="Found in this week's data" />
+      {/* These are this season's tour-level leaders, drawn at random from the
+          Records boards — not, as the old header claimed, stories found in the
+          week's data. The qualifier is stated once here so the four cards
+          below don't each have to repeat it. */}
+      <SectionHeader title="Leading this season" kicker="Tour-level events · a different four each visit" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[var(--space-xs)]">
         {storylines.slice(0, 4).map((s, i) => (
           <Link
@@ -190,8 +194,10 @@ function StorylinesRow() {
               <span className="ba-eyebrow">{s.label ?? s.type.replace(/_/g, ' ')}</span>
               <span className="ba-stat-sm text-[var(--ink)]">{s.value}</span>
             </div>
+            {/* `detail` is deliberately not rendered: every one of them restates
+                the headline and re-appends "this season", which the section
+                kicker now says once. */}
             <div className="ba-h3">{s.headline}</div>
-            <p className="ba-cell leading-snug text-[var(--ink-2)] mt-0.5">{s.detail}</p>
           </Link>
         ))}
       </div>
@@ -248,7 +254,7 @@ function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
       ) : isError ? (
         <QueryError
           title="Champions did not load"
-          message="The recent-champions request failed."
+          message="Retry, or browse events by name."
           onRetry={() => refetch()}
         />
       ) : (
@@ -269,22 +275,22 @@ function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
 }
 
 export default function HomePage() {
-  const { data: stats } = useMetaStats();
-  const era = stats ? `${stats.year_min} to ${stats.year_max}` : 'the open era to today';
-
+  // Default flow, not `ba-flow-loose`. At `--space-xl` this was the only page
+  // in the app spacing its blocks at ~60px while every other page ran at 20,
+  // which read as emptiness rather than as air.
   return (
-    <div className="ba-flow ba-flow-loose ba-rise">
-      {/* Lede — what this is, in one sentence, over the counts that prove it. */}
+    <div className="ba-flow">
+      {/* Lede — the claim, and directly beneath it the counts that prove it.
+          The two are one block: separated by a full flow step, the ledger
+          stopped reading as evidence for the headline above it. */}
       <section>
-        <div className="ba-eyebrow mb-2">ATP + WTA match archive</div>
-        <h1 className="ba-display max-w-4xl">Every match on record, both tours.</h1>
-        <p className="ba-body mt-[var(--space-sm)] max-w-2xl">
-          Rivalries, careers, upsets, and every serve held or broken — indexed from {era},
-          filterable down to a single match, and exportable.
+        <h1 className="ba-display max-w-4xl">Every match on record.</h1>
+        <p className="ba-body mt-[var(--space-xs)] max-w-3xl">
+          Rivalries, careers, and upsets — filter down to a single match, or
+          query the tables yourself.
         </p>
+        <Ledger className="mt-[var(--space-sm)]" />
       </section>
-
-      <Ledger />
 
       <StorylinesRow />
 
@@ -294,16 +300,17 @@ export default function HomePage() {
           table with an afterthought beside it. */}
       <div className="ba-spread ba-spread-even">
         <section>
-          <SectionHeader title="Latest champions" kicker="Most recent finals on record" />
-          <div className="ba-flow">
+          <SectionHeader title="Latest champions" kicker="Most recent finals" />
+          {/* The two tours are a pair under one header, not two sections. */}
+          <div className="ba-flow ba-flow-tight">
             <ChampionsColumn tour="M" label="ATP" />
             <ChampionsColumn tour="F" label="WTA" />
           </div>
         </section>
 
         <section>
-          <SectionHeader title="Biggest recent upsets" kicker="Ranking places jumped" />
-          <div className="ba-flow">
+          <SectionHeader title="Biggest upsets" kicker="By ranking" />
+          <div className="ba-flow ba-flow-tight">
             <UpsetsColumn tour="M" label="ATP" />
             <UpsetsColumn tour="F" label="WTA" />
           </div>

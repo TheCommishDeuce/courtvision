@@ -151,13 +151,14 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
 
       {!country.trim() ? (
         <EmptyState
+          eyebrow="Start here"
           title="Pick a country"
           message="Type a country code above — RUS, ESP, USA — to list its players who reached this stage."
         />
       ) : isError ? (
         <QueryError
           title="That lookup did not load"
-          message="The request failed. Retry, or check the country code."
+          message="Retry, or check the country code."
           onRetry={() => refetch()}
         />
       ) : isFetching && rows.length === 0 ? (
