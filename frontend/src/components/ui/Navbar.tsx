@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { NavLink, useLocation, useSearchParams } from 'react-router-dom';
-import { useMetaStats } from '../../hooks';
 import ThemeToggle from './ThemeToggle';
 
 const links = [
@@ -15,7 +14,6 @@ const links = [
 export default function Navbar() {
   const [params] = useSearchParams();
   const { pathname } = useLocation();
-  const { data: stats } = useMetaStats();
 
   const tour = params.get('tour') ?? 'M';
   const navSearch = useMemo(() => `?tour=${tour}`, [tour]);
@@ -24,13 +22,6 @@ export default function Navbar() {
   // everywhere else: it is established on arrival, and after that the data is
   // the point.
   const isFront = pathname === '/';
-
-  const dataThrough = stats?.data_through ? stats.data_through.slice(0, 10) : '—';
-  const dateline = [
-    'ATP + WTA match archive',
-    `Data through ${dataThrough}`,
-    stats?.total_matches ? `${stats.total_matches.toLocaleString()} matches` : null,
-  ].filter(Boolean) as string[];
 
   return (
     <header className="bg-[var(--paper)]">
@@ -49,14 +40,11 @@ export default function Navbar() {
             <span className={`ba-masthead ${isFront ? '' : 'ba-masthead-sm'}`}>courtvision</span>
           </NavLink>
 
-          <p className="ba-dateline mt-[var(--space-2xs)]">
-            {dateline.map((part, i) => (
-              <span key={part} className="flex items-baseline gap-[var(--space-sm)]">
-                {i > 0 && <span aria-hidden="true" className="text-[var(--rule-mid)]">·</span>}
-                {part}
-              </span>
-            ))}
-          </p>
+          {/* The dateline says what the paper is, and nothing else. The counts
+              belong to the front-page ledger and the currency date to the
+              footer's provenance block; repeating either here put the same
+              figure on screen twice. */}
+          <p className="ba-dateline mt-[var(--space-2xs)]">Professional tennis match archive</p>
         </div>
 
         <div className="shrink-0 pb-[2px]">

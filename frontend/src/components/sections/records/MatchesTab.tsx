@@ -191,18 +191,20 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
 
       {!submitted ? (
         <EmptyState
+          eyebrow="Start here"
           title="Choose what to rank"
           message="Pick a measure and set the filters above, then select Show matches."
         />
       ) : stale ? (
         <EmptyState
+          eyebrow="Out of date"
           title="Filters changed"
           message="Select Show matches to rank again with the new selection."
         />
       ) : isError ? (
         <QueryError
           title="Match extremes did not load"
-          message="The request failed. Retry, or widen the filters."
+          message="Retry, or widen the filters."
           onRetry={() => refetch()}
         />
       ) : isFetching && rows.length === 0 ? (

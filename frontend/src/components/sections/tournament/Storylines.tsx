@@ -66,7 +66,8 @@ export default function Storylines({
 
   return (
     <section>
-      <SectionHeader title="Storylines" kicker="The week's outliers" />
+      {/* Not "the week's" — this recap is just as often a 1998 draw. */}
+      <SectionHeader title="Storylines" kicker="Outliers in this draw" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
         {hasLongest && (
           <Panel title="Longest matches" headers={['Rnd', 'Winner', 'Beat', 'Time']}>

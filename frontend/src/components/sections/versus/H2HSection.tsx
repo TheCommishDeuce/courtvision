@@ -75,7 +75,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
     return (
       <QueryError
         title="The head-to-head did not load"
-        message="The request failed. Retry, or check both player names."
+        message="Retry, or check both player names."
         onRetry={() => refetch()}
       />
     );

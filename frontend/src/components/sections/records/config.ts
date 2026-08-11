@@ -22,7 +22,8 @@ export type Section = 'winning' | 'serve' | 'return';
 export const SECTIONS: { id: Section; title: string; kicker: string }[] = [
   { id: 'winning', title: 'Winning', kicker: 'Matches, titles, upsets, comebacks, streaks' },
   { id: 'serve', title: 'On serve', kicker: 'Aces, service points, break points saved, tiebreaks' },
-  { id: 'return', title: 'On return, and by how much', kicker: 'Return points, draws, scoreline margins' },
+  // Not "and by how much" — that echoes the page's own headline two rules above.
+  { id: 'return', title: 'On return, and by margin', kicker: 'Return points, draws, scoreline margins' },
 ];
 
 export type Fmt = 'count' | 'pct' | 'rank';

@@ -35,7 +35,9 @@ export function ServeReturnSection({
           {returnPct && Object.keys(returnPct).length > 0 && <div className="ba-card"><ReturnRadarChart percentiles={returnPct} labelA={lastName(player)} title="Return" tour={tour} /></div>}
         </div>
         <div className="xl:col-span-2 flex flex-col">
-          <StatTable stretch title="Serve and return" rows={[
+          {/* The section header above already says "Serve and return"; this
+              table is the numbers behind the two radars beside it. */}
+          <StatTable stretch title="Every figure" rows={[
             ...(serveStats && Object.keys(serveStats).length > 0 ? [
               { label: 'Ace %', value: serveStats['ace%'] != null ? `${serveStats['ace%']}%` : null },
               { label: 'Double Fault %', value: serveStats['df%'] != null ? `${serveStats['df%']}%` : null },

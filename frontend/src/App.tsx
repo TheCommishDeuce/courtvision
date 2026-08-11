@@ -31,15 +31,15 @@ function Footer() {
     <footer className="border-t border-[var(--rule-ink)] bg-[var(--paper)] mt-[var(--space-xl)]">
       <div className="ba-canvas py-[var(--space-sm)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <p className="ba-cell text-[var(--ink-2)] max-w-2xl">
-          Match data from{' '}
+          Match data from Jeff Sackmann's{' '}
           <a href="https://www.tennisabstract.com" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
             Tennis Abstract
           </a>
           {' '}and{' '}
           <a href="https://github.com/JeffSackmann/tennis_atp" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
-            Jeff Sackmann's match dataset
+            public datasets
           </a>
-          . All credit for the underlying data goes to him.
+          — all credit for the underlying data is theirs.
         </p>
         <span className="ba-label">
           {stats?.data_through ? `Data through ${stats.data_through.slice(0, 10)}` : 'courtvision'}

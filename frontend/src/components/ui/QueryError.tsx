@@ -4,10 +4,16 @@ interface Props {
   onRetry?: () => void;
 }
 
-/** States what happened and how to fix it. No apology, no vagueness. */
+/**
+ * States what happened and how to fix it. No apology, no vagueness.
+ *
+ * The eyebrow and title already establish that a request failed, so `message`
+ * carries only the fix — callers should pass "Retry, or …", never a third
+ * restatement of the failure.
+ */
 export default function QueryError({
   title = 'This data did not load',
-  message = 'The request to the API failed. Retry, or reload the page if it keeps failing.',
+  message = 'Retry, or reload the page if it keeps failing.',
   onRetry,
 }: Props) {
   return (

@@ -119,7 +119,7 @@ export default function TournamentPage() {
           ) : errorChampions ? (
             <QueryError
               title="Recent champions did not load"
-              message="The request failed. Retry, or search for an event by name."
+              message="Retry, or search for an event by name."
               onRetry={() => refetchChampions()}
             />
           ) : (
@@ -157,7 +157,7 @@ export default function TournamentPage() {
       {!isFetching && selected && errorRecap && (
         <QueryError
           title="This recap did not load"
-          message="The request failed. Retry, or pick a different year."
+          message="Retry, or pick a different year."
           onRetry={() => refetchRecap()}
         />
       )}
