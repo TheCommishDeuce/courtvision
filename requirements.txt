@@ -70,7 +70,7 @@ numpy==2.5.1
     # via pandas
 packaging==26.3
     # via pytest
-pandas==2.2.2
+pandas==2.3.3
     # via -r requirements.in
 pluggy==1.6.0
     # via pytest
@@ -78,7 +78,7 @@ propcache==0.5.2
     # via
     #   aiohttp
     #   yarl
-pyarrow==25.0.0
+pyarrow==25.0.1
     # via -r requirements.in
 pydantic==2.13.4
     # via fastapi
@@ -125,7 +125,7 @@ tzdata==2026.3
     # via pandas
 urllib3==2.7.0
     # via requests
-uvicorn==0.52.1
+uvicorn==0.52.3
     # via -r requirements.in
 uvloop==0.22.1
     # via uvicorn
