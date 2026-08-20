@@ -57,7 +57,7 @@ export default function ThemeToggle() {
       title={`Theme: ${LABEL[theme]} — click for ${LABEL[NEXT[theme]]}`}
       className="ba-chip"
     >
-      <span aria-hidden="true" className="text-[var(--clay)]">
+      <span aria-hidden="true" className="text-clay">
         {theme === 'dark' ? '◓' : theme === 'light' ? '◒' : '◑'}
       </span>
       {LABEL[theme]}

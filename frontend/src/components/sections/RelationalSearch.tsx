@@ -4,11 +4,11 @@ import { usePlayers, useRelationalMatches } from '../../hooks';
 import PlayerAutocomplete from '../filters/PlayerAutocomplete';
 import SurfaceSelect from '../filters/SurfaceSelect';
 import LevelSelect from '../filters/LevelSelect';
-import KPIBlock from '../ui/KPIBlock';
-import MatchStatsPanel, { type SideStats } from '../ui/MatchStatsPanel';
-import Spinner from '../ui/Spinner';
-import EmptyState from '../ui/EmptyState';
-import QueryError from '../ui/QueryError';
+import KPIBlock from '../primitives/KPIBlock';
+import MatchStatsPanel, { type SideStats } from '../primitives/MatchStatsPanel';
+import Spinner from '../primitives/Spinner';
+import EmptyState from '../primitives/EmptyState';
+import QueryError from '../primitives/QueryError';
 import { fmtTime, lastName } from '../../utils';
 import type { RelationalMatchRow, RelationalSummary } from '../../types/tennis';
 
@@ -189,13 +189,13 @@ export default function RelationalSearch({ tour }: Props) {
 
   return (
     <section className="ba-card space-y-5">
-      <div className="border-b border-[var(--rule)] pb-2">
+      <div className="border-b border-rule pb-2">
         {/* No kicker here: the tab is already labelled "Player vs cohort" and
             the page header carries its description. */}
         <h2 className="ba-h2">
-          Matches <span className="text-[var(--clay)]">Against…</span>
+          Matches <span className="text-clay">Against…</span>
         </h2>
-        <p className="ba-cell text-[var(--mute)] mt-1">
+        <p className="ba-cell text-mute mt-1">
           Pick a player, then filter their matches by opponent traits — left-handers, compatriots, top-ranked, or younger/older opponents.
         </p>
       </div>
@@ -216,22 +216,22 @@ export default function RelationalSearch({ tour }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Field label="Opponent hand">
-          <select value={oppHand} onChange={e => { setOppHand(e.target.value); setSubmitted(false); }} className="ba-input">
+          <select value={oppHand} onChange={e => { setOppHand(e.target.value); setSubmitted(false); }} className="ba-select">
             {HANDS.map(h => <option key={h.value} value={h.value}>{h.label}</option>)}
           </select>
         </Field>
         <Field label="Nationality">
-          <select value={relation} onChange={e => { setRelation(e.target.value); setSubmitted(false); }} className="ba-input">
+          <select value={relation} onChange={e => { setRelation(e.target.value); setSubmitted(false); }} className="ba-select">
             {RELATIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </Field>
         <Field label="Relative age">
-          <select value={ageRelation} onChange={e => { setAgeRelation(e.target.value); setSubmitted(false); }} className="ba-input">
+          <select value={ageRelation} onChange={e => { setAgeRelation(e.target.value); setSubmitted(false); }} className="ba-select">
             {AGE_RELATIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </Field>
         <Field label="Opponent rank">
-          <select value={rankMax} onChange={e => { setRankMax(e.target.value); setSubmitted(false); }} className="ba-input">
+          <select value={rankMax} onChange={e => { setRankMax(e.target.value); setSubmitted(false); }} className="ba-select">
             {RANK_CAPS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </Field>
@@ -242,7 +242,7 @@ export default function RelationalSearch({ tour }: Props) {
           Find Matches →
         </button>
         {needsPlayer && !player && (
-          <span className="ba-meta text-[var(--clay-deep)]">
+          <span className="ba-meta text-clay-deep">
             Compatriot / younger-older filters need a player selected.
           </span>
         )}
@@ -262,22 +262,24 @@ export default function RelationalSearch({ tour }: Props) {
             {data.total.toLocaleString()} match{data.total !== 1 ? 'es' : ''}
             {data.shown < data.total ? ` · showing latest ${data.shown}` : ''} · tap a row for full match stats
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full ba-cell border-collapse">
+          {/* The system's table, not a hand-rolled one: same density steps,
+              same head, same one-size-per-row rule as every other table. */}
+          <div className="ba-scroller border border-rule">
+            <table className="ba-table ba-table-dense w-full">
               <thead>
-                <tr className="border-b border-[var(--rule)] text-left ba-mono ba-agate uppercase tracking-[0.08em] text-[var(--mute)]">
-                  <th className="py-1.5 pr-3">Date</th>
-                  <th className="py-1.5 pr-3">Tournament</th>
-                  <th className="py-1.5 pr-3">Rd</th>
-                  <th className="py-1.5 pr-3">Res</th>
-                  <th className="py-1.5 pr-3">Age</th>
-                  <th className="py-1.5 pr-3">Rank</th>
-                  <th className="py-1.5 pr-3">Opponent</th>
-                  <th className="py-1.5 pr-3">Hand</th>
-                  <th className="py-1.5 pr-3">Ctry</th>
-                  <th className="py-1.5 pr-3">Op Age</th>
-                  <th className="py-1.5 pr-3">Op Rank</th>
-                  <th className="py-1.5 pr-3">Score</th>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Tournament</th>
+                  <th scope="col">Rd</th>
+                  <th scope="col">Res</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Rank</th>
+                  <th scope="col">Opponent</th>
+                  <th scope="col">Hand</th>
+                  <th scope="col">Ctry</th>
+                  <th scope="col">Op Age</th>
+                  <th scope="col">Op Rank</th>
+                  <th scope="col">Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,35 +288,35 @@ export default function RelationalSearch({ tour }: Props) {
                   return (
                     <Fragment key={i}>
                       <tr
-                        className={`border-b border-[var(--rule)] cursor-pointer ${isOpen ? 'bg-[var(--clay-wash)]' : 'hover:bg-[var(--clay-wash)]'}`}
+                        className={`cursor-pointer ${isOpen ? 'bg-clay-wash' : ''}`}
                         onClick={() => setExpandedIdx(isOpen ? null : i)}
                         aria-expanded={isOpen}
                       >
-                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono ba-meta">
-                          <span className="text-[var(--mute)] mr-1">{isOpen ? '▾' : '▸'}</span>{m.date?.slice(0, 10)}
+                        <td className="whitespace-nowrap ba-mono">
+                          <span className="text-mute mr-1">{isOpen ? '▾' : '▸'}</span>{m.date?.slice(0, 10)}
                         </td>
-                        <td className="py-1.5 pr-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                        <td className="whitespace-nowrap" onClick={e => e.stopPropagation()}>
                           <Link to={`/tournament?t=${encodeURIComponent(m.tournament)}&year=${m.date?.slice(0, 4)}&tour=${m.tour}`} className="ba-link font-medium">{m.tournament}</Link>
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.round}</td>
-                        <td className={`py-1.5 pr-3 font-bold ${m.result === 'W' ? 'text-[var(--clay-deep)]' : 'text-[var(--mute)]'}`}>
-                          {m.result}{m.is_retirement && <span className="ba-mono ba-agate text-[var(--mute)] ml-0.5">r</span>}
+                        <td className="ba-mono">{m.round}</td>
+                        <td className={`font-bold ${m.result === 'W' ? 'text-clay-deep' : 'text-mute'}`}>
+                          {m.result}{m.is_retirement && <span className="ba-mono ba-agate text-mute ml-0.5">r</span>}
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.player_age ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.player_rank ?? '—'}</td>
-                        <td className="py-1.5 pr-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                        <td className="ba-mono">{m.player_age ?? '—'}</td>
+                        <td className="ba-mono">{m.player_rank ?? '—'}</td>
+                        <td className="whitespace-nowrap" onClick={e => e.stopPropagation()}>
                           <Link to={`/player?p=${encodeURIComponent(m.opponent_name)}&tour=${m.tour}`} className="ba-link font-medium">{m.opponent_name}</Link>
                         </td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_hand ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_country ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opp_age ?? '—'}</td>
-                        <td className="py-1.5 pr-3 ba-mono ba-meta">{m.opponent_rank ?? '—'}</td>
-                        <td className="py-1.5 pr-3 whitespace-nowrap ba-mono ba-meta">
-                          {m.score}{m.time ? <span className="text-[var(--mute)] ml-1">· {fmtTime(m.time)}</span> : null}
+                        <td className="ba-mono">{m.opp_hand ?? '—'}</td>
+                        <td className="ba-mono">{m.opp_country ?? '—'}</td>
+                        <td className="ba-mono">{m.opp_age ?? '—'}</td>
+                        <td className="ba-mono">{m.opponent_rank ?? '—'}</td>
+                        <td className="whitespace-nowrap ba-mono">
+                          {m.score}{m.time ? <span className="text-mute ml-1">· {fmtTime(m.time)}</span> : null}
                         </td>
                       </tr>
                       {isOpen && (
-                        <tr className="border-b border-[var(--rule)]">
+                        <tr>
                           <td colSpan={12} className="p-0">
                             <MatchStatsPanel a={focalStats(m)} b={oppStats(m)} aLabel={lastName(m.player_name)} bLabel={lastName(m.opponent_name)} />
                           </td>

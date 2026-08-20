@@ -2,7 +2,7 @@ import { lastName } from '../../../utils';
 import ServeRadarChart from '../../charts/ServeRadarChart';
 import ReturnRadarChart from '../../charts/ReturnRadarChart';
 import StatTable from '../../tables/StatTable';
-import SectionHeader from '../../ui/SectionHeader';
+import SectionHeader from '../../primitives/SectionHeader';
 import type { ReturnPercentiles, ServePercentiles } from '../../../api/client';
 import type { ReturnStats, ServeStats } from '../../../types/tennis';
 

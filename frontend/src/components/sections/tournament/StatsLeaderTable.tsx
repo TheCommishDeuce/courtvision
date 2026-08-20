@@ -1,4 +1,4 @@
-import StatBoard from '../../ui/StatBoard';
+import StatBoard from '../../primitives/StatBoard';
 import type { TournamentStatsLeader } from '../../../types/tennis';
 
 /** A tournament stat leaderboard — the same results column used on Records. */

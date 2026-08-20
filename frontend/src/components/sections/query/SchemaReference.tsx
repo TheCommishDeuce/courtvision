@@ -20,11 +20,11 @@ export default function SchemaReference({
 
   return (
     <section>
-      <div className="ba-label border-b border-[var(--rule-ink)] pb-1 mb-1.5">
+      <div className="ba-label border-b border-rule-ink pb-1 mb-1.5">
         Schema · click a column to add it to SELECT
       </div>
 
-      <div className="border border-[var(--rule)] divide-y divide-[var(--rule)]">
+      <div className="border border-rule divide-y divide-[var(--rule)]">
         {schema.relations.map(rel => {
           const isOpen = open === rel.name;
           const isActive = rel.name === activeRelation;
@@ -35,26 +35,26 @@ export default function SchemaReference({
                 onClick={() => setOpen(isOpen ? null : rel.name)}
                 aria-expanded={isOpen}
                 className={`ba-touch w-full flex items-baseline gap-2 px-2.5 py-1.5 text-left transition-colors ${
-                  isOpen ? 'bg-[var(--clay-wash)]' : 'hover:bg-[var(--paper-sunken)]'
+                  isOpen ? 'bg-clay-wash' : 'hover:bg-paper-sunken'
                 }`}
               >
-                <span className="ba-mono ba-agate text-[var(--mute)] w-2">
+                <span className="ba-mono ba-agate text-mute w-2">
                   {isOpen ? '▾' : '▸'}
                 </span>
                 <span
                   className={`ba-mono ba-meta font-semibold ${
-                    isActive ? 'text-[var(--clay)]' : 'text-[var(--ink)]'
+                    isActive ? 'text-clay' : 'text-ink'
                   }`}
                 >
                   {rel.name}
                 </span>
-                <span className="ba-mono ba-agate text-[var(--mute)] ml-auto">
+                <span className="ba-mono ba-agate text-mute ml-auto">
                   {rel.rows.toLocaleString()} rows · {rel.columns.length} cols
                 </span>
               </button>
 
               {isOpen && (
-                <div className="px-2.5 pb-2 pt-0.5 bg-[var(--paper-sunken)]">
+                <div className="px-2.5 pb-2 pt-0.5 bg-paper-sunken">
                   <div className="flex flex-wrap gap-1">
                     {rel.columns.map(c => (
                       <button
@@ -62,9 +62,9 @@ export default function SchemaReference({
                         type="button"
                         onClick={() => onPickColumn(c.name)}
                         title={`${c.name} · ${c.type}`}
-                        className="ba-touch ba-mono ba-agate px-1.5 py-[1px] border border-[var(--rule-mid)]
-                                   bg-[var(--paper-raised)] text-[var(--ink-2)]
-                                   hover:border-[var(--clay)] hover:text-[var(--clay-deep)] transition-colors"
+                        className="ba-touch ba-mono ba-agate px-1.5 py-[1px] border border-rule-mid
+                                   bg-paper-raised text-ink-2
+                                   hover:border-clay hover:text-clay-deep transition-colors"
                       >
                         {c.name}
                       </button>

@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import TourToggle from '../components/filters/TourToggle';
-import SectionHeader from '../components/ui/SectionHeader';
+import SectionHeader from '../components/primitives/SectionHeader';
 import QueryBuilder from '../components/sections/query/QueryBuilder';
 import RelationalSearch from '../components/sections/RelationalSearch';
 
@@ -11,27 +9,19 @@ import RelationalSearch from '../components/sections/RelationalSearch';
  * joins (opponent hand, nationality, age, match situation) that would be
  * tedious to write by hand.
  */
+import { useUrlFilters } from '../state/useUrlFilters';
+import { searchFilterSchema, defaultSearchFilters } from '../components/sections/query/filters';
+
 const TABS = [
   { id: 'query', label: 'Build a query', kicker: 'Filters, editable SQL, CSV' },
   { id: 'cohort', label: 'Player vs cohort', kicker: 'How a player fares against a group' },
 ] as const;
 
-type TabId = (typeof TABS)[number]['id'];
-
 export default function SearchPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const paramTab = searchParams.get('tab');
-  const [tab, setTab] = useState<TabId>(
-    TABS.some(t => t.id === paramTab) ? (paramTab as TabId) : 'query',
-  );
-  const [tour, setTour] = useState(searchParams.get('tour') ?? 'M');
+  const [filters, setFilters] = useUrlFilters(searchFilterSchema, defaultSearchFilters);
 
-  const update = (next: Partial<{ tab: TabId; tour: string }>) => {
-    const params = new URLSearchParams(searchParams);
-    if (next.tab) params.set('tab', next.tab);
-    if (next.tour) params.set('tour', next.tour);
-    setSearchParams(params, { replace: true });
-  };
+  const tab = filters.tab ?? 'query';
+  const tour = filters.tour ?? 'M';
 
   const active = TABS.find(t => t.id === tab)!;
 
@@ -44,17 +34,14 @@ export default function SearchPage() {
         kicker={active.kicker}
       />
 
-      <div className="flex items-stretch border-b border-[var(--rule)] -mt-2">
+      <div className="flex items-stretch border-b border-rule -mt-2">
         {TABS.map(t => {
           const isActive = t.id === tab;
           return (
             <button
               key={t.id}
               type="button"
-              onClick={() => {
-                setTab(t.id);
-                update({ tab: t.id });
-              }}
+              onClick={() => setFilters({ tab: t.id })}
               aria-current={isActive ? 'page' : undefined}
               className={`ba-tab ${isActive ? 'is-active' : ''}`}
             >
@@ -68,13 +55,10 @@ export default function SearchPage() {
 
       {tab === 'cohort' && (
         <div className="space-y-4">
-          <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
+          <section className="ba-well px-3 py-2.5">
             <TourToggle
               value={tour}
-              onChange={v => {
-                setTour(v);
-                update({ tour: v });
-              }}
+              onChange={v => setFilters({ tour: v as 'M'|'F' })}
             />
           </section>
           <RelationalSearch tour={tour} />

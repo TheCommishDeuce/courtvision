@@ -6,8 +6,8 @@ import {
   useLeadersStreaks,
   useLeadersDrawStrength,
 } from '../../../hooks';
-import type { Column } from '../../tables/AdaptiveTable';
-import SortHeader, { type SortState } from '../../tables/SortHeader';
+import type { Column } from '../../primitives/AdaptiveTable';
+import SortHeader, { type SortState } from '../../primitives/SortHeader';
 import { MIN_MATCHES, formatFigure, type SourceId } from './config';
 
 export type { SortState };
@@ -88,7 +88,7 @@ export function useRecordSources(f: RecordsFilters): Record<SourceId, SourceStat
 interface ColSpec {
   key: string;
   label: string;
-  fmt?: 'count' | 'pct' | 'rank' | 'date' | 'text';
+  fmt?: 'count' | 'pct' | 'rank' | 'year' | 'date' | 'text';
   /** Keep off the stacked mobile card. */
   hideOnCard?: boolean;
 }
@@ -97,7 +97,7 @@ const rankColumn = (): Column<RecordRow> => ({
   key: '__rank',
   header: '#',
   hideOnCard: true,
-  cell: (_r, i) => <span className="ba-mono ba-meta text-[var(--mute)]">{i + 1}</span>,
+  cell: (_r, i) => <span className="ba-mono ba-meta text-mute">{i + 1}</span>,
 });
 
 const playerColumn = (): Column<RecordRow> => ({
@@ -107,7 +107,7 @@ const playerColumn = (): Column<RecordRow> => ({
   cell: r => (
     <Link
       to={`/player?p=${encodeURIComponent(r.player_name)}&tour=${r.tour}`}
-      className="font-semibold whitespace-nowrap text-[var(--ink)] hover:text-[var(--clay-deep)]"
+      className="font-semibold whitespace-nowrap text-ink hover:text-clay-deep"
     >
       {r.player_name}
     </Link>
@@ -127,16 +127,29 @@ function specToColumn(spec: ColSpec, sort: SortState, highlight: string): Column
       if (spec.fmt === 'date') {
         const v = r[spec.key];
         return (
-          <span className="ba-mono ba-meta text-[var(--ink-2)]">
+          <span className="ba-mono ba-meta text-ink-2">
             {v ? String(v).slice(0, 10) : 'Active'}
           </span>
         );
       }
-      if (spec.fmt === 'text') return <span className="ba-meta">{str(r, spec.key)}</span>;
+      // A tournament name is always a way into that event, wherever it appears.
+      if (spec.key === 'tournament') {
+        const name = str(r, spec.key);
+        const year = r.year == null ? '' : String(r.year);
+        return (
+          <Link
+            to={`/tournament?t=${encodeURIComponent(name)}&year=${year}&tour=${r.tour}`}
+            className="ba-link-quiet whitespace-nowrap"
+          >
+            {name}
+          </Link>
+        );
+      }
+      if (spec.fmt === 'text') return <span>{str(r, spec.key)}</span>;
       const text = formatFigure(num(r, spec.key), spec.fmt ?? 'count');
       const lead = spec.key === sort.sortKey;
       return (
-        <span className={lead ? 'font-bold text-[var(--clay)]' : 'text-[var(--ink-2)]'}>{text}</span>
+        <span className={lead ? 'font-bold text-clay' : 'text-ink-2'}>{text}</span>
       );
     },
   };
@@ -181,7 +194,7 @@ const SPECS: Record<SourceId, ColSpec[]> = {
   ],
   draw: [
     { key: 'tournament', label: 'Tournament', fmt: 'text' },
-    { key: 'year', label: 'Year' },
+    { key: 'year', label: 'Year', fmt: 'year' },
     { key: 'surface', label: 'Surface', fmt: 'text' },
     { key: 'avg_opp_rank', label: 'Avg opp', fmt: 'rank' },
     { key: 'matches_won', label: 'Wins' },

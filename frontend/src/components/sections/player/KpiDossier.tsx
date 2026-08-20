@@ -3,10 +3,10 @@ import type { PlayerForm, PlayerSummary, TopNRecords } from '../../../types/tenn
 
 function DossierCell({ label, value, sub }: { label: string; value: ReactNode; sub?: ReactNode }) {
   return (
-    <div className="bg-[var(--paper-raised)] px-[var(--space-sm)] py-[var(--space-xs)] flex flex-col">
+    <div className="bg-paper-raised px-[var(--space-sm)] py-[var(--space-xs)] flex flex-col">
       <div className="ba-label mb-1">{label}</div>
-      <div className="ba-stat-sm text-[var(--ink)]">{value}</div>
-      {sub && <div className="ba-mono ba-agate text-[var(--mute)] mt-0.5">{sub}</div>}
+      <div className="ba-stat-sm text-ink">{value}</div>
+      {sub && <div className="ba-mono ba-agate text-mute mt-0.5">{sub}</div>}
     </div>
   );
 }
@@ -33,6 +33,7 @@ export function KpiDossier({
 }: {
   filteredWins: number;
   filteredLosses: number;
+  /** Already formatted, sign included — "83.0%" or "—". */
   filteredWinPct: string;
   summary: PlayerSummary;
   topN?: TopNRecords;
@@ -53,15 +54,15 @@ export function KpiDossier({
       {/* The figure the reader came for, at the size that says so. */}
       <div className="ba-kpi ba-kpi-hero flex flex-wrap items-end justify-between gap-x-[var(--space-lg)] gap-y-[var(--space-xs)]">
         <div>
-          <div className="ba-label text-[var(--on-clay-soft)] mb-1.5">Win rate</div>
-          <div className="ba-stat-hero text-[var(--on-clay)]">{filteredWinPct}%</div>
+          <div className="ba-label text-on-clay-soft mb-1.5">Win rate</div>
+          <div className="ba-stat-hero text-spark">{filteredWinPct}</div>
         </div>
-        <div className="ba-mono ba-cell text-[var(--on-clay-soft)] pb-1">
+        <div className="ba-mono ba-cell text-on-clay-soft pb-1">
           {filteredWins}W – {filteredLosses}L
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--rule)] border-b border-[var(--rule)]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-rule border-b border-rule">
       <DossierCell
         label="Peak rank"
         value={summary.career_high_rank ? `#${summary.career_high_rank}` : '—'}

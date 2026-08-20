@@ -13,7 +13,7 @@ export default function StatRow({
   return (
     <div
       className={`flex items-baseline justify-between gap-3 px-1 py-2 flex-1 ${
-        last ? '' : 'border-b border-[var(--rule)]'
+        last ? '' : 'border-b border-rule'
       }`}
     >
       <span className="ba-label">{label}</span>

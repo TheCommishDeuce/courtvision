@@ -1,6 +1,6 @@
 import LineChart from '../../charts/LineChart';
 import RankHistoryChart from '../../charts/RankHistoryChart';
-import SectionHeader from '../../ui/SectionHeader';
+import SectionHeader from '../../primitives/SectionHeader';
 import type { PlayerMatchesResponse, PlayerSummary, RankHistoryPoint, WinPctRow } from '../../../types/tennis';
 
 function toLineData(rows: WinPctRow[]) {

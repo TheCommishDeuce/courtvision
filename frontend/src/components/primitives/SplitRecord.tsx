@@ -24,11 +24,11 @@ export default function SplitRecord({ wins, losses, size = 'md', align = 'left' 
     align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
   return (
     <div className={`inline-flex items-baseline leading-none ${justify}`}>
-      <span className={`ba-stat ${cls} text-[var(--clay)]`}>{wins}</span>
+      <span className={`ba-stat ${cls} text-clay`}>{wins}</span>
       {/* --mute, not --rule-mid: the dash is part of the record being read,
           not a hairline, and at rule weight it vanished against the card. */}
-      <span className={`ba-stat ${cls} text-[var(--mute)] px-[0.1em]`}>&ndash;</span>
-      <span className={`ba-stat ${cls} text-[var(--ink-2)]`}>{losses}</span>
+      <span className={`ba-stat ${cls} text-mute px-[0.1em]`}>&ndash;</span>
+      <span className={`ba-stat ${cls} text-ink-2`}>{losses}</span>
     </div>
   );
 }

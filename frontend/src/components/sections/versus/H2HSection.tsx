@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useH2H } from '../../../hooks';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
-import EmptyState from '../../ui/EmptyState';
-import QueryError from '../../ui/QueryError';
-import SurfaceTag from '../../ui/SurfaceTag';
-import MatchStatsPanel, { type SideStats } from '../../ui/MatchStatsPanel';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
+import EmptyState from '../../primitives/EmptyState';
+import QueryError from '../../primitives/QueryError';
+import SurfaceTag from '../../primitives/SurfaceTag';
+import MatchStatsPanel, { type SideStats } from '../../primitives/MatchStatsPanel';
 import MomentumTimeline from '../../charts/MomentumTimeline';
 import { CHART } from '../../charts/theme';
 import { fmtTime, lastName, surfaceClass } from '../../../utils';
@@ -40,18 +40,18 @@ function SurfaceRow({ surface, a, b }: { surface: string; a: number; b: number }
   const total = a + b;
   const pctA = total > 0 ? (a / total) * 100 : 0;
   return (
-    <div className="flex items-center gap-2.5 py-1.5 border-b border-[var(--rule)] last:border-b-0">
+    <div className="flex items-center gap-2.5 py-1.5 border-b border-rule last:border-b-0">
       <span
         className={`ba-mono ba-agate font-bold tracking-[0.11em] uppercase w-[52px] text-center px-1 py-[1px] ${surfaceClass(surface, 'ba-surface-hard')}`}
       >
         {surface}
       </span>
-      <span className="ba-figure text-[var(--clay)] w-[3ch] text-right">{a}</span>
-      <div className="flex-1 h-[3px] bg-[var(--rule)] flex overflow-hidden">
-        <div className="h-full bg-[var(--clay)]" style={{ width: `${pctA}%` }} />
-        <div className="h-full bg-[var(--ink)]" style={{ width: `${100 - pctA}%` }} />
+      <span className="ba-figure text-clay w-[3ch] text-right">{a}</span>
+      <div className="flex-1 h-[3px] bg-rule flex overflow-hidden">
+        <div className="h-full bg-clay" style={{ width: `${pctA}%` }} />
+        <div className="h-full bg-ink" style={{ width: `${100 - pctA}%` }} />
       </div>
-      <span className="ba-figure text-[var(--ink)] w-[3ch]">{b}</span>
+      <span className="ba-figure text-ink w-[3ch]">{b}</span>
     </div>
   );
 }
@@ -59,13 +59,13 @@ function SurfaceRow({ surface, a, b }: { surface: string; a: number; b: number }
 export default function H2HSection({ f }: { f: VersusFilters }) {
   const { data: h2h, isFetching, isError, refetch } = useH2H(
     {
-      player_a: f.playerA,
-      player_b: f.playerB,
+      player_a: f.a!,
+      player_b: f.b!,
       tour: f.tour,
       surface: f.surface === 'All' ? undefined : f.surface,
-      level: f.level || undefined,
-      year_min: f.yearRange[0],
-      year_max: f.yearRange[1],
+      level: f.level === 'All Tour' ? undefined : f.level,
+      year_min: f.y0,
+      year_max: f.y1,
     },
     f.enabled,
   );
@@ -95,12 +95,12 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
     );
   }
 
-  const splits = computeSurfaceSplits(h2h.by_surface, f.playerA, f.playerB);
+  const splits = computeSurfaceSplits(h2h.by_surface, f.a!, f.b!);
   const orderedSurfaces = ['Hard', 'Clay', 'Grass', 'Carpet'].filter(s => splits[s]);
   const showSplit = f.surface === 'All' && orderedSurfaces.length > 0;
 
   const { wins_a: winsA, wins_b: winsB } = h2h.summary;
-  const leader = winsA > winsB ? f.playerA : winsB > winsA ? f.playerB : null;
+  const leader = winsA > winsB ? f.a! : winsB > winsA ? f.b! : null;
 
   const columns: Column<H2HRow>[] = [
     {
@@ -108,7 +108,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: m => (
-        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-mute whitespace-nowrap">
           {m.date?.slice(0, 10)}
         </span>
       ),
@@ -121,7 +121,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       cell: m => (
         <Link
           to={`/tournament?t=${encodeURIComponent(m.tournament)}&year=${m.date?.slice(0, 4)}&tour=${f.tour}`}
-          className="text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+          className="text-ink-2 hover:text-clay-deep"
         >
           {m.tournament}
         </Link>
@@ -132,12 +132,12 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       key: 'level_name',
       header: 'Level',
       hideOnCard: true,
-      cell: m => <span className="ba-meta text-[var(--ink-2)]">{m.level_name}</span>,
+      cell: m => <span className="ba-meta text-ink-2">{m.level_name}</span>,
     },
     {
       key: 'round',
       header: 'Rnd',
-      cell: m => <span className="ba-mono ba-meta text-[var(--ink-2)]">{m.round}</span>,
+      cell: m => <span className="ba-mono ba-meta text-ink-2">{m.round}</span>,
     },
     {
       key: 'winner_name',
@@ -145,11 +145,11 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       cell: m => (
         <span
           className={`font-semibold whitespace-nowrap ${
-            m.winner_name === f.playerA ? 'text-[var(--clay)]' : 'text-[var(--ink)]'
+            m.winner_name === f.a! ? 'text-clay' : 'text-ink'
           }`}
         >
           {lastName(m.winner_name)}
-          {m.is_retirement && <span className="ba-mono ba-agate text-[var(--mute)] ml-1">ret.</span>}
+          {m.is_retirement && <span className="ba-mono ba-agate text-mute ml-1">ret.</span>}
         </span>
       ),
     },
@@ -163,7 +163,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       header: 'Time',
       num: true,
       hideOnCard: true,
-      cell: m => <span className="text-[var(--mute)]">{fmtTime(m.time)}</span>,
+      cell: m => <span className="text-mute">{fmtTime(m.time)}</span>,
     },
   ];
 
@@ -180,36 +180,42 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
             the hero figure size rather than merely larger than the table. */}
         <div className="ba-kpi ba-kpi-hero">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 mb-[var(--space-sm)]">
-            <span className="ba-label text-[var(--on-clay-soft)]">Rivalry score</span>
+            <span className="ba-label text-on-clay-soft">Rivalry score</span>
             {leader && (
-              <span className="ba-label text-[var(--on-clay-soft)]">
+              <span className="ba-label text-on-clay-soft">
                 {lastName(leader)} leads
               </span>
             )}
           </div>
           <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-[var(--space-xs)]">
             <div className="text-right min-w-0">
-              <div className="ba-mono ba-meta text-[var(--on-clay-soft)] mb-0.5 truncate">
+              <div className="ba-mono ba-meta text-on-clay-soft mb-0.5 truncate">
                 {h2h.summary.player_a}
               </div>
-              <div className="ba-stat-hero text-[var(--on-clay)]">{winsA}</div>
+              {/* The leader's figure takes the spark colour: the one thing
+                  anyone came to this page to read. */}
+              <div className={`ba-stat-hero ${winsA > winsB ? 'text-spark' : 'text-on-clay'}`}>
+                {winsA}
+              </div>
             </div>
             {/* Full strength, not 60%: at the hero size the two figures sit far
                 enough apart that a faint dash stopped reading as "16–24" and
                 started reading as two separate numbers. */}
-            <div className="ba-stat text-[var(--on-clay-soft)]">–</div>
+            <div className="ba-stat text-on-clay-soft">–</div>
             <div className="text-left min-w-0">
-              <div className="ba-mono ba-meta text-[var(--on-clay-soft)] mb-0.5 truncate">
+              <div className="ba-mono ba-meta text-on-clay-soft mb-0.5 truncate">
                 {h2h.summary.player_b}
               </div>
-              <div className="ba-stat-hero text-[var(--on-clay)]">{winsB}</div>
+              <div className={`ba-stat-hero ${winsB > winsA ? 'text-spark' : 'text-on-clay'}`}>
+                {winsB}
+              </div>
             </div>
           </div>
         </div>
 
         {showSplit && (
           <div className="ba-card">
-            <div className="ba-board-title border-b border-[var(--rule-ink)] pb-1.5 mb-1">
+            <div className="ba-board-title border-b border-rule-ink pb-1.5 mb-1">
               Wins by surface
             </div>
             {orderedSurfaces.map(s => (
@@ -222,8 +228,8 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       <div className="ba-card">
         <MomentumTimeline
           matches={h2h.matches}
-          playerA={f.playerA}
-          playerB={f.playerB}
+          playerA={f.a!}
+          playerB={f.b!}
           colorA={CHART.clay}
           colorB={CHART.ink}
         />
@@ -240,20 +246,20 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
           columns={columns}
           rowKey={(m, i) => `${m.date}-${i}`}
           density="dense"
-          cardTitle={m => `${lastName(m.winner_name)} beat ${lastName(m.winner_name === f.playerA ? f.playerB : f.playerA)}`}
+          cardTitle={m => `${lastName(m.winner_name)} beat ${lastName(m.winner_name === f.a! ? f.b! : f.a!)}`}
           cardMeta={m => `${m.date?.slice(0, 10)} · ${m.tournament} · ${m.round}`}
           unit="meetings"
           expand={m =>
             m.winner_pts == null ? (
-              <div className="bg-[var(--paper-sunken)] px-3 py-3 text-center ba-kicker">
+              <div className="bg-paper-sunken px-3 py-3 text-center ba-kicker">
                 No point-level stats recorded for this match.
               </div>
             ) : (
               <MatchStatsPanel
-                a={sideStats(m, m.winner_name === f.playerA)}
-                b={sideStats(m, m.winner_name !== f.playerA)}
-                aLabel={lastName(f.playerA)}
-                bLabel={lastName(f.playerB)}
+                a={sideStats(m, m.winner_name === f.a!)}
+                b={sideStats(m, m.winner_name !== f.a!)}
+                aLabel={lastName(f.a!)}
+                bLabel={lastName(f.b!)}
               />
             )
           }

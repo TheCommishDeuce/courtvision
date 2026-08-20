@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import MatchStatsPanel, { type SideStats } from '../../ui/MatchStatsPanel';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import MatchStatsPanel, { type SideStats } from '../../primitives/MatchStatsPanel';
 import { fmtTime, lastName } from '../../../utils';
 import { MAIN_DRAW_ROUND_ORDER, ROUND_LABEL } from '../../../domain/rounds';
 import type { TournamentMatchRow, TournamentRoundGroup } from '../../../types/tennis';
@@ -24,12 +24,12 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
         <span className="whitespace-nowrap">
           <Link
             to={`/player?p=${encodeURIComponent(m.winner_name)}&tour=${tour}`}
-            className={`font-semibold hover:underline ${m.is_upset ? 'text-[var(--clay)]' : 'text-[var(--ink)]'}`}
+            className={`font-semibold hover:underline ${m.is_upset ? 'text-clay' : 'text-ink'}`}
           >
             {m.winner_name}
           </Link>
           {m.winner_rank && (
-            <span className="ba-mono ba-agate text-[var(--mute)] ml-1.5">#{m.winner_rank}</span>
+            <span className="ba-mono ba-agate text-mute ml-1.5">#{m.winner_rank}</span>
           )}
         </span>
       ),
@@ -42,12 +42,12 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
         <span className="whitespace-nowrap">
           <Link
             to={`/player?p=${encodeURIComponent(m.loser_name)}&tour=${tour}`}
-            className="text-[var(--ink-2)] hover:underline"
+            className="text-ink-2 hover:underline"
           >
             {m.loser_name}
           </Link>
           {m.loser_rank && (
-            <span className="ba-mono ba-agate text-[var(--mute)] ml-1.5">#{m.loser_rank}</span>
+            <span className="ba-mono ba-agate text-mute ml-1.5">#{m.loser_rank}</span>
           )}
         </span>
       ),
@@ -61,7 +61,7 @@ function roundColumns(tour: string): Column<TournamentMatchRow>[] {
       key: 'time',
       header: 'Time',
       num: true,
-      cell: m => <span className="text-[var(--mute)]">{m.time ? fmtTime(m.time) : '—'}</span>,
+      cell: m => <span className="text-mute">{m.time ? fmtTime(m.time) : '—'}</span>,
     },
   ];
 }
@@ -86,9 +86,9 @@ export default function DrawResults({
     <div className="space-y-3">
       {rounds.map(({ round, matches }) => (
         <div key={round}>
-          <h3 className="ba-eyebrow border-b border-[var(--rule-ink)] pb-1 mb-1.5">
+          <h3 className="ba-eyebrow border-b border-rule-ink pb-1 mb-1.5">
             {ROUND_LABEL[round] ?? round}
-            <span className="text-[var(--mute)] ml-2">
+            <span className="text-mute ml-2">
               {matches.length} {matches.length === 1 ? 'match' : 'matches'}
             </span>
           </h3>

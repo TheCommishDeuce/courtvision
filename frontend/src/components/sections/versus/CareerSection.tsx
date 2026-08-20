@@ -10,11 +10,11 @@ import {
   useRankHistory,
   useTopNRecords,
 } from '../../../hooks';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
-import QueryError from '../../ui/QueryError';
-import EmptyState from '../../ui/EmptyState';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
+import QueryError from '../../primitives/QueryError';
+import EmptyState from '../../primitives/EmptyState';
 import ServeRadarChart from '../../charts/ServeRadarChart';
 import ReturnRadarChart from '../../charts/ReturnRadarChart';
 import RankHistoryChart from '../../charts/RankHistoryChart';
@@ -23,7 +23,7 @@ import CompareRow from '../compare/CompareRow';
 import ComparisonCard from '../compare/ComparisonCard';
 import PlayerHeroBlock from '../compare/PlayerHeroBlock';
 import { CHART } from '../../charts/theme';
-import { pct } from '../../../lib/compare';
+import { pct } from '../../../domain/compare';
 import { lastName } from '../../../utils';
 import type { CommonOpponentRow, WinPctRow } from '../../../types/tennis';
 import { playerParams, type VersusFilters } from './filters';
@@ -31,10 +31,10 @@ import { playerParams, type VersusFilters } from './filters';
 const fmtPct = (v: number | null | undefined) => (v == null ? '—' : `${v}%`);
 
 export default function CareerSection({ f }: { f: VersusFilters }) {
-  const paramsA = playerParams(f, f.playerA);
-  const paramsB = playerParams(f, f.playerB);
-  const pctParamsA = { player: f.playerA, tour: f.tour };
-  const pctParamsB = { player: f.playerB, tour: f.tour };
+  const paramsA = playerParams(f, f.a!);
+  const paramsB = playerParams(f, f.b!);
+  const pctParamsA = { player: f.a!, tour: f.tour };
+  const pctParamsB = { player: f.b!, tour: f.tour };
   const on = f.enabled;
 
   const { data: sumA, isFetching: loadA, isError: errA, refetch: retryA } = usePlayerSummary(paramsA, on);
@@ -54,7 +54,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
   const { data: rankA } = useRankHistory(paramsA, on);
   const { data: rankB } = useRankHistory(paramsB, on);
   const { data: common } = useCommonOpponents(
-    { player_a: f.playerA, player_b: f.playerB, tour: f.tour },
+    { player_a: f.a!, player_b: f.b!, tour: f.tour },
     on,
   );
 
@@ -98,8 +98,8 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
 
   const surfaceData = surfaces.map(surf => ({
     surface: surf,
-    [f.playerA]: matchA.by_surface.find((r: WinPctRow) => r.surface === surf)?.win_pct ?? 0,
-    [f.playerB]: matchB.by_surface.find((r: WinPctRow) => r.surface === surf)?.win_pct ?? 0,
+    [f.a!]: matchA.by_surface.find((r: WinPctRow) => r.surface === surf)?.win_pct ?? 0,
+    [f.b!]: matchB.by_surface.find((r: WinPctRow) => r.surface === surf)?.win_pct ?? 0,
   }));
 
   const hasServe = !!serveA && !!serveB && Object.keys(serveA).length > 0 && Object.keys(serveB).length > 0;
@@ -115,7 +115,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
       cell: r => (
         <Link
           to={`/player?p=${encodeURIComponent(r.opponent_name)}&tour=${f.tour}`}
-          className="font-medium whitespace-nowrap text-[var(--ink)] hover:text-[var(--clay-deep)]"
+          className="font-medium whitespace-nowrap text-ink hover:text-clay-deep"
         >
           {r.opponent_name}
         </Link>
@@ -123,21 +123,21 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
     },
     {
       key: 'a',
-      header: `${lastName(f.playerA)} W–L`,
+      header: `${lastName(f.a!)} W–L`,
       num: true,
-      cell: r => <span className="text-[var(--clay)] font-semibold">{r.a_wins}–{r.a_losses}</span>,
+      cell: r => <span className="text-clay font-semibold">{r.a_wins}–{r.a_losses}</span>,
     },
     {
       key: 'b',
-      header: `${lastName(f.playerB)} W–L`,
+      header: `${lastName(f.b!)} W–L`,
       num: true,
-      cell: r => <span className="text-[var(--ink)] font-semibold">{r.b_wins}–{r.b_losses}</span>,
+      cell: r => <span className="text-ink font-semibold">{r.b_wins}–{r.b_losses}</span>,
     },
     {
       key: 'total_matches',
       header: 'Matches',
       num: true,
-      cell: r => <span className="text-[var(--mute)]">{r.total_matches}</span>,
+      cell: r => <span className="text-mute">{r.total_matches}</span>,
     },
   ];
 
@@ -154,7 +154,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <PlayerHeroBlock
-          name={f.playerA}
+          name={f.a!}
           tour={f.tour}
           winPct={pct(tA.wins, tA.total)}
           record={`${tA.wins}–${tA.losses}`}
@@ -163,7 +163,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
           variant="clay"
         />
         <PlayerHeroBlock
-          name={f.playerB}
+          name={f.b!}
           tour={f.tour}
           winPct={pct(tB.wins, tB.total)}
           record={`${tB.wins}–${tB.losses}`}
@@ -174,7 +174,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-        <ComparisonCard title="Career" playerA={f.playerA} playerB={f.playerB}>
+        <ComparisonCard title="Career" playerA={f.a!} playerB={f.b!}>
           <CompareRow label="W–L" a={`${sumA.wins}–${sumA.losses}`} b={`${sumB.wins}–${sumB.losses}`} better="none" />
           <CompareRow label="Win %" a={`${pct(sumA.wins, sumA.total)}%`} b={`${pct(sumB.wins, sumB.total)}%`} />
           <CompareRow label="Peak rank" a={sumA.career_high_rank ? `#${sumA.career_high_rank}` : '—'} b={sumB.career_high_rank ? `#${sumB.career_high_rank}` : '—'} better="lower" />
@@ -188,7 +188,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
 
         <div className="space-y-3">
           {hasServe && (
-            <ComparisonCard title="Serve" playerA={f.playerA} playerB={f.playerB}>
+            <ComparisonCard title="Serve" playerA={f.a!} playerB={f.b!}>
               <CompareRow label="Ace %" a={fmtPct(serveA['ace%'])} b={fmtPct(serveB['ace%'])} />
               <CompareRow label="Double fault %" a={fmtPct(serveA['df%'])} b={fmtPct(serveB['df%'])} better="lower" />
               <CompareRow label="1st in %" a={fmtPct(serveA['1st_in%'])} b={fmtPct(serveB['1st_in%'])} />
@@ -198,7 +198,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
             </ComparisonCard>
           )}
           {hasReturn && (
-            <ComparisonCard title="Return" playerA={f.playerA} playerB={f.playerB}>
+            <ComparisonCard title="Return" playerA={f.a!} playerB={f.b!}>
               <CompareRow label="1st return won %" a={fmtPct(returnA['1st_return_win%'])} b={fmtPct(returnB['1st_return_win%'])} />
               <CompareRow label="2nd return won %" a={fmtPct(returnA['2nd_return_win%'])} b={fmtPct(returnB['2nd_return_win%'])} />
               <CompareRow label="BP converted %" a={fmtPct(returnA['bp_converted%'])} b={fmtPct(returnB['bp_converted%'])} />
@@ -216,8 +216,8 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
                 <ServeRadarChart
                   percentiles={servePctA}
                   percentilesB={servePctB}
-                  labelA={lastName(f.playerA)}
-                  labelB={lastName(f.playerB)}
+                  labelA={lastName(f.a!)}
+                  labelB={lastName(f.b!)}
                   title="Serve"
                   tour={f.tour}
                 />
@@ -228,8 +228,8 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
                 <ReturnRadarChart
                   percentiles={returnPctA}
                   percentilesB={returnPctB}
-                  labelA={lastName(f.playerA)}
-                  labelB={lastName(f.playerB)}
+                  labelA={lastName(f.a!)}
+                  labelB={lastName(f.b!)}
                   title="Return"
                   tour={f.tour}
                 />
@@ -245,12 +245,12 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {rankA && rankA.length > 0 && (
               <div className="ba-card">
-                <RankHistoryChart data={rankA} careerHigh={sumA.career_high_rank} color={CHART.clay} title={f.playerA} label={lastName(f.playerA)} />
+                <RankHistoryChart data={rankA} careerHigh={sumA.career_high_rank} color={CHART.clay} title={f.a!} label={lastName(f.a!)} />
               </div>
             )}
             {rankB && rankB.length > 0 && (
               <div className="ba-card">
-                <RankHistoryChart data={rankB} careerHigh={sumB.career_high_rank} color={CHART.ink} title={f.playerB} label={lastName(f.playerB)} />
+                <RankHistoryChart data={rankB} careerHigh={sumB.career_high_rank} color={CHART.ink} title={f.b!} label={lastName(f.b!)} />
               </div>
             )}
           </div>
@@ -265,8 +265,8 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
               data={surfaceData}
               xKey="surface"
               groups={[
-                { key: f.playerA, color: CHART.clay, label: lastName(f.playerA) },
-                { key: f.playerB, color: CHART.ink, label: lastName(f.playerB) },
+                { key: f.a!, color: CHART.clay, label: lastName(f.a!) },
+                { key: f.b!, color: CHART.ink, label: lastName(f.b!) },
               ]}
               yLabel="Win %"
             />

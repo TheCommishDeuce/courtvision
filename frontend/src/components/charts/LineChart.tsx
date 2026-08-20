@@ -1,7 +1,7 @@
 import {
   LineChart as RcLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
-import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS } from './theme';
+import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS, CHART_FS } from './theme';
 
 interface LineChartProps {
   data: { x: string | number; y: number; wins?: number; total?: number }[];
@@ -25,10 +25,10 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   const y = typeof item.value === 'number' ? item.value : d.y;
   return (
     <div className={TOOLTIP_CLASS}>
-      <div className="ba-mono font-bold text-[var(--ink)] mb-0.5">{d.x}</div>
-      <div className="ba-mono text-[var(--ink-2)]">
-        Win %: <span className="font-bold text-[var(--clay)]">{y.toFixed(1)}%</span>
-        {d.wins != null && <span className="text-[var(--mute)] ml-1">({d.wins}/{d.total})</span>}
+      <div className="ba-mono font-bold text-ink mb-0.5">{d.x}</div>
+      <div className="ba-mono text-ink-2">
+        Win %: <span className="font-bold text-clay">{y.toFixed(1)}%</span>
+        {d.wins != null && <span className="text-mute ml-1">({d.wins}/{d.total})</span>}
       </div>
     </div>
   );
@@ -42,10 +42,10 @@ export default function LineChart({ data, title, color = CHART.clay, referenceLi
       <ResponsiveContainer width="100%" height={240}>
         <RcLineChart data={data} margin={{ top: 6, right: 16, left: 0, bottom: 4 }}>
           <CartesianGrid {...GRID_PROPS} />
-          <XAxis dataKey="x" tick={monoTick(10, CHART.tickMute)} {...AXIS_PROPS} />
+          <XAxis dataKey="x" tick={monoTick(CHART_FS.tick, CHART.tickMute)} {...AXIS_PROPS} />
           <YAxis
             domain={[0, 100]}
-            tick={monoTick(10, CHART.tickMute)}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
             tickFormatter={v => `${v}%`}
             width={34}
             {...AXIS_PROPS}

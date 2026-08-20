@@ -16,9 +16,9 @@ const TONE_RULE: Record<NonNullable<Props['tone']>, string> = {
 export default function MetricCard({ label, value, tone = 'default', sub }: Props) {
   return (
     <div className="ba-card px-3 py-2.5 text-center" style={{ borderTopColor: TONE_RULE[tone] }}>
-      <div className="ba-stat-sm leading-none text-[var(--ink)]">{value ?? '—'}</div>
+      <div className="ba-stat-sm leading-none text-ink">{value ?? '—'}</div>
       <div className="ba-label mt-1.5">{label}</div>
-      {sub && <div className="ba-mono ba-agate mt-0.5 text-[var(--mute)]">{sub}</div>}
+      {sub && <div className="ba-mono ba-agate mt-0.5 text-mute">{sub}</div>}
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function ProfileTable({
 }) {
   return (
     <div className="ba-card p-0 overflow-hidden">
-      <div className="px-2.5 py-1.5 border-b border-[var(--rule-ink)] bg-[var(--paper-sunken)]">
+      <div className="px-2.5 py-1.5 border-b border-rule-ink bg-paper-sunken">
         <h3 className="ba-board-title">{title}</h3>
       </div>
 
@@ -30,7 +30,7 @@ export default function ProfileTable({
           <div className="sm:hidden divide-y divide-[var(--rule)]">
             {rows.map((row, i) => (
               <div key={i} className="px-2.5 py-2">
-                <div className="ba-record-title ba-cell font-semibold text-[var(--ink)] mb-1">
+                <div className="ba-record-title ba-cell font-semibold text-ink mb-1">
                   {row[cardTitleIndex] ?? row[0]}
                 </div>
                 {row.map((cell, j) =>
@@ -59,7 +59,7 @@ export default function ProfileTable({
                 {rows.map((row, i) => (
                   <tr key={i}>
                     {row.map((cell, j) => (
-                      <td key={j} className="ba-cell text-[var(--ink-2)]">{cell ?? '—'}</td>
+                      <td key={j} className="ba-cell text-ink-2">{cell ?? '—'}</td>
                     ))}
                   </tr>
                 ))}

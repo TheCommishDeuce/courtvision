@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
-import Navbar from './components/ui/Navbar';
-import ErrorBoundary from './components/ui/ErrorBoundary';
-import Spinner from './components/ui/Spinner';
+import Navbar from './components/primitives/Navbar';
+import ErrorBoundary from './components/primitives/ErrorBoundary';
+import Spinner from './components/primitives/Spinner';
 import { useMetaStats } from './hooks';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -28,9 +28,12 @@ function RedirectTo({ to }: { to: string }) {
 function Footer() {
   const { data: stats } = useMetaStats();
   return (
-    <footer className="border-t border-[var(--rule-ink)] bg-[var(--paper)] mt-[var(--space-xl)]">
-      <div className="ba-canvas py-[var(--space-sm)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <p className="ba-cell text-[var(--ink-2)] max-w-2xl">
+    <footer className="border-t border-rule bg-paper-sunken mt-[var(--space-xl)]">
+      <div className="ba-canvas py-[var(--space-md)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        {/* No max-width: the line is short enough to sit beside the dateline
+            on a desktop, and wrapping it there for no reason looked like a
+            mistake. It still wraps when the viewport actually runs out. */}
+        <p className="ba-cell text-ink-2">
           Match data from Jeff Sackmann's{' '}
           <a href="https://www.tennisabstract.com" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
             Tennis Abstract
@@ -51,7 +54,7 @@ function Footer() {
 
 function NotFound() {
   return (
-    <div className="py-20 text-center">
+    <div className="py-[var(--space-2xl)] text-center">
       <div className="ba-eyebrow mb-2">No such page</div>
       <h1 className="ba-h2 mb-1">That address isn't part of this site</h1>
       <p className="ba-body mb-5 max-w-md mx-auto">
@@ -64,9 +67,9 @@ function NotFound() {
 
 export default function App() {
   return (
-    <div className="min-h-dvh bg-[var(--paper)] flex flex-col text-[var(--ink)]">
+    <div className="min-h-dvh bg-paper flex flex-col text-ink">
       <Navbar />
-      <main className="ba-canvas py-[var(--space-md)] w-full flex-1">
+      <main className="ba-canvas py-[var(--space-lg)] w-full flex-1">
         <ErrorBoundary>
           <Suspense fallback={<Spinner />}>
             <Routes>

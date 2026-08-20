@@ -1,5 +1,5 @@
 import StatTable from '../../tables/StatTable';
-import SectionHeader from '../../ui/SectionHeader';
+import SectionHeader from '../../primitives/SectionHeader';
 import type { PlayerMilestones, TopNRecords } from '../../../types/tennis';
 
 export function MilestonesRecordsSection({ milestones, topN }: { milestones?: PlayerMilestones; topN?: TopNRecords }) {

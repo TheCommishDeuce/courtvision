@@ -24,7 +24,7 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-0.5 w-full sm:min-w-[280px] sm:w-auto">
       <span className="ba-label">
-        Years <span className="text-[var(--ink)]">{local[0]}–{local[1]}</span>
+        Years <span className="text-ink">{local[0]}–{local[1]}</span>
       </span>
       <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
         <input
@@ -39,7 +39,7 @@ export default function YearRangeSlider({ min, max, value, onChange }: Props) {
           }}
           className="ba-range w-full accent-[var(--clay)]"
         />
-        <span className="ba-mono ba-agate text-[var(--mute)]">to</span>
+        <span className="ba-mono ba-agate text-mute">to</span>
         <input
           type="range"
           aria-label="End year"

@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuerySchema } from '../../../hooks';
 import { downloadQueryCsv, runQuery, type QueryResult } from '../../../api/client';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
 import SchemaReference from './SchemaReference';
 import {
   RELATIONS,
@@ -86,7 +86,7 @@ function FilterControl({
           aria-label={`${def.label} minimum`}
           className="ba-input flex-1 min-w-0"
         />
-        <span className="ba-mono ba-agate text-[var(--mute)] shrink-0">to</span>
+        <span className="ba-mono ba-agate text-mute shrink-0">to</span>
         <input
           value={value?.max ?? ''}
           onChange={e => onChange({ ...value, max: e.target.value })}
@@ -188,7 +188,7 @@ export default function QueryBuilder() {
         num: result?.rows.some(r => typeof r[i] === 'number') ?? false,
         cell: (row: Row) => {
           const v = row[i];
-          if (v === null) return <span className="text-[var(--rule-mid)]">null</span>;
+          if (v === null) return <span className="text-rule-mid">null</span>;
           if (typeof v === 'boolean') return <span className="ba-mono ba-meta">{String(v)}</span>;
           if (typeof v === 'number') return <span className="ba-mono">{v.toLocaleString()}</span>;
           return <span className="whitespace-nowrap">{v}</span>;
@@ -203,7 +203,7 @@ export default function QueryBuilder() {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_18rem] gap-4 items-start">
       <div className="space-y-4 min-w-0">
         {/* Relation */}
-        <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
+        <section className="ba-well px-3 py-2.5">
           <div className="ba-label mb-1.5">Table</div>
           <div className="flex flex-wrap gap-1.5">
             {RELATIONS.map(r => (
@@ -246,10 +246,10 @@ export default function QueryBuilder() {
                   type="button"
                   onClick={() => setColumns(prev => prev.filter(x => x !== c))}
                   title={`Remove ${c}`}
-                  className="ba-touch ba-mono ba-meta px-1.5 py-[2px] border border-[var(--rule-ink)]
-                             bg-[var(--paper-raised)] hover:border-[var(--clay)] hover:text-[var(--clay-deep)]"
+                  className="ba-touch ba-mono ba-meta px-1.5 py-[2px] border border-rule-ink
+                             bg-paper-raised hover:border-clay hover:text-clay-deep"
                 >
-                  {c} <span className="text-[var(--mute)]">×</span>
+                  {c} <span className="text-mute">×</span>
                 </button>
               ))}
               {columns.length === 0 && <span className="ba-kicker">All columns (*)</span>}
@@ -257,7 +257,7 @@ export default function QueryBuilder() {
                 <button
                   type="button"
                   onClick={() => setColumns([])}
-                  className="ba-touch ba-mono ba-agate text-[var(--mute)] hover:text-[var(--clay)] ml-1"
+                  className="ba-touch ba-mono ba-agate text-mute hover:text-clay ml-1"
                 >
                   clear
                 </button>
@@ -364,9 +364,9 @@ export default function QueryBuilder() {
         {/* Results */}
         <section>
           {error && (
-            <div className="ba-card-flat border-t-2 border-t-[var(--clay)] px-3 py-2.5">
+            <div className="ba-card-flat border-clay px-3 py-2.5">
               <div className="ba-eyebrow mb-1">Query error</div>
-              <pre className="ba-mono ba-meta text-[var(--ink)] whitespace-pre-wrap">{error}</pre>
+              <pre className="ba-mono ba-meta text-ink whitespace-pre-wrap">{error}</pre>
             </div>
           )}
 

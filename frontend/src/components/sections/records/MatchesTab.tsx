@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMatchExtremes } from '../../../hooks';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
-import QueryError from '../../ui/QueryError';
-import EmptyState from '../../ui/EmptyState';
-import SurfaceTag from '../../ui/SurfaceTag';
-import MatchStatsPanel, { type SideStats } from '../../ui/MatchStatsPanel';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
+import QueryError from '../../primitives/QueryError';
+import EmptyState from '../../primitives/EmptyState';
+import SurfaceTag from '../../primitives/SurfaceTag';
+import MatchStatsPanel, { type SideStats } from '../../primitives/MatchStatsPanel';
 import { fmtTime, lastName } from '../../../utils';
 import type { MatchExtremeRow } from '../../../types/tennis';
 import type { RecordsFilters } from './sources';
@@ -74,7 +74,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       key: '__rank',
       header: '#',
       hideOnCard: true,
-      cell: (_r, i) => <span className="ba-mono ba-meta text-[var(--mute)]">{i + 1}</span>,
+      cell: (_r, i) => <span className="ba-mono ba-meta text-mute">{i + 1}</span>,
     },
     {
       key: 'metric_value',
@@ -83,7 +83,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       num: true,
       accentHeader: true,
       cell: r => (
-        <span className="font-bold text-[var(--clay)]">
+        <span className="font-bold text-clay">
           {r.metric_value == null ? '—' : m.fmt ? m.fmt(r.metric_value) : r.metric_value.toLocaleString()}
         </span>
       ),
@@ -93,7 +93,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: r => (
-        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-mute whitespace-nowrap">
           {r.date?.slice(0, 10)}
         </span>
       ),
@@ -106,7 +106,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       cell: r => (
         <Link
           to={`/tournament?t=${encodeURIComponent(r.tournament)}&year=${r.year}&tour=${r.tour}`}
-          className="text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+          className="text-ink-2 hover:text-clay-deep"
         >
           {r.tournament}
         </Link>
@@ -117,7 +117,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       key: 'round',
       header: 'Rnd',
       hideOnCard: true,
-      cell: r => <span className="ba-mono ba-meta text-[var(--ink-2)]">{r.round}</span>,
+      cell: r => <span className="ba-mono ba-meta text-ink-2">{r.round}</span>,
     },
     {
       key: 'winner_name',
@@ -126,7 +126,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       cell: r => (
         <Link
           to={`/player?p=${encodeURIComponent(r.winner_name)}&tour=${r.tour}`}
-          className="font-semibold whitespace-nowrap text-[var(--ink)] hover:text-[var(--clay-deep)]"
+          className="font-semibold whitespace-nowrap text-ink hover:text-clay-deep"
         >
           {r.winner_name}
         </Link>
@@ -139,7 +139,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
       cell: r => (
         <Link
           to={`/player?p=${encodeURIComponent(r.loser_name)}&tour=${r.tour}`}
-          className="whitespace-nowrap text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+          className="whitespace-nowrap text-ink-2 hover:text-clay-deep"
         >
           {r.loser_name}
         </Link>
@@ -156,7 +156,7 @@ export default function MatchesTab({ filters }: { filters: RecordsFilters }) {
     <div className="space-y-4">
       <SectionHeader title="Match extremes" kicker="Top 50 · click a row for point stats" />
 
-      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
+      <div className="ba-well px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <label className="flex flex-col gap-0.5">
             <span className="ba-label">Rank by</span>

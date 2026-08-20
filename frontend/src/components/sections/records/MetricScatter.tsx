@@ -13,11 +13,11 @@ import {
   ZAxis,
 } from 'recharts';
 import { useComebackScatter } from '../../../hooks';
-import Spinner from '../../ui/Spinner';
-import QueryError from '../../ui/QueryError';
-import EmptyState from '../../ui/EmptyState';
-import SectionHeader from '../../ui/SectionHeader';
-import { CHART, GRID_PROPS, monoTick, TOOLTIP_CLASS } from '../../charts/theme';
+import Spinner from '../../primitives/Spinner';
+import QueryError from '../../primitives/QueryError';
+import EmptyState from '../../primitives/EmptyState';
+import SectionHeader from '../../primitives/SectionHeader';
+import { CHART, GRID_PROPS, monoTick, TOOLTIP_CLASS, CHART_FS } from '../../charts/theme';
 import type { ComebackScatterPoint } from '../../../types/tennis';
 import type { RecordsFilters } from './sources';
 
@@ -197,8 +197,8 @@ function ChartTooltip({ active, payload }: TooltipProps) {
   const p = payload[0].payload;
   return (
     <div className={TOOLTIP_CLASS}>
-      <div className="font-semibold text-[var(--ink)]">{p.player_name}</div>
-      <div className="ba-mono ba-agate text-[var(--mute)] mb-1">
+      <div className="font-semibold text-ink">{p.player_name}</div>
+      <div className="ba-mono ba-agate text-mute mb-1">
         rank #{p.current_rank}
         {p.country ? ` · ${p.country}` : ''}
       </div>
@@ -341,7 +341,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
         kicker="Two player metrics against each other · click a point to name it"
       />
 
-      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5 mb-3">
+      <div className="ba-well px-3 py-2.5 mb-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex flex-col gap-0.5 sm:w-40">
             <span className="ba-label">Cohort</span>
@@ -389,7 +389,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
       ) : (
         <>
           <div className="flex justify-end mb-1"><Legend /></div>
-          <div className="h-[520px] w-full border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] bg-[var(--paper-raised)] pt-3 pr-3">
+          <div className="h-[360px] sm:h-[460px] xl:h-[520px] w-full rounded-[var(--r-md)] border border-rule bg-paper-raised pt-3 pr-3">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 18, right: 24, bottom: 42, left: 8 }}>
                 <CartesianGrid {...GRID_PROPS} />
@@ -398,14 +398,14 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
                   dataKey="x_value"
                   name={metricLabel(xMetric)}
                   domain={xDomain}
-                  tick={monoTick(10, CHART.tickMute)}
+                  tick={monoTick(CHART_FS.tick, CHART.tickMute)}
                   tickLine={false}
                   axisLine={{ stroke: CHART.axis }}
                   label={{
                     value: metricLabel(xMetric),
                     position: 'insideBottom',
                     offset: -24,
-                    fontSize: 10,
+                    fontSize: CHART_FS.label,
                     fill: CHART.tickMute,
                     fontFamily: 'JetBrains Mono',
                   }}
@@ -415,7 +415,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
                   dataKey="y_value"
                   name={metricLabel(yMetric)}
                   domain={yDomain}
-                  tick={monoTick(10, CHART.tickMute)}
+                  tick={monoTick(CHART_FS.tick, CHART.tickMute)}
                   tickLine={false}
                   axisLine={{ stroke: CHART.axis }}
                   width={44}
@@ -423,7 +423,7 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
                     value: metricLabel(yMetric),
                     angle: -90,
                     position: 'insideLeft',
-                    fontSize: 10,
+                    fontSize: CHART_FS.label,
                     fill: CHART.tickMute,
                     fontFamily: 'JetBrains Mono',
                   }}
@@ -455,13 +455,13 @@ export default function MetricScatter({ filters }: { filters: RecordsFilters }) 
             </ResponsiveContainer>
           </div>
 
-          <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[var(--rule)] mt-2 pt-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-rule mt-2 pt-2">
             <span className="ba-kicker">
               {data?.meta.source}
               {data?.meta.level ? ` · ${data.meta.level}` : ' · all levels'}
               {data?.meta.surface ? ` · ${data.meta.surface}` : ''}
             </span>
-            <span className="ba-mono ba-agate text-[var(--mute)]">
+            <span className="ba-mono ba-agate text-mute">
               Median {formatMetricValue(medianX, xMetric)} {metricLabel(xMetric)} ·{' '}
               {formatMetricValue(medianY, yMetric)} {metricLabel(yMetric)}
             </span>

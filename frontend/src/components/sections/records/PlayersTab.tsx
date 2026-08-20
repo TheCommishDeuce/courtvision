@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import StatBoard, { type BoardRow } from '../../ui/StatBoard';
-import AdaptiveTable from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
-import QueryError from '../../ui/QueryError';
+import StatBoard, { type BoardRow } from '../../primitives/StatBoard';
+import AdaptiveTable from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
+import QueryError from '../../primitives/QueryError';
 import {
   BOARDS,
   BOARD_SUB,

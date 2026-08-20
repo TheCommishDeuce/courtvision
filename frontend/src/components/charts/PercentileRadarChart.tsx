@@ -8,7 +8,7 @@ import {
   Legend,
   Tooltip,
 } from 'recharts';
-import { CHART, TOOLTIP_STYLE, LEGEND_STYLE, monoTick, LINE_WIDTH } from './theme';
+import { CHART, TOOLTIP_STYLE, LEGEND_STYLE, monoTick, LINE_WIDTH, CHART_FS } from './theme';
 
 interface Props<T extends { tour_size?: number }> {
   percentiles: T;
@@ -41,7 +41,7 @@ export default function PercentileRadarChart<T extends { tour_size?: number }>({
       <ResponsiveContainer width="100%" height={250}>
         <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 6, left: 30 }}>
           <PolarGrid stroke={CHART.grid} />
-          <PolarAngleAxis dataKey="subject" tick={monoTick(10, CHART.tickMute)} />
+          <PolarAngleAxis dataKey="subject" tick={monoTick(CHART_FS.tick, CHART.tickMute)} />
           <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
           <Radar
             name={labelA}

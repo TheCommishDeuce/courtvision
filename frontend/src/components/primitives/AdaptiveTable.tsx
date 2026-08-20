@@ -110,15 +110,15 @@ export default function AdaptiveTable<T>({
           const isOpen = openKey === key;
           return (
             <article key={key} className={`ba-record-card ${flag?.(row) ? 'flag' : ''}`}>
-              <div className="ba-cell font-semibold text-[var(--ink)] leading-snug">
+              <div className="ba-cell font-semibold text-ink leading-snug">
                 {cardTitle ? cardTitle(row) : columns[0].cell(row, offset + i)}
               </div>
               {cardMeta && (
-                <div className="ba-mono ba-meta text-[var(--mute)] mt-0.5 mb-1.5">
+                <div className="ba-mono ba-meta text-mute mt-0.5 mb-1.5">
                   {cardMeta(row)}
                 </div>
               )}
-              <div className="mt-1.5 pt-1.5 border-t border-[var(--rule)]">
+              <div className="mt-1.5 pt-1.5 border-t border-rule">
                 {cardFields.map(c => (
                   <div key={c.key} className="ba-record-field">
                     <span className="ba-label">{c.cardLabel ?? c.header}</span>
@@ -132,7 +132,7 @@ export default function AdaptiveTable<T>({
                     type="button"
                     onClick={() => setOpenKey(isOpen ? null : key)}
                     aria-expanded={isOpen}
-                    className="ba-label ba-touch mt-1.5 hover:text-[var(--clay)]"
+                    className="ba-label ba-touch mt-1.5 hover:text-clay"
                   >
                     {isOpen ? 'Hide match stats' : 'Show match stats'}
                   </button>
@@ -146,7 +146,7 @@ export default function AdaptiveTable<T>({
 
       {/* Table — wide viewports */}
       <div className={bp.table}>
-        <div className="ba-scroller border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
+        <div className="ba-scroller border border-rule">
           <table
             className={`ba-table ${DENSITY_CLASS[density]} ${pinFirst ? 'ba-table-pinned' : ''}`}
           >
@@ -156,7 +156,7 @@ export default function AdaptiveTable<T>({
                   <th
                     key={c.key}
                     scope="col"
-                    className={`${c.num ? 'num' : ''} ${c.accentHeader ? 'text-[var(--clay)]' : ''}`}
+                    className={`${c.num ? 'num' : ''} ${c.accentHeader ? 'text-clay' : ''}`}
                   >
                     {c.header}
                   </th>
@@ -171,7 +171,7 @@ export default function AdaptiveTable<T>({
                   <Fragment key={key}>
                     <tr
                       className={`${flag?.(row) ? 'flag' : ''} ${expand ? 'cursor-pointer' : ''} ${
-                        isOpen ? 'bg-[var(--clay-wash)]' : ''
+                        isOpen ? 'bg-clay-wash' : ''
                       }`}
                       {...(expand
                         ? {
@@ -191,7 +191,7 @@ export default function AdaptiveTable<T>({
                       {columns.map((c, ci) => (
                         <td key={c.key} className={`${c.num ? 'num' : ''} ${c.className ?? ''}`}>
                           {expand && ci === 0 && (
-                            <span className="ba-mono ba-agate text-[var(--mute)] mr-1">
+                            <span className="ba-mono ba-agate text-mute mr-1">
                               {isOpen ? '▾' : '▸'}
                             </span>
                           )}
@@ -224,7 +224,7 @@ export default function AdaptiveTable<T>({
           >
             ← Prev
           </button>
-          <span className="ba-mono ba-meta text-[var(--mute)]">
+          <span className="ba-mono ba-meta text-mute">
             Page {safePage + 1} / {pages} · {rows.length.toLocaleString()} {unit}
           </span>
           <button

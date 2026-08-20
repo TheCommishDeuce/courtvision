@@ -34,12 +34,12 @@ export default function PlayerAutocomplete({
         className="ba-input w-full min-w-0"
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute top-full left-0 z-20 bg-[var(--paper-raised)] border border-[var(--rule-ink)] max-h-48 overflow-y-auto w-full text-sm">
+        <ul className="absolute top-full left-0 z-20 mt-1 w-full max-h-48 overflow-y-auto rounded-[var(--r-sm)] border border-rule bg-paper-raised shadow-[var(--shadow-2)]">
           {filtered.map(p => (
             <li
               key={p}
               onMouseDown={() => { onChange(p); setOpen(false); }}
-              className="px-2.5 py-1 ba-cell hover:bg-[var(--clay-wash)] cursor-pointer text-[var(--ink)]"
+              className="px-2.5 py-1 ba-cell hover:bg-clay-wash cursor-pointer text-ink"
             >
               {p}
             </li>

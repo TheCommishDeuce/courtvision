@@ -25,8 +25,8 @@ type Props = {
 
 const RULE: Record<Level, string> = {
   page: 'ba-double-rule pb-2 mb-5',
-  section: 'border-b border-[var(--rule-ink)] pb-1.5 mb-4',
-  sub: 'border-b border-[var(--rule)] pb-1.5 mb-3',
+  section: 'border-b border-rule-ink pb-1.5 mb-4',
+  sub: 'border-b border-rule pb-1.5 mb-3',
 };
 
 export default function SectionHeader({

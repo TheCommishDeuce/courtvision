@@ -41,20 +41,20 @@ export function PlayerHeader({
         {player ? (
           <>
             {given && `${given} `}
-            <span className="text-[var(--clay)]">{surname}</span>
+            <span className="text-clay">{surname}</span>
           </>
         ) : (
-          <span className="text-[var(--mute)]">No player selected</span>
+          <span className="text-mute">No player selected</span>
         )}
       </h1>
       {submitted && summary && (summary.country || facts.length > 0) && (
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 ba-mono ba-meta text-[var(--ink-2)]">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 ba-mono ba-meta text-ink-2">
           {summary.country && (
-            <span className="font-bold text-[var(--ink)]">{countryDisplay(summary.country)}</span>
+            <span className="font-bold text-ink">{countryDisplay(summary.country)}</span>
           )}
           {facts.map(fact => (
             <span key={fact} className="flex items-center gap-2.5">
-              <span aria-hidden="true" className="text-[var(--rule-mid)]">·</span>
+              <span aria-hidden="true" className="text-rule-mid">·</span>
               {fact}
             </span>
           ))}

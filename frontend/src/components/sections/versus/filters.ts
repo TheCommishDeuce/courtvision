@@ -1,26 +1,32 @@
-/** The one filter object both halves of the Versus page read from. */
-export interface VersusFilters {
-  tour: string;
-  playerA: string;
-  playerB: string;
-  surface: string;
-  level: string;
-  yearRange: [number, number];
-  /** False until both players are chosen and the pair is submitted. */
-  enabled: boolean;
-}
+import { z } from 'zod';
 
-/**
- * Filters the player-profile endpoints accept. They take surface and years but
- * not level, so the career half follows surface and years while `level` narrows
- * the head-to-head only — the page says so where it matters.
- */
-export function playerParams(f: VersusFilters, player: string) {
+export const versusFilterSchema = z.object({
+  tour: z.enum(['M', 'F']),
+  a: z.string().optional(),
+  b: z.string().optional(),
+  surface: z.string(),
+  level: z.string(),
+  y0: z.coerce.number().optional(),
+  y1: z.coerce.number().optional(),
+});
+
+export type VersusFilters = z.infer<typeof versusFilterSchema> & { enabled?: boolean };
+
+export const defaultVersusFilters: VersusFilters = {
+  tour: 'M',
+  surface: 'All',
+  level: 'All Tour',
+};
+
+/** Extracts params for a single player API call from the combined versus filters. */
+export function playerParams(f: VersusFilters, p: string) {
   return {
-    player,
+    player: p,
     tour: f.tour,
     surface: f.surface === 'All' ? undefined : f.surface,
-    year_min: f.yearRange[0],
-    year_max: f.yearRange[1],
+    // The career comparison ignores the level filter — it only scopes the H2H table.
+    // Level is omitted here by design.
+    year_min: f.y0,
+    year_max: f.y1,
   };
 }

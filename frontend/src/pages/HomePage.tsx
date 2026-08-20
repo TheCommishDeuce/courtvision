@@ -5,16 +5,17 @@ import {
   useRecentUpsets,
   useStorylines,
 } from '../hooks';
-import Spinner from '../components/ui/Spinner';
-import QueryError from '../components/ui/QueryError';
-import SectionHeader from '../components/ui/SectionHeader';
-import SurfaceTag from '../components/ui/SurfaceTag';
-import AdaptiveTable, { type Column } from '../components/tables/AdaptiveTable';
+import Spinner from '../components/primitives/Spinner';
+import QueryError from '../components/primitives/QueryError';
+import SectionHeader from '../components/primitives/SectionHeader';
+import SurfaceTag from '../components/primitives/SurfaceTag';
+import AdaptiveTable, { type Column } from '../components/primitives/AdaptiveTable';
 import type { RecentChampion, RecentUpset } from '../types/tennis';
 
 /**
- * The counts that prove the claim in the lede, set as a hairline strip
- * directly under it — a broadsheet dateline carrying figures.
+ * The counts that prove the claim in the lede, set as one scoreboard panel
+ * directly under it. Four cells on a wide screen, two on a phone; the lead
+ * figure takes the spark colour so the eye lands on the headline number.
  */
 function Ledger({ className = '' }: { className?: string }) {
   const { data: stats } = useMetaStats();
@@ -28,41 +29,61 @@ function Ledger({ className = '' }: { className?: string }) {
   ];
 
   return (
-    // gap-px over a rule-coloured ground: the gaps *are* the hairlines, so the
-    // grid rules itself correctly at every wrap point.
-    <dl className={`grid grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--rule)]
-                   border-t-2 border-[var(--rule-ink)] border-b border-[var(--rule)] ${className}`}>
+    // gap-px over a lighter ground: the gaps *are* the hairlines, so the panel
+    // rules itself correctly at whichever column count the width picks.
+    <dl
+      className={`grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden
+                  rounded-[var(--r-lg)] bg-white/10 shadow-[var(--shadow-2)] ${className}`}
+    >
       {cells.map(c => (
-        <div key={c.label} className="bg-[var(--paper)] px-[var(--space-sm)] py-[var(--space-xs)]">
-          <dt className="ba-label mb-1">{c.label}</dt>
-          <dd className={`ba-stat-sm ${c.lead ? 'text-[var(--clay)]' : 'text-[var(--ink)]'}`}>
-            {c.value}
-          </dd>
+        <div key={c.label} className="bg-score px-[var(--space-md)] py-[var(--space-sm)]">
+          <dt className="ba-label text-on-clay-soft mb-1">{c.label}</dt>
+          <dd className={`ba-stat-sm ${c.lead ? 'text-spark' : 'text-on-clay'}`}>{c.value}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
-function PlayerLink({ name, tour, strong }: { name: string; tour: string; strong?: boolean }) {
+function PlayerLink({
+  name,
+  tour,
+  strong,
+  className = '',
+}: {
+  name: string;
+  tour: string;
+  strong?: boolean;
+  className?: string;
+}) {
   return (
     <Link
       to={`/player?p=${encodeURIComponent(name)}&tour=${tour}`}
-      className={
+      title={name}
+      className={`${
         strong
-          ? 'font-semibold text-[var(--ink)] hover:text-[var(--clay-deep)]'
-          : 'text-[var(--ink-2)] hover:text-[var(--clay-deep)]'
-      }
+          ? 'font-semibold text-ink hover:text-clay-deep'
+          : 'text-ink-2 hover:text-clay-deep'
+      } ${className}`}
     >
       {name}
     </Link>
   );
 }
 
+/**
+ * One row per match, always — a name long enough to wrap turns a six-row table
+ * into a nine-row one and the column stops scanning. `max-w-[1px]` with a
+ * percentage width is the table-cell truncation idiom: the browser allocates
+ * the percentage and the cell can no longer grow past it, so the inner span
+ * ellipsises. The full name stays in the `title`.
+ */
+const CLIP = 'max-w-[1px] overflow-hidden';
+
 /** Shared head for a tour block inside a column. */
 function BlockHead({ label, to, more }: { label: string; to: string; more: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-2 border-b border-[var(--rule)] pb-1 mb-1.5">
+    <div className="flex items-baseline justify-between gap-2 border-b border-rule pb-1 mb-1.5">
       <h3 className="ba-board-title">{label}</h3>
       <Link to={to} className="ba-board-more ba-link ba-touch">{more} →</Link>
     </div>
@@ -94,31 +115,39 @@ function UpsetsColumn({ tour, label }: { tour: string; label: string }) {
       // The stacked card already names both players in its headline, so the
       // card carries only what that headline does not contain.
       hideOnCard: true,
+      className: `${CLIP} w-[31%]`,
       cell: u => (
-        <>
-          <PlayerLink name={u.winner_name} tour={tour} strong />
-          {u.winner_rank && <span className="ba-mono ba-agate text-[var(--mute)] ml-1">#{u.winner_rank}</span>}
-        </>
+        <span className="flex items-baseline gap-1 min-w-0">
+          <PlayerLink name={u.winner_name} tour={tour} strong className="truncate min-w-0" />
+          {u.winner_rank && (
+            <span className="ba-mono ba-agate text-mute shrink-0">#{u.winner_rank}</span>
+          )}
+        </span>
       ),
     },
     {
       key: 'loser',
       header: 'Beat',
       hideOnCard: true,
+      className: `${CLIP} w-[29%]`,
       cell: u => (
-        <>
-          <PlayerLink name={u.loser_name} tour={tour} />
-          {u.loser_rank && <span className="ba-mono ba-agate text-[var(--mute)] ml-1">#{u.loser_rank}</span>}
-        </>
+        <span className="flex items-baseline gap-1 min-w-0">
+          <PlayerLink name={u.loser_name} tour={tour} className="truncate min-w-0" />
+          {u.loser_rank && (
+            <span className="ba-mono ba-agate text-mute shrink-0">#{u.loser_rank}</span>
+          )}
+        </span>
       ),
     },
     {
       key: 'event',
       header: 'Event',
+      className: `${CLIP} w-[26%]`,
       cell: u => (
         <Link
           to={`/tournament?t=${encodeURIComponent(u.tournament)}&year=${u.date?.slice(0, 4)}&tour=${tour}`}
-          className="ba-link-quiet"
+          title={u.tournament}
+          className="ba-link-quiet block truncate"
         >
           {u.tournament}
         </Link>
@@ -131,7 +160,7 @@ function UpsetsColumn({ tour, label }: { tour: string; label: string }) {
       accentHeader: true,
       cardLabel: 'Ranking places',
       cell: u => (
-        <span className="font-bold text-[var(--clay)]">
+        <span className="font-bold text-clay">
           {u.rank_diff != null ? Math.round(u.rank_diff) : '—'}
         </span>
       ),
@@ -186,13 +215,12 @@ function StorylinesRow() {
           <Link
             key={`${s.type}-${i}`}
             to={s.link}
-            className="block bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]
-                       px-[var(--space-sm)] py-[var(--space-xs)] transition-colors
-                       hover:border-t-[var(--clay)] hover:bg-[var(--clay-wash)]"
+            className="ba-card-flat block px-[var(--space-md)] py-[var(--space-sm)]
+                       transition-colors hover:border-clay hover:bg-clay-wash hover:no-underline"
           >
             <div className="flex items-baseline justify-between gap-2 mb-0.5">
               <span className="ba-eyebrow">{s.label ?? s.type.replace(/_/g, ' ')}</span>
-              <span className="ba-stat-sm text-[var(--ink)]">{s.value}</span>
+              <span className="ba-stat-sm text-ink">{s.value}</span>
             </div>
             {/* `detail` is deliberately not rendered: every one of them restates
                 the headline and re-appends "this season", which the section
@@ -215,7 +243,7 @@ function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
       header: 'Date',
       hideOnCard: true,
       cell: c => (
-        <span className="ba-mono ba-agate text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-agate text-mute whitespace-nowrap">
           {c.date?.slice(0, 10)}
         </span>
       ),
@@ -223,10 +251,12 @@ function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
     {
       key: 'event',
       header: 'Event',
+      className: `${CLIP} w-[38%]`,
       cell: c => (
         <Link
           to={`/tournament?t=${encodeURIComponent(c.tournament)}&year=${c.year}&tour=${tour}`}
-          className="ba-link-quiet"
+          title={c.tournament}
+          className="ba-link-quiet block truncate"
         >
           {c.tournament}
         </Link>
@@ -238,10 +268,9 @@ function ChampionsColumn({ tour, label }: { tour: string; label: string }) {
       header: 'Champion',
       // Already the card headline.
       hideOnCard: true,
+      className: `${CLIP} w-[34%]`,
       cell: c => (
-        <span className="whitespace-nowrap">
-          <PlayerLink name={c.winner_name} tour={tour} strong />
-        </span>
+        <PlayerLink name={c.winner_name} tour={tour} strong className="block truncate" />
       ),
     },
   ];
@@ -298,7 +327,10 @@ export default function HomePage() {
           the upsets table carries an event column too, both hold four columns,
           so equal widths let the two read as one spread rather than as a main
           table with an afterthought beside it. */}
-      <div className="ba-spread ba-spread-even">
+      {/* Two-up only from xl. Both blocks are four-column tables of full
+          player names; side by side on a 1024px laptop each one gets ~470px
+          and every name ellipsises to nothing. */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-[var(--space-lg)]">
         <section>
           <SectionHeader title="Latest champions" kicker="Most recent finals" />
           {/* The two tours are a pair under one header, not two sections. */}

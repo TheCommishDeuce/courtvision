@@ -6,16 +6,16 @@
  * density step is visible in one place. Delete this file and its route if
  * you don't want it shipping.
  */
-import SectionHeader from '../components/ui/SectionHeader';
-import StatBoard, { type BoardRow } from '../components/ui/StatBoard';
-import AdaptiveTable, { type Column } from '../components/tables/AdaptiveTable';
-import KPIBlock from '../components/ui/KPIBlock';
-import MetricCard from '../components/ui/MetricCard';
-import SplitRecord from '../components/ui/SplitRecord';
-import SurfaceTag from '../components/ui/SurfaceTag';
-import EmptyState from '../components/ui/EmptyState';
-import QueryError from '../components/ui/QueryError';
-import Spinner from '../components/ui/Spinner';
+import SectionHeader from '../components/primitives/SectionHeader';
+import StatBoard, { type BoardRow } from '../components/primitives/StatBoard';
+import AdaptiveTable, { type Column } from '../components/primitives/AdaptiveTable';
+import KPIBlock from '../components/primitives/KPIBlock';
+import MetricCard from '../components/primitives/MetricCard';
+import SplitRecord from '../components/primitives/SplitRecord';
+import SurfaceTag from '../components/primitives/SurfaceTag';
+import EmptyState from '../components/primitives/EmptyState';
+import QueryError from '../components/primitives/QueryError';
+import Spinner from '../components/primitives/Spinner';
 
 const TOKENS = [
   ['--paper', 'page field'],
@@ -26,22 +26,24 @@ const TOKENS = [
   ['--mute', 'labels, meta'],
   ['--rule', 'hairline between rows'],
   ['--rule-mid', 'hairline between blocks'],
-  ['--rule-ink', 'the heavy rule'],
-  ['--clay', 'accent text — ranks, figures'],
+  ['--rule-ink', 'the strong divider'],
+  ['--clay', 'accent — marks, ranks'],
   ['--clay-deep', 'links, hover'],
-  ['--clay-fill', 'block fills only'],
+  ['--clay-fill', 'accent fills'],
+  ['--spark', 'live/active marks only'],
+  ['--score', 'scoreboard panels'],
 ];
 
 /** The fluid ramp. Every size in the app is one of these. */
 const STEPS = [
-  ['--step--2', 'agate, eyebrow', '9 → 10.5'],
-  ['--step--1', 'label, board figure', '10.5 → 12'],
-  ['--step-0', 'table cell, body-sm', '12.5 → 14'],
-  ['--step-1', 'body', '14 → 16.5'],
-  ['--step-2', 'h3', '17 → 21'],
-  ['--step-3', 'h2, stat-sm', '22 → 34'],
-  ['--step-4', 'stat', '30 → 56'],
-  ['--step-5', 'display, masthead, hero figure', '40 → 104'],
+  ['--step--2', 'agate, eyebrow', '10 → 11'],
+  ['--step--1', 'label, board figure', '11 → 12.5'],
+  ['--step-0', 'table cell, body-sm', '13 → 14.5'],
+  ['--step-1', 'body', '14.5 → 16.5'],
+  ['--step-2', 'h3, lede', '17 → 21'],
+  ['--step-3', 'h2, stat-sm', '21 → 31'],
+  ['--step-4', 'display, stat', '28 → 46'],
+  ['--step-5', 'hero figure', '34 → 66'],
 ];
 
 const LEADERS: BoardRow[] = [
@@ -79,12 +81,12 @@ const MATCHES: MatchSample[] = [
 ];
 
 const COLUMNS: Column<MatchSample>[] = [
-  { key: 'date', header: 'Date', cell: r => <span className="ba-mono ba-meta text-[var(--mute)]">{r.date}</span>, hideOnCard: true },
+  { key: 'date', header: 'Date', cell: r => <span className="ba-mono ba-meta text-mute">{r.date}</span>, hideOnCard: true },
   { key: 'tournament', header: 'Event', cell: r => r.tournament },
   { key: 'surface', header: 'Surf', cell: r => <SurfaceTag surface={r.surface} /> },
   { key: 'round', header: 'Rnd', cell: r => <span className="ba-mono ba-meta">{r.round}</span> },
   { key: 'winner', header: 'Winner', cell: r => <span className="font-semibold">{r.winner}</span>, hideOnCard: true },
-  { key: 'loser', header: 'Loser', cell: r => <span className="text-[var(--ink-2)]">{r.loser}</span>, hideOnCard: true },
+  { key: 'loser', header: 'Loser', cell: r => <span className="text-ink-2">{r.loser}</span>, hideOnCard: true },
   { key: 'score', header: 'Score', cell: r => <span className="ba-mono ba-meta">{r.score}</span> },
   { key: 'aces', header: 'Aces', num: true, accentHeader: true, cell: r => r.aces },
 ];
@@ -93,11 +95,11 @@ function Swatch({ token, use }: { token: string; use: string }) {
   return (
     <div className="flex items-center gap-2.5">
       <span
-        className="w-8 h-8 shrink-0 border border-[var(--rule-mid)]"
+        className="w-8 h-8 shrink-0 rounded-[var(--r-sm)] border border-rule-mid"
         style={{ background: `var(${token})` }}
       />
       <span className="min-w-0">
-        <span className="ba-mono ba-meta text-[var(--ink)] block">{token}</span>
+        <span className="ba-mono ba-meta text-ink block">{token}</span>
         <span className="ba-label">{use}</span>
       </span>
     </div>
@@ -108,9 +110,9 @@ function DensityDemo({ label, cls, spec }: { label: string; cls: string; spec: s
   return (
     <div>
       <div className="ba-label mb-1">
-        {label} <span aria-hidden="true" className="text-[var(--rule-mid)]">·</span> {spec}
+        {label} <span aria-hidden="true" className="text-rule-mid">·</span> {spec}
       </div>
-      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
+      <div className="overflow-hidden rounded-[var(--r-md)] border border-rule bg-paper-raised">
         <table className={`ba-table ${cls}`}>
           <thead>
             <tr>
@@ -148,7 +150,7 @@ export default function SpecimenPage() {
         <SectionHeader
           level="sub"
           title="Colour"
-          kicker="Twelve tokens · both themes from the same names"
+          kicker="One palette · both themes from the same names"
         />
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
           {TOKENS.map(([token, use]) => (
@@ -163,15 +165,15 @@ export default function SpecimenPage() {
           title="Scale"
           kicker="Nothing in the app sets a literal font-size"
         />
-        <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)]">
+        <div className="overflow-hidden rounded-[var(--r-md)] border border-rule bg-paper-raised">
           {STEPS.map(([step, use, range]) => (
             <div
               key={step}
               className="flex flex-wrap items-baseline gap-x-[var(--space-sm)] gap-y-1
                          px-[var(--space-sm)] py-[var(--space-2xs)]
-                         border-b border-[var(--rule)] last:border-b-0"
+                         border-b border-rule last:border-b-0"
             >
-              <span className="ba-mono ba-meta text-[var(--clay)] w-[7ch] shrink-0">{step}</span>
+              <span className="ba-mono ba-meta text-clay w-[10ch] shrink-0 whitespace-nowrap">{step}</span>
               <span
                 className="ba-display leading-none min-w-0 truncate"
                 style={{ fontSize: `var(${step})` }}
@@ -179,7 +181,7 @@ export default function SpecimenPage() {
                 Aa
               </span>
               <span className="ba-label ml-auto">{use}</span>
-              <span className="ba-mono ba-agate text-[var(--mute)] w-[9ch] text-right">{range}px</span>
+              <span className="ba-mono ba-agate text-mute w-[9ch] text-right">{range}px</span>
             </div>
           ))}
         </div>
@@ -189,25 +191,25 @@ export default function SpecimenPage() {
         <SectionHeader
           level="sub"
           title="Type"
-          kicker="EB Garamond · Fraunces · Inter · JetBrains Mono"
+          kicker="Archivo · Inter · JetBrains Mono"
         />
         <div className="space-y-3">
           <div>
-            <div className="ba-label mb-0.5">.ba-display — EB Garamond 500</div>
+            <div className="ba-label mb-0.5">.ba-display — Archivo 700</div>
             <div className="ba-display">Every match on record</div>
           </div>
           <div>
-            <div className="ba-label mb-0.5">.ba-h2 — EB Garamond 600</div>
+            <div className="ba-label mb-0.5">.ba-h2 — Archivo 650</div>
             <div className="ba-h2">Titles and finals</div>
           </div>
           <div>
-            <div className="ba-label mb-0.5">.ba-h3 — EB Garamond 600</div>
+            <div className="ba-label mb-0.5">.ba-h3 — Archivo 650</div>
             <div className="ba-h3">Break points saved</div>
           </div>
           <div className="grid sm:grid-cols-2 gap-3 pt-1">
             <div>
               <div className="ba-label mb-0.5">
-                .ba-stat / .ba-stat-sm — Fraunces, display figures
+                .ba-stat / .ba-stat-sm — Archivo, tabular figures
               </div>
               <div className="ba-stat">1,071,691</div>
               <div className="ba-stat-sm mt-1">38,228</div>
@@ -216,9 +218,9 @@ export default function SpecimenPage() {
               <div className="ba-label mb-0.5">.ba-body / .ba-body-sm — Inter</div>
               <p className="ba-body">
                 The figure rule: a number that stands alone as a headline is set in
-                Fraunces. A number that sits in a column beside other numbers — table
-                cells, board rows, .ba-figure — is mono and tabular, so the column
-                lines up.
+                the display face. A number that sits in a column beside other numbers
+                — table cells, board rows, .ba-figure — is mono and tabular, so the
+                column lines up.
               </p>
             </div>
           </div>
@@ -238,9 +240,9 @@ export default function SpecimenPage() {
           kicker="One spec, three steps — and a 44px floor on any touch screen"
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <DensityDemo label="Default" cls="" spec="32 → 30px row" />
-          <DensityDemo label=".ba-table-dense" cls="ba-table-dense" spec="28px row" />
-          <DensityDemo label=".ba-table-agate" cls="ba-table-agate" spec="24px row" />
+          <DensityDemo label="Default" cls="" spec="34px row" />
+          <DensityDemo label=".ba-table-dense" cls="ba-table-dense" spec="30px row" />
+          <DensityDemo label=".ba-table-agate" cls="ba-table-agate" spec="26px row" />
         </div>
         <p className="ba-body-sm mt-[var(--space-xs)] max-w-3xl">
           Every row height is <code className="ba-mono ba-meta">max(--t-touch, n)</code>. On a fine
@@ -278,7 +280,7 @@ export default function SpecimenPage() {
           cardMeta={r => `${r.date} · ${r.tournament}`}
           unit="matches"
         />
-        <p className="ba-kicker mt-2">Clay tick in the left margin marks an upset.</p>
+        <p className="ba-kicker mt-2">Accent tick in the left margin marks an upset.</p>
       </section>
 
       <section>

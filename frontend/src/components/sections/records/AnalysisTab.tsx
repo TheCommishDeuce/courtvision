@@ -1,11 +1,11 @@
 import { useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCountries, useNationalityStage } from '../../../hooks';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import SectionHeader from '../../ui/SectionHeader';
-import Spinner from '../../ui/Spinner';
-import QueryError from '../../ui/QueryError';
-import EmptyState from '../../ui/EmptyState';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import SectionHeader from '../../primitives/SectionHeader';
+import Spinner from '../../primitives/Spinner';
+import QueryError from '../../primitives/QueryError';
+import EmptyState from '../../primitives/EmptyState';
 import MetricScatter from './MetricScatter';
 import type { NationalityStageRow } from '../../../types/tennis';
 import type { RecordsFilters } from './sources';
@@ -53,7 +53,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
       header: 'Date',
       hideOnCard: true,
       cell: r => (
-        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-mute whitespace-nowrap">
           {r.reached_date?.slice(0, 10)}
         </span>
       ),
@@ -65,7 +65,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
       cell: r => (
         <Link
           to={`/player?p=${encodeURIComponent(r.player_name)}&tour=${r.tour}`}
-          className="font-semibold whitespace-nowrap text-[var(--ink)] hover:text-[var(--clay-deep)]"
+          className="font-semibold whitespace-nowrap text-ink hover:text-clay-deep"
         >
           {r.player_name}
         </Link>
@@ -84,7 +84,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
       cell: r => (
         <Link
           to={`/tournament?t=${encodeURIComponent(r.tournament)}&year=${r.year}&tour=${r.tour}`}
-          className="text-[var(--ink-2)] hover:text-[var(--clay-deep)]"
+          className="text-ink-2 hover:text-clay-deep"
         >
           {r.tournament} {r.year}
         </Link>
@@ -100,9 +100,9 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
       header: 'Title',
       cell: r =>
         r.won_title ? (
-          <span className="font-bold text-[var(--clay)]" title="Won the title">★</span>
+          <span className="font-bold text-clay" title="Won the title">★</span>
         ) : (
-          <span className="text-[var(--rule-mid)]">—</span>
+          <span className="text-rule-mid">—</span>
         ),
     },
   ];
@@ -114,7 +114,7 @@ function NationalityStage({ filters }: { filters: RecordsFilters }) {
         kicker="Who from a country has reached a given stage"
       />
 
-      <div className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5 mb-3">
+      <div className="ba-well px-3 py-2.5 mb-3">
         <div className="flex flex-wrap gap-3">
           <label className="flex flex-col gap-0.5 w-full sm:w-52">
             <span className="ba-label">Country</span>

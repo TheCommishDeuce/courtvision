@@ -1,51 +1,45 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTournaments, useTournamentYears, useTournamentRecap, useRecentChampions, useTournamentDrawStrength } from '../hooks';
 import TourToggle from '../components/filters/TourToggle';
-import Spinner from '../components/ui/Spinner';
-import EmptyState from '../components/ui/EmptyState';
-import QueryError from '../components/ui/QueryError';
-import SectionHeader from '../components/ui/SectionHeader';
+import Spinner from '../components/primitives/Spinner';
+import EmptyState from '../components/primitives/EmptyState';
+import QueryError from '../components/primitives/QueryError';
+import SectionHeader from '../components/primitives/SectionHeader';
 import DrawResults from '../components/sections/tournament/DrawResults';
 import StatsLeaderTable from '../components/sections/tournament/StatsLeaderTable';
 import StatRow from '../components/sections/tournament/StatRow';
 import Storylines from '../components/sections/tournament/Storylines';
 import type { RecentChampion } from '../types/tennis';
-import SurfaceTag from '../components/ui/SurfaceTag';
+import SurfaceTag from '../components/primitives/SurfaceTag';
+import { useUrlFilters } from '../state/useUrlFilters';
+import { tournamentFilterSchema, defaultTournamentFilters } from '../components/sections/tournament/filters';
 
 export default function TournamentPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [tour, setTour] = useState(searchParams.get('tour') ?? 'M');
-  const [search, setSearch] = useState(searchParams.get('t') ?? '');
-  const [selected, setSelected] = useState(searchParams.get('t') ?? '');
-  const [year, setYear] = useState<number | undefined>(
-    searchParams.get('year') ? Number(searchParams.get('year')) : undefined,
-  );
+  const [filters, setFilters] = useUrlFilters(tournamentFilterSchema, defaultTournamentFilters);
+  const tour = filters.tour;
+  const selected = filters.t ?? '';
+  const activeYear = filters.year;
+
+  // Local state for the input before selection
+  const [search, setSearch] = useState(selected);
+  
+  // Sync search input when url selected changes
+  useEffect(() => {
+    setSearch(selected);
+  }, [selected]);
 
   const { data: allTournaments } = useTournaments(tour);
   const { data: years } = useTournamentYears(selected, tour);
   const { data: recentChampions, isLoading: loadingChampions, isError: errorChampions, refetch: refetchChampions } = useRecentChampions(tour);
-  const activeYear = year ?? years?.[0];
-  const { data: recap, isFetching, isError: errorRecap, refetch: refetchRecap } = useTournamentRecap({ tournament: selected, year: activeYear, tour }, !!selected);
-  const { data: drawStrength } = useTournamentDrawStrength({ tournament: selected, year: activeYear, tour }, !!selected && !!activeYear);
-
-  useEffect(() => {
-    const next = new URLSearchParams();
-    next.set('tour', tour);
-    if (selected) {
-      next.set('t', selected);
-      if (activeYear) next.set('year', String(activeYear));
-    }
-    if (next.toString() !== searchParams.toString()) {
-      setSearchParams(next, { replace: true });
-    }
-  }, [activeYear, searchParams, selected, setSearchParams, tour]);
+  
+  const resolvedYear = activeYear ?? years?.[0];
+  const { data: recap, isFetching, isError: errorRecap, refetch: refetchRecap } = useTournamentRecap({ tournament: selected, year: resolvedYear, tour }, !!selected);
+  const { data: drawStrength } = useTournamentDrawStrength({ tournament: selected, year: resolvedYear, tour }, !!selected && !!resolvedYear);
 
   const filtered = (allTournaments ?? []).filter(t => t.toLowerCase().includes(search.toLowerCase()));
   const handleSelect = (t: string, y?: number) => {
-    setSelected(t);
-    setSearch(t);
-    setYear(y);
+    setFilters({ t, year: y });
   };
 
   const champion = recap?.matches_by_round?.find(g => g.round === 'F')?.matches?.[0];
@@ -63,24 +57,24 @@ export default function TournamentPage() {
         ].filter(Boolean).join(' · ')}
       />
 
-      <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
+      <section className="ba-well px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <label className="flex flex-col gap-0.5 relative w-full sm:w-80">
             <span className="ba-label">Tournament</span>
             <input
               value={search}
-              onChange={e => { setSearch(e.target.value); setSelected(''); }}
+              onChange={e => { setSearch(e.target.value); setFilters({ t: '' }); }}
               placeholder="Type to search events…"
               className="ba-input w-full"
             />
             {search && !selected && filtered.length > 0 && (
-              <ul className="absolute top-full left-0 z-20 bg-[var(--paper-raised)] border border-[var(--rule-ink)] max-h-56 overflow-y-auto w-full">
+              <ul className="absolute top-full left-0 z-20 mt-1 w-full max-h-56 overflow-y-auto rounded-[var(--r-sm)] border border-rule bg-paper-raised shadow-[var(--shadow-2)]">
                 {filtered.slice(0, 30).map(t => (
-                  <li key={t} className="border-b border-[var(--rule)] last:border-b-0">
+                  <li key={t} className="border-b border-rule last:border-b-0">
                     <button
                       type="button"
                       onClick={() => handleSelect(t)}
-                      className="w-full text-left px-2.5 py-1 ba-cell hover:bg-[var(--clay)] hover:text-[var(--on-clay)]"
+                      className="w-full text-left px-2.5 py-1 ba-cell hover:bg-clay hover:text-on-clay"
                     >
                       {t}
                     </button>
@@ -94,8 +88,8 @@ export default function TournamentPage() {
             <label className="flex flex-col gap-0.5 w-full sm:w-auto">
               <span className="ba-label">Year</span>
               <select
-                value={activeYear ?? ''}
-                onChange={e => setYear(Number(e.target.value))}
+                value={resolvedYear ?? ''}
+                onChange={e => setFilters({ year: Number(e.target.value) })}
                 className="ba-select w-full"
               >
                 {years.map(y => <option key={y} value={y}>{y}</option>)}
@@ -105,7 +99,7 @@ export default function TournamentPage() {
 
           <TourToggle
             value={tour}
-            onChange={v => { setTour(v); setSelected(''); setSearch(''); setYear(undefined); }}
+            onChange={v => setFilters({ tour: v as 'M'|'F', t: '', year: undefined })}
           />
         </div>
       </section>
@@ -123,27 +117,27 @@ export default function TournamentPage() {
               onRetry={() => refetchChampions()}
             />
           ) : (
-            <ul className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] divide-y divide-[var(--rule)]">
+            <ul className="overflow-hidden rounded-[var(--r-md)] border border-rule bg-paper-raised divide-y divide-[var(--rule)]">
               {(recentChampions ?? []).map((c: RecentChampion, i) => (
                 <li key={i}>
                   <button
                     type="button"
-                    className="w-full text-left px-2.5 py-1.5 hover:bg-[var(--clay-wash)] transition-colors"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-clay-wash transition-colors"
                     onClick={() => handleSelect(c.tournament, c.year)}
                   >
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                       <SurfaceTag surface={c.surface} />
-                      <span className="ba-cell font-semibold text-[var(--ink)]">{c.tournament}</span>
-                      <span className="ba-mono ba-meta text-[var(--mute)]">{c.year}</span>
-                      <span className="ba-mono ba-meta text-[var(--mute)] ml-auto">
+                      <span className="ba-cell font-semibold text-ink">{c.tournament}</span>
+                      <span className="ba-mono ba-meta text-mute">{c.year}</span>
+                      <span className="ba-mono ba-meta text-mute ml-auto">
                         {c.date?.slice(0, 10)}
                       </span>
                     </div>
                     <div className="ba-cell mt-0.5">
-                      <span className="font-semibold text-[var(--clay)]">{c.winner_name}</span>
-                      <span className="ba-mono ba-meta text-[var(--mute)] mx-1.5">beat</span>
-                      <span className="text-[var(--ink-2)]">{c.loser_name}</span>
-                      <span className="ba-mono ba-meta text-[var(--mute)] ml-2">{c.score}</span>
+                      <span className="font-semibold text-clay">{c.winner_name}</span>
+                      <span className="ba-mono ba-meta text-mute mx-1.5">beat</span>
+                      <span className="text-ink-2">{c.loser_name}</span>
+                      <span className="ba-mono ba-meta text-mute ml-2">{c.score}</span>
                     </div>
                   </button>
                 </li>
@@ -173,7 +167,7 @@ export default function TournamentPage() {
           <section className="grid grid-cols-1 md:grid-cols-[7fr_5fr] gap-3 items-stretch">
             {/* The champion, as the page's one clay block. */}
             <div className="ba-kpi px-4 py-4 flex flex-col">
-              <div className="ba-label text-[var(--on-clay-soft)] mb-2">
+              <div className="ba-label text-on-clay-soft mb-2">
                 {recap.meta.year} {recap.meta.tournament} · champion
               </div>
               {champion ? (
@@ -183,31 +177,31 @@ export default function TournamentPage() {
                 <div className="flex flex-col gap-1.5 flex-1 justify-center">
                   <Link
                     to={`/player?p=${encodeURIComponent(champion.winner_name)}&tour=${tour}`}
-                    className="ba-display ba-touch text-[length:var(--step-4)] text-[var(--on-clay)] hover:underline"
+                    className="ba-display ba-touch text-[length:var(--step-4)] text-on-clay hover:underline"
                   >
                     {champion.winner_name}
                   </Link>
-                  <div className="ba-cell text-[var(--on-clay)]">
+                  <div className="ba-cell text-on-clay">
                     <span className="ba-mono ba-meta mr-2">beat</span>
                     <Link
                       to={`/player?p=${encodeURIComponent(champion.loser_name)}&tour=${tour}`}
-                      className="ba-touch text-[var(--on-clay)] hover:underline underline-offset-2"
+                      className="ba-touch text-on-clay hover:underline underline-offset-2"
                     >
                       {champion.loser_name}
                     </Link>
                     {champion.loser_rank && (
                       <span className="ba-mono ba-meta ml-1.5">#{champion.loser_rank}</span>
                     )}
-                    <span aria-hidden="true" className="mx-2 text-[var(--on-clay-soft)]/60">·</span>
+                    <span aria-hidden="true" className="mx-2 text-on-clay-soft/60">·</span>
                     <span className="ba-mono ba-meta">{champion.score}</span>
                   </div>
                 </div>
               ) : (
-                <div className="ba-h3 text-[var(--on-clay-soft)] flex-1 flex items-center">No final on record</div>
+                <div className="ba-h3 text-on-clay-soft flex-1 flex items-center">No final on record</div>
               )}
             </div>
 
-            <div className="flex flex-col border-t-2 border-[var(--rule-ink)]">
+            <div className="flex flex-col">
               <StatRow
                 label="Surface"
                 value={recap.meta.surface ? <SurfaceTag surface={recap.meta.surface} size="md" /> : '—'}

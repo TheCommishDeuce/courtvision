@@ -16,14 +16,14 @@ export default function ComparisonCard({
   return (
     <div className="ba-card p-0 overflow-hidden">
       {title && (
-        <div className="px-2.5 py-1.5 bg-[var(--paper-sunken)] border-b border-[var(--rule-ink)]">
+        <div className="px-2.5 py-1.5 bg-paper-sunken border-b border-rule-ink">
           <h3 className="ba-board-title">{title}</h3>
         </div>
       )}
       <table className="ba-table ba-table-dense w-full">
         <thead>
           <tr>
-            <th scope="col" className="text-right text-[var(--clay)]" title={playerA}>
+            <th scope="col" className="text-right text-clay" title={playerA}>
               {lastName(playerA)}
             </th>
             <th scope="col" className="text-center">Metric</th>

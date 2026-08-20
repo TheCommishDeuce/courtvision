@@ -24,7 +24,7 @@ export default function SortHeader({ label, colKey, sort }: Props) {
       onClick={() => sort.toggle(colKey)}
       aria-label={`Sort by ${label}`}
       className={`inline-flex items-center gap-0.5 cursor-pointer uppercase tracking-[0.11em] ${
-        active ? 'text-[var(--clay)]' : 'hover:text-[var(--clay)]'
+        active ? 'text-clay' : 'hover:text-clay'
       }`}
     >
       {label}

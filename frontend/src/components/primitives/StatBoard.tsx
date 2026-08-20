@@ -111,11 +111,11 @@ export default function StatBoard({
             <div key={`blank-${i}`} className="ba-board-row is-empty" aria-hidden="true">
               <span className="ba-board-rank">{shown.length + i + 1}</span>
               <span className="ba-board-name">
-                <span className="text-[var(--rule-mid)]">
+                <span className="text-rule-mid">
                   {shown.length === 0 && i === 0 ? emptyNote : ' '}
                 </span>
               </span>
-              <span className="ba-board-figure text-[var(--rule-mid)]">—</span>
+              <span className="ba-board-figure text-rule-mid">—</span>
             </div>
           ))}
       </div>

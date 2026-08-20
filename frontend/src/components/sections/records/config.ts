@@ -26,7 +26,7 @@ export const SECTIONS: { id: Section; title: string; kicker: string }[] = [
   { id: 'return', title: 'On return, and by margin', kicker: 'Return points, draws, scoreline margins' },
 ];
 
-export type Fmt = 'count' | 'pct' | 'rank';
+export type Fmt = 'count' | 'pct' | 'rank' | 'year';
 
 export interface BoardDef {
   id: string;
@@ -73,7 +73,7 @@ export const BOARDS: BoardDef[] = [
   { id: 'first_return_win_pct', section: 'return', title: '1st return won %', source: 'return', key: 'first_return_win_pct', fmt: 'pct', foot: RATE_NOTE },
   { id: 'second_return_win_pct', section: 'return', title: '2nd return won %', source: 'return', key: 'second_return_win_pct', fmt: 'pct', foot: RATE_NOTE },
   { id: 'bp_converted_pct', section: 'return', title: 'Break points converted %', source: 'return', key: 'bp_converted_pct', fmt: 'pct', foot: RATE_NOTE },
-  { id: 'draw_strength', section: 'return', title: 'Toughest draw won', source: 'draw', key: 'avg_opp_rank', fmt: 'rank', dir: 'asc', foot: 'Average opponent rank · title runs only' },
+  { id: 'draw_strength', section: 'return', title: 'Toughest draw won', source: 'draw', key: 'avg_opp_rank', fmt: 'rank', dir: 'asc', foot: 'Average opponent rank' },
   { id: 'bagels_given', section: 'return', title: 'Bagels given', source: 'activity', key: 'bagels_given', fmt: 'count', foot: '6-0 sets won' },
   { id: 'bagels_received', section: 'return', title: 'Bagels received', source: 'activity', key: 'bagels_received', fmt: 'count', foot: '6-0 sets lost' },
   { id: 'breadsticks_given', section: 'return', title: 'Breadsticks given', source: 'activity', key: 'breadsticks_given', fmt: 'count', foot: '6-1 sets won' },
@@ -91,6 +91,8 @@ export function formatFigure(value: unknown, fmt: Fmt): string {
   if (!Number.isFinite(n)) return String(value);
   if (fmt === 'pct') return `${n}%`;
   if (fmt === 'rank') return `#${Math.round(n)}`;
+  // A year is a label, not a quantity: no thousands separator.
+  if (fmt === 'year') return String(Math.round(n));
   return n.toLocaleString();
 }
 

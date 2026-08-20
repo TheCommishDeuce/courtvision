@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useYearRange } from '../hooks';
-import SectionHeader from '../components/ui/SectionHeader';
+import SectionHeader from '../components/primitives/SectionHeader';
 import TourToggle from '../components/filters/TourToggle';
 import SurfaceSelect from '../components/filters/SurfaceSelect';
 import LevelSelect from '../components/filters/LevelSelect';
@@ -9,8 +9,8 @@ import YearRangeSlider from '../components/filters/YearRangeSlider';
 import PlayersTab from '../components/sections/records/PlayersTab';
 import MatchesTab from '../components/sections/records/MatchesTab';
 import AnalysisTab from '../components/sections/records/AnalysisTab';
-import type { RecordsFilters } from '../components/sections/records/sources';
-import { parseYearRange } from '../lib/yearRange';
+import { useUrlFilters } from '../state/useUrlFilters';
+import { recordsFilterSchema, defaultRecordsFilters } from '../components/sections/records/filters';
 
 const TABS = [
   { id: 'players', label: 'Players', kicker: 'Career and season leaderboards' },
@@ -19,60 +19,31 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
-/**
- * The leaderboards open on this season's main tour, which is what people
- * actually come to look at — the all-time view is one control away. `All Tour`
- * is the level code the API uses for "all ATP" / "all WTA".
- */
 const DEFAULT_LEVEL = 'All Tour';
 
 export default function RecordsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { data: yr } = useYearRange();
 
-  const paramTab = searchParams.get('tab');
-  const [tab, setTab] = useState<TabId>(
-    TABS.some(t => t.id === paramTab) ? (paramTab as TabId) : 'players',
-  );
+  const [filters, setFilters] = useUrlFilters(recordsFilterSchema, defaultRecordsFilters);
 
-  const [tour, setTour] = useState(searchParams.get('tour') ?? 'M');
-  const [surface, setSurface] = useState(searchParams.get('surface') ?? 'All');
-  const [level, setLevel] = useState(searchParams.get('level') ?? DEFAULT_LEVEL);
-  const [yearRange, setYearRange] = useState<[number, number] | null>(() =>
-    parseYearRange(searchParams),
-  );
+  const tab = (TABS.some(t => t.id === filters.tab) ? filters.tab : 'players') as TabId;
+  const tour = filters.tour;
+  const surface = filters.surface ?? 'All';
+  const level = filters.level ?? DEFAULT_LEVEL;
+  const board = filters.board ?? null;
 
-  const board = searchParams.get('board');
-
-  // The latest season with data, which is what "current year" means here — the
-  // calendar year could be ahead of the last scrape.
-  const currentYear = yr?.year_max;
+  const currentYear = yr?.year_max ?? 2026;
 
   const activeYearRange = useMemo<[number, number]>(
-    () => yearRange ?? [currentYear ?? 2026, currentYear ?? 2026],
-    [yearRange, currentYear],
+    () => [filters.y0 ?? currentYear, filters.y1 ?? currentYear],
+    [filters.y0, filters.y1, currentYear],
   );
 
-  const filters: RecordsFilters = useMemo(
+  const childFilters = useMemo(
     () => ({ tour, surface, level, yearRange: activeYearRange }),
     [tour, surface, level, activeYearRange],
   );
-
-  // The URL is the source of truth for shareability: every filter, the tab, and
-  // the focused board all live in the query string.
-  useEffect(() => {
-    const next = new URLSearchParams();
-    next.set('tab', tab);
-    next.set('tour', tour);
-    if (surface !== 'All') next.set('surface', surface);
-    if (level) next.set('level', level);
-    next.set('y0', String(activeYearRange[0]));
-    next.set('y1', String(activeYearRange[1]));
-    if (board) next.set('board', board);
-    if (next.toString() !== searchParams.toString()) {
-      setSearchParams(next, { replace: true });
-    }
-  }, [activeYearRange, board, level, searchParams, setSearchParams, surface, tab, tour]);
 
   const hrefWith = useCallback(
     (overrides: Record<string, string | null>) => {
@@ -103,9 +74,7 @@ export default function RecordsPage() {
         kicker={summary}
       />
 
-      {/* Tabs. Switching tabs keeps the filters — that is the point of putting
-          the filter bar above them rather than inside each one. */}
-      <div className="flex items-stretch border-b border-[var(--rule)] -mt-2">
+      <div className="flex items-stretch border-b border-rule -mt-2">
         {TABS.map(t => {
           const active = t.id === tab;
           return (
@@ -113,12 +82,7 @@ export default function RecordsPage() {
               key={t.id}
               type="button"
               onClick={() => {
-                setTab(t.id);
-                if (board) setSearchParams(prev => {
-                  const next = new URLSearchParams(prev);
-                  next.delete('board');
-                  return next;
-                }, { replace: true });
+                setFilters({ tab: t.id, board: '' });
               }}
               aria-current={active ? 'page' : undefined}
               className={`ba-tab ${active ? 'is-active' : ''}`}
@@ -129,29 +93,29 @@ export default function RecordsPage() {
         })}
       </div>
 
-      {/* Global filter bar — one set of controls for both tabs. */}
-      <section className="ba-well border-t-2 border-t-[var(--rule-ink)] px-3 py-2.5">
+      <section className="ba-well px-3 py-2.5">
         <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
           <TourToggle
             value={tour}
             onChange={v => {
-              // Level codes differ per tour, so switching resets to that tour's
-              // own default view: all of its main tour, this season.
-              setTour(v);
-              setLevel(DEFAULT_LEVEL);
-              setSurface('All');
-              setYearRange(currentYear ? [currentYear, currentYear] : null);
+              setFilters({
+                tour: v as 'M'|'F',
+                level: DEFAULT_LEVEL,
+                surface: 'All',
+                y0: currentYear,
+                y1: currentYear,
+              });
             }}
           />
-          <SurfaceSelect value={surface} onChange={setSurface} />
-          <LevelSelect tour={tour} value={level} onChange={setLevel} />
+          <SurfaceSelect value={surface} onChange={v => setFilters({ surface: v })} />
+          <LevelSelect tour={tour} value={level} onChange={v => setFilters({ level: v })} />
           {yr && (
             <YearRangeSlider
               key={`records-${activeYearRange[0]}-${activeYearRange[1]}-${yr.year_min}-${yr.year_max}`}
               min={yr.year_min}
               max={yr.year_max}
               value={activeYearRange}
-              onChange={setYearRange}
+              onChange={([y0, y1]) => setFilters({ y0, y1 })}
             />
           )}
           <p className="ba-kicker ml-auto self-center">{activeTab.kicker}</p>
@@ -160,7 +124,7 @@ export default function RecordsPage() {
 
       {tab === 'players' && (
         <PlayersTab
-          filters={filters}
+          filters={childFilters}
           board={board}
           boardHref={id => hrefWith({ board: id })}
           backHref={hrefWith({ board: null })}
@@ -168,8 +132,8 @@ export default function RecordsPage() {
       )}
       {tab === 'matches' && (
         <div className="space-y-8">
-          <MatchesTab filters={filters} />
-          <AnalysisTab filters={filters} />
+          <MatchesTab filters={childFilters} />
+          <AnalysisTab filters={childFilters} />
         </div>
       )}
     </div>

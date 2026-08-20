@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { H2HRow } from '../../types/tennis';
-import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS } from './theme';
+import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS, CHART_FS } from './theme';
 import { lastName } from '../../utils';
 
 interface MomentumPoint {
@@ -34,10 +34,10 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
   const d = payload[0].payload;
   return (
     <div className={`${TOOLTIP_CLASS} max-w-[190px]`}>
-      <div className="font-semibold truncate text-[var(--ink)]">{d.winner}</div>
-      <div className="text-[var(--mute)] ba-mono">{d.date} · {d.tournament}</div>
-      <div className="ba-mono text-[var(--ink-2)]">{d.score}</div>
-      <div className="mt-0.5 font-medium text-[var(--ink)]">
+      <div className="font-semibold truncate text-ink">{d.winner}</div>
+      <div className="text-mute ba-mono">{d.date} · {d.tournament}</div>
+      <div className="ba-mono text-ink-2">{d.score}</div>
+      <div className="mt-0.5 font-medium text-ink">
         Lead: {d.lead > 0 ? `+${d.lead}` : d.lead === 0 ? 'Tied' : d.lead}
       </div>
     </div>
@@ -89,13 +89,13 @@ export default function MomentumTimeline({
           <CartesianGrid {...GRID_PROPS} />
           <XAxis
             dataKey="match_num"
-            tick={monoTick(10, CHART.tickMute)}
-            label={{ value: 'Match #', position: 'insideBottom', offset: -8, fontSize: 9.5, fill: CHART.tickMute, fontFamily: 'JetBrains Mono' }}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
+            label={{ value: 'Match #', position: 'insideBottom', offset: -8, fontSize: CHART_FS.label, fill: CHART.tickMute, fontFamily: 'JetBrains Mono' }}
             {...AXIS_PROPS}
           />
           <YAxis
             domain={[-maxAbs - 1, maxAbs + 1]}
-            tick={monoTick(10, CHART.tickMute)}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
             tickFormatter={v => (v > 0 ? `+${v}` : String(v))}
             width={30}
             {...AXIS_PROPS}

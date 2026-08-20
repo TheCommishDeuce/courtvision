@@ -23,9 +23,9 @@ export default function PlayerHeroBlock({
   variant: 'clay' | 'ink';
 }) {
   const isClay = variant === 'clay';
-  const label = isClay ? 'text-[var(--on-clay-soft)]' : 'text-[var(--mute)]';
-  const value = isClay ? 'text-[var(--on-clay)]' : 'text-[var(--ink)]';
-  const rule = isClay ? 'border-[var(--on-clay)]/30' : 'border-[var(--rule)]';
+  const label = isClay ? 'text-on-clay-soft' : 'text-mute';
+  const value = isClay ? 'text-on-clay' : 'text-ink';
+  const rule = isClay ? 'border-on-clay/30' : 'border-rule';
 
   const rows = [
     { k: 'Record', v: record },
@@ -38,7 +38,7 @@ export default function PlayerHeroBlock({
       className={
         isClay
           ? 'ba-kpi px-4 py-3.5 flex flex-col gap-2'
-          : 'bg-[var(--paper-raised)] border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] px-4 py-3.5 flex flex-col gap-2'
+          : 'ba-card-flat px-4 py-3.5 flex flex-col gap-2'
       }
     >
       <div className={`ba-label ${label}`}>{isClay ? 'Player A' : 'Player B'}</div>

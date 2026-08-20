@@ -1,7 +1,7 @@
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { CHART, TOOLTIP_STYLE, LEGEND_STYLE, monoTick, GRID_PROPS, AXIS_PROPS } from './theme';
+import { CHART, TOOLTIP_STYLE, LEGEND_STYLE, monoTick, GRID_PROPS, AXIS_PROPS, CHART_FS } from './theme';
 
 interface GroupedBarProps {
   data: Record<string, unknown>[];
@@ -19,11 +19,11 @@ export default function GroupedBar({ data, xKey, groups, title, yLabel }: Groupe
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={data} margin={{ top: 6, right: 16, left: 0, bottom: 4 }} barCategoryGap="22%">
           <CartesianGrid {...GRID_PROPS} />
-          <XAxis dataKey={xKey} tick={monoTick(10, CHART.tickMute)} {...AXIS_PROPS} />
+          <XAxis dataKey={xKey} tick={monoTick(CHART_FS.tick, CHART.tickMute)} {...AXIS_PROPS} />
           <YAxis
-            tick={monoTick(10, CHART.tickMute)}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
             width={34}
-            label={yLabel ? { value: yLabel, angle: -90, position: 'insideLeft', style: monoTick(10, CHART.tickMute) } : undefined}
+            label={yLabel ? { value: yLabel, angle: -90, position: 'insideLeft', style: monoTick(CHART_FS.tick, CHART.tickMute) } : undefined}
             {...AXIS_PROPS}
           />
           <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: 'var(--clay-wash)' }} />

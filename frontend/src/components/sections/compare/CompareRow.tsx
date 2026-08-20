@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { toNum } from '../../../lib/compare';
+import { toNum } from '../../../domain/compare';
 
 /**
  * One metric, both players, label between them. Only the winning side is bold —
@@ -24,11 +24,11 @@ export default function CompareRow({
 
   return (
     <tr>
-      <td className={`text-right ba-figure ${aWins ? 'text-[var(--clay)] font-bold' : 'text-[var(--ink-2)] font-normal'}`}>
+      <td className={`text-right ba-figure ${aWins ? 'text-clay font-bold' : 'text-ink-2 font-normal'}`}>
         {a ?? '—'}
       </td>
-      <td className="text-center ba-label bg-[var(--paper-sunken)] whitespace-nowrap">{label}</td>
-      <td className={`text-left ba-figure ${bWins ? 'text-[var(--ink)] font-bold' : 'text-[var(--ink-2)] font-normal'}`}>
+      <td className="text-center ba-label bg-paper-sunken whitespace-nowrap">{label}</td>
+      <td className={`text-left ba-figure ${bWins ? 'text-ink font-bold' : 'text-ink-2 font-normal'}`}>
         {b ?? '—'}
       </td>
     </tr>

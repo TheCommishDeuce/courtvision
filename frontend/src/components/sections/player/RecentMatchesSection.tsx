@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { lastName } from '../../../utils';
-import { groupMatchesByTournament } from '../../../lib/playerMatches';
-import AdaptiveTable, { type Column } from '../../tables/AdaptiveTable';
-import MatchStatsPanel, { type SideStats } from '../../ui/MatchStatsPanel';
-import SurfaceTag from '../../ui/SurfaceTag';
-import SectionHeader from '../../ui/SectionHeader';
+import { groupMatchesByTournament } from '../../../domain/playerMatches';
+import AdaptiveTable, { type Column } from '../../primitives/AdaptiveTable';
+import MatchStatsPanel, { type SideStats } from '../../primitives/MatchStatsPanel';
+import SurfaceTag from '../../primitives/SurfaceTag';
+import SectionHeader from '../../primitives/SectionHeader';
 import type { PlayerMatchRow } from '../../../types/tennis';
 
 function focalSide(m: PlayerMatchRow): SideStats {
@@ -29,7 +29,7 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       header: 'W/L',
       cell: m => (
         <span
-          className={`ba-mono font-bold ${m.result === 'W' ? 'text-[var(--clay)]' : 'text-[var(--ink-2)]'}`}
+          className={`ba-mono font-bold ${m.result === 'W' ? 'text-clay' : 'text-ink-2'}`}
         >
           {m.result}
         </span>
@@ -40,7 +40,7 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       header: 'Date',
       hideOnCard: true,
       cell: m => (
-        <span className="ba-mono ba-meta text-[var(--mute)] whitespace-nowrap">
+        <span className="ba-mono ba-meta text-mute whitespace-nowrap">
           {m.date?.slice(0, 10)}
         </span>
       ),
@@ -52,7 +52,7 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       cell: m => (
         <Link
           to={`/player?p=${encodeURIComponent(m.opponent_name)}&tour=${tour}`}
-          className="font-medium whitespace-nowrap text-[var(--ink)] hover:text-[var(--clay-deep)]"
+          className="font-medium whitespace-nowrap text-ink hover:text-clay-deep"
         >
           {m.opponent_name}
         </Link>
@@ -62,19 +62,19 @@ function TournamentMatches({ matches, tour }: { matches: PlayerMatchRow[]; tour:
       key: 'opponent_rank',
       header: 'Opp rank',
       num: true,
-      cell: m => <span className="text-[var(--mute)]">{m.opponent_rank ?? '—'}</span>,
+      cell: m => <span className="text-mute">{m.opponent_rank ?? '—'}</span>,
     },
     { key: 'surface', header: 'Surf', cell: m => <SurfaceTag surface={m.surface} /> },
     {
       key: 'level_name',
       header: 'Level',
       hideOnCard: true,
-      cell: m => <span className="ba-meta text-[var(--ink-2)]">{m.level_name}</span>,
+      cell: m => <span className="ba-meta text-ink-2">{m.level_name}</span>,
     },
     {
       key: 'round',
       header: 'Rnd',
-      cell: m => <span className="ba-mono ba-meta text-[var(--ink-2)]">{m.round}</span>,
+      cell: m => <span className="ba-mono ba-meta text-ink-2">{m.round}</span>,
     },
     {
       key: 'score',
@@ -127,51 +127,62 @@ export function RecentMatchesSection({
       {/* One row per tournament run, opening to that run's matches. Rendered as
           a list of disclosures rather than nested tables, so it works at any
           width without a table inside a table inside a scroller. */}
-      <div className="border border-[var(--rule)] border-t-2 border-t-[var(--rule-ink)] divide-y divide-[var(--rule)]">
+      <div className="overflow-hidden rounded-[var(--r-md)] border border-rule bg-paper-raised divide-y divide-[var(--rule)]">
         {groups.map(group => {
           const isOpen = openKey === group.key;
           const panelId = `run-${group.key.replace(/[^a-zA-Z0-9]+/g, '-')}`;
           const count = group.matches.length;
           return (
             <div key={group.key}>
-              {/* Two distinct destinations on one row, so neither is a guess:
-                  the event name goes to that event's own page, and the count
-                  chip opens this player's run inside it. A row-wide button
-                  cannot hold a link — nesting one inside the other is invalid —
-                  so the row is a plain flex container and each affordance is
-                  its own control. */}
+              {/* The whole row opens the run — reaching for a control on the
+                  far right to expand the row you are already pointing at is a
+                  trip for nothing. The event name is the one exception: it
+                  stops the click and goes to that event's own page. */}
               <div
-                className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 px-2.5 py-1 ${
-                  isOpen ? 'bg-[var(--clay-wash)]' : ''
-                }`}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                onClick={() => setOpenKey(isOpen ? null : group.key)}
+                onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+                  // Only the row itself — Enter on the nested link navigates.
+                  if (e.target !== e.currentTarget) return;
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setOpenKey(isOpen ? null : group.key);
+                  }
+                }}
+                className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 px-2.5 py-1.5
+                            cursor-pointer transition-colors ${
+                              isOpen ? 'bg-clay-wash' : 'hover:bg-clay-wash'
+                            }`}
               >
+                <span aria-hidden="true" className="ba-mono ba-agate text-mute">
+                  {isOpen ? '▾' : '▸'}
+                </span>
                 <Link
                   to={`/tournament?t=${encodeURIComponent(group.tournament)}&year=${group.year}&tour=${tour}`}
+                  onClick={e => e.stopPropagation()}
                   className="ba-touch ba-link-quiet ba-cell font-semibold"
                 >
                   {group.tournament}
                 </Link>
-                <span className="ba-mono ba-meta text-[var(--mute)]">{group.year}</span>
-                <span className="ba-mono ba-meta font-bold text-[var(--clay)]">
+                <span className="ba-mono ba-meta text-mute">{group.year}</span>
+                <span className="ba-mono ba-meta font-bold text-clay">
                   {group.result}
                 </span>
-                <span className="ba-mono ba-meta text-[var(--mute)] ml-auto">
+                {/* The week drops on a phone: it repeats in the open run, and
+                    keeping it wraps every long event name onto two lines. */}
+                <span className="ba-mono ba-meta text-mute ml-auto hidden sm:inline">
                   {group.week}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setOpenKey(isOpen ? null : group.key)}
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                  className={`ba-chip ba-touch ${isOpen ? 'ba-chip-active' : ''}`}
-                >
+                <span className="ba-mono ba-meta text-mute ml-auto sm:ml-0">
                   {count} {count === 1 ? 'match' : 'matches'}
-                  <span aria-hidden="true">{isOpen ? '▴' : '▾'}</span>
-                </button>
+                </span>
               </div>
 
               {isOpen && (
-                <div id={panelId} className="px-2.5 pb-2.5 pt-1 bg-[var(--paper-sunken)]">
+                <div id={panelId} className="px-2.5 pb-2.5 pt-1 bg-paper-sunken">
                   <TournamentMatches matches={group.matches} tour={tour} />
                 </div>
               )}
@@ -181,7 +192,7 @@ export function RecentMatchesSection({
       </div>
 
       <p className="ba-kicker mt-1.5">
-        The event name opens that tournament; the match count opens this run. Clay tick marks a win.
+        The row opens this run; the event name opens that tournament. Accent tick marks a win.
       </p>
     </section>
   );

@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useMemo, useState } from 'react';
 import {
   usePlayers,
   useYearRange,
@@ -16,9 +15,9 @@ import {
   useSimilarPlayersReturn,
   usePlayerForm,
 } from '../hooks';
-import Spinner from '../components/ui/Spinner';
-import EmptyState from '../components/ui/EmptyState';
-import QueryError from '../components/ui/QueryError';
+import Spinner from '../components/primitives/Spinner';
+import EmptyState from '../components/primitives/EmptyState';
+import QueryError from '../components/primitives/QueryError';
 import {
   CareerPulseSection,
   FormSection,
@@ -30,139 +29,161 @@ import {
   ServeReturnSection,
   SimilarProfilesSection,
 } from '../components/sections/player/PlayerSections';
-
-import { parseYearRange, DEFAULT_YEAR_RANGE } from '../lib/yearRange';
+import { clampRange } from '../domain/yearRange';
+import { useUrlFilters } from '../state/useUrlFilters';
+import { playerFilterSchema, defaultPlayerFilters } from '../components/sections/player/filters';
 
 export default function PlayerPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const { data: yr } = useYearRange();
 
-  const [tour, setTour] = useState(searchParams.get('tour') ?? 'M');
-  const [player, setPlayer] = useState(searchParams.get('p') ?? '');
-  const [surface, setSurface] = useState(searchParams.get('surface') ?? 'All');
-  const [level, setLevel] = useState(searchParams.get('level') ?? '');
-  const [yearRange, setYearRange] = useState<[number, number] | null>(() => parseYearRange(searchParams));
-  const [submitted, setSubmitted] = useState(!!searchParams.get('p'));
+  const [filters, setFilters] = useUrlFilters(playerFilterSchema, defaultPlayerFilters);
 
-  const { data: players } = usePlayers(tour);
-  const activeYearRange = useMemo<[number, number]>(
-    () => yearRange ?? (yr ? [yr.year_min, yr.year_max] as [number, number] : DEFAULT_YEAR_RANGE),
-    [yearRange, yr],
-  );
+  // A URL that names a player is already a request for that profile: every
+  // player link in the app points here, so arriving with `p` set loads it
+  // rather than showing "pick a player" over the name the link just named.
+  const [isSubmitted, setIsSubmitted] = useState(Boolean(filters.p));
 
-  useEffect(() => {
-    if (!submitted) return;
-    const p: Record<string, string> = { tour };
-    if (player) p.p = player;
-    if (surface !== 'All') p.surface = surface;
-    if (level) p.level = level;
-    p.y0 = String(activeYearRange[0]);
-    p.y1 = String(activeYearRange[1]);
-    setSearchParams(p, { replace: true });
-  }, [submitted, activeYearRange, level, player, setSearchParams, surface, tour]);
+  // The typed name is page state until it is submitted. Writing it to the URL
+  // per keystroke would remount this page (App keys the route on `p`) and
+  // re-run the profile against half a name.
+  const [draft, setDraft] = useState(filters.p ?? '');
 
-  const filterParams = {
-    player,
-    tour,
-    surface: surface === 'All' ? undefined : surface,
-    level: level || undefined,
-    year_min: activeYearRange[0],
-    year_max: activeYearRange[1],
-  };
-  const baseParams = { player, tour };
-  const yearParams = { ...baseParams, year_min: activeYearRange[0], year_max: activeYearRange[1] };
-  const titlesParams = { ...yearParams, surface: surface === 'All' ? undefined : surface };
-  const enabled = submitted && !!player;
+  const { data: players } = usePlayers(filters.tour);
 
-  const { data: summary, isFetching: loadingSummary, isError: errorSummary, refetch: refetchSummary } = usePlayerSummary(titlesParams, enabled);
-  const { data: matchData, isFetching: loadingMatches, isError: errorMatches, refetch: refetchMatches } = usePlayerMatches(filterParams, enabled);
-  const { data: serveStats, isFetching: loadingServe } = usePlayerServeStats(filterParams, enabled);
-  const { data: returnStats, isFetching: loadingReturn } = usePlayerReturnStats(filterParams, enabled);
-  const { data: topN, isFetching: loadingTopN } = useTopNRecords(filterParams, enabled);
-  const { data: rankHistory } = useRankHistory(yearParams, enabled);
-  const { data: milestones } = usePlayerMilestones(baseParams, enabled);
-  const { data: servePct } = usePlayerServePercentiles({ player, tour }, enabled);
-  const { data: returnPct } = usePlayerReturnPercentiles({ player, tour }, enabled);
-  const { data: similarPlayers } = useSimilarPlayers(baseParams, enabled);
-  const { data: similarReturn } = useSimilarPlayersReturn(baseParams, enabled);
-  const { data: playerForm } = usePlayerForm(filterParams, enabled);
+  const globalMin = yr?.year_min ?? 1990;
+  const globalMax = yr?.year_max ?? new Date().getFullYear();
 
-  const isLoading = loadingSummary || loadingMatches || loadingServe || loadingReturn || loadingTopN;
-  const playerBounds = useMemo<[number, number] | null>(() => {
-    if (!matchData || matchData.by_year.length === 0) return null;
-    const years = matchData.by_year.map(r => r.year ?? 0).filter(y => y > 0);
-    if (years.length === 0) return null;
-    return [Math.min(...years), Math.max(...years)];
-  }, [matchData]);
+  // We want the query arguments to be exact only when submitted
+  const runParams = useMemo(() => {
+    if (!isSubmitted || !filters.p) return null;
+    return {
+      player: filters.p,
+      tour: filters.tour,
+      surface: filters.surface === 'All' ? undefined : filters.surface,
+      level: filters.level === 'All Tour' ? undefined : filters.level,
+      year_min: filters.y0,
+      year_max: filters.y1,
+    };
+  }, [isSubmitted, filters]);
 
-  const filteredWins = matchData?.by_year.reduce((s, r) => s + r.wins, 0) ?? 0;
-  const filteredTotal = matchData?.by_year.reduce((s, r) => s + r.total, 0) ?? 0;
-  const filteredLosses = filteredTotal - filteredWins;
-  const filteredWinPct = filteredTotal > 0 ? ((filteredWins / filteredTotal) * 100).toFixed(1) : '0.0';
+  // Data fetching
+  const summaryQ = usePlayerSummary(runParams!, !!runParams);
+  const matchesQ = usePlayerMatches(runParams!, !!runParams);
+  const formQ = usePlayerForm(runParams!, !!runParams);
+  const serveQ = usePlayerServeStats(runParams!, !!runParams);
+  const returnQ = usePlayerReturnStats(runParams!, !!runParams);
+  const topRecordsQ = useTopNRecords(runParams!, !!runParams);
+  const rankQ = useRankHistory(runParams!, !!runParams);
+  const milestonesQ = usePlayerMilestones({ player: runParams?.player || '', tour: runParams?.tour }, !!runParams);
+  const servePctQ = usePlayerServePercentiles({ player: runParams?.player || '', tour: runParams?.tour || 'M' }, !!runParams);
+  const retPctQ = usePlayerReturnPercentiles({ player: runParams?.player || '', tour: runParams?.tour || 'M' }, !!runParams);
+  const simServeQ = useSimilarPlayers({ player: runParams?.player || '', tour: runParams?.tour }, !!runParams);
+  const simRetQ = useSimilarPlayersReturn({ player: runParams?.player || '', tour: runParams?.tour }, !!runParams);
 
-  const sliderMin = playerBounds?.[0] ?? yr?.year_min ?? DEFAULT_YEAR_RANGE[0];
-  const sliderMax = playerBounds?.[1] ?? yr?.year_max ?? DEFAULT_YEAR_RANGE[1];
-  const sliderValue = useMemo<[number, number]>(() => {
-    const start = Math.max(activeYearRange[0], sliderMin);
-    const end = Math.min(activeYearRange[1], sliderMax);
-    return start <= end ? [start, end] : [sliderMin, sliderMax];
-  }, [activeYearRange, sliderMax, sliderMin]);
+  // The slider offers this player's career, not the archive's 1910–2026.
+  //
+  // The bounds come from an unfiltered read of their matches, deliberately:
+  // taking them from `matchesQ` would let a narrowed range narrow the bounds
+  // under it, one drag at a time, with no way back. On first load this is the
+  // same request the page already makes, so it is a cache hit, not a fetch.
+  const careerQ = usePlayerMatches({ player: runParams?.player ?? '', tour: filters.tour }, !!runParams);
+  const careerYears = (careerQ.data?.by_year ?? [])
+    .map(r => r.year)
+    .filter((y): y is number => typeof y === 'number');
+  const sliderMin = careerYears.length ? Math.min(...careerYears) : globalMin;
+  const sliderMax = careerYears.length ? Math.max(...careerYears) : globalMax;
 
-  const hasLoaded = submitted && !!summary && !!matchData && matchData.total > 0;
+  const isAnyLoading = summaryQ.isLoading || matchesQ.isLoading;
+  const isAnyError = summaryQ.isError || matchesQ.isError;
+  const hasNoMatches = isSubmitted && !isAnyLoading && !isAnyError && matchesQ.data?.total === 0;
 
   return (
-    <div className="space-y-5">
-      <PlayerHeader player={player} submitted={submitted} summary={summary} />
-      {yr && (
-        <PlayerFilterPanel
-          tour={tour}
-          player={player}
-          surface={surface}
-          level={level}
-          players={players ?? []}
-          yearRange={sliderValue}
-          sliderMin={sliderMin}
-          sliderMax={sliderMax}
-          onTourChange={v => { setTour(v); setSubmitted(false); }}
-          onPlayerChange={v => { setPlayer(v); setSubmitted(false); }}
-          onSurfaceChange={setSurface}
-          onLevelChange={setLevel}
-          onYearRangeChange={setYearRange}
-          onSubmit={() => setSubmitted(true)}
-        />
+    <div className="ba-flow pb-[var(--space-2xl)]">
+      <PlayerHeader player={draft} summary={summaryQ.data} submitted={isSubmitted} />
+
+      <PlayerFilterPanel
+        tour={filters.tour}
+        player={draft}
+        surface={filters.surface}
+        level={filters.level}
+        players={players ?? []}
+        yearRange={clampRange([filters.y0 ?? sliderMin, filters.y1 ?? sliderMax], sliderMin, sliderMax)}
+        sliderMin={sliderMin}
+        sliderMax={sliderMax}
+        onTourChange={t => { setDraft(''); setIsSubmitted(false); setFilters({ tour: t as 'M'|'F', p: '' }); }}
+        onPlayerChange={p => { setDraft(p); setIsSubmitted(false); }}
+        onSurfaceChange={s => setFilters({ surface: s })}
+        onLevelChange={l => setFilters({ level: l })}
+        onYearRangeChange={([y0, y1]) => setFilters({ y0, y1 })}
+        onSubmit={() => { setFilters({ p: draft }); setIsSubmitted(true); }}
+      />
+
+      {isSubmitted && isAnyLoading && (
+        <div className="ba-card flex items-center justify-center py-20 mt-[var(--space-md)]">
+          <Spinner />
+        </div>
       )}
 
-      {isLoading && <Spinner />}
-      {!isLoading && (errorSummary || errorMatches) && (
-        <QueryError
-          title="This profile did not load"
-          message="Retry, or check the player's name."
-          onRetry={() => { if (errorSummary) refetchSummary(); if (errorMatches) refetchMatches(); }}
-        />
-      )}
-      {!isLoading && !submitted && (
-        <EmptyState
-          eyebrow="Start here"
-          title="Pick a player"
-          message="Type a name above and select Load profile to see their career, form, serve and return."
-        />
-      )}
-      {!isLoading && submitted && matchData && matchData.total === 0 && (
-        <EmptyState
-          title="No matches under these filters"
-          message="Widen the surface, level or year range — this player has no matches in the current selection."
-        />
+      {isSubmitted && isAnyError && (
+        <div className="mt-[var(--space-md)]">
+          <QueryError onRetry={() => {
+            summaryQ.refetch();
+            matchesQ.refetch();
+          }} />
+        </div>
       )}
 
-      {!isLoading && hasLoaded && summary && matchData && (
-        <div className="space-y-6">
-          <KpiDossier filteredWins={filteredWins} filteredLosses={filteredLosses} filteredWinPct={filteredWinPct} summary={summary} topN={topN} playerForm={playerForm} />
-          <FormSection playerForm={playerForm} tour={tour} />
-          <CareerPulseSection matchData={matchData} rankHistory={rankHistory} summary={summary} />
-          <MilestonesRecordsSection milestones={milestones} topN={topN} />
-          <ServeReturnSection player={player} tour={tour} serveStats={serveStats} returnStats={returnStats} servePct={servePct} returnPct={returnPct} />
-          <SimilarProfilesSection similarPlayers={similarPlayers} similarReturn={similarReturn} tour={tour} />
-          <RecentMatchesSection recentMatches={matchData.recent52w ?? []} tour={tour} />
+      {isSubmitted && !isAnyLoading && !isAnyError && !hasNoMatches && (
+        <div className="ba-flow mt-[var(--space-md)]">
+          <KpiDossier
+            summary={summaryQ.data!}
+            filteredWins={matchesQ.data!.total > 0 ? (matchesQ.data!.by_surface.reduce((acc, r) => acc + r.wins, 0)) : 0}
+            filteredLosses={matchesQ.data!.total > 0 ? (matchesQ.data!.by_surface.reduce((acc, r) => acc + (r.total - r.wins), 0)) : 0}
+            filteredWinPct={matchesQ.data!.total > 0 ? ((matchesQ.data!.by_surface.reduce((acc, r) => acc + r.wins, 0) / matchesQ.data!.by_surface.reduce((acc, r) => acc + r.total, 0)) * 100).toFixed(1) + '%' : '—'}
+            topN={topRecordsQ.data}
+            playerForm={formQ.data}
+          />
+
+          <FormSection playerForm={formQ.data} tour={filters.tour} />
+
+          <CareerPulseSection matchData={matchesQ.data!} rankHistory={rankQ.data} summary={summaryQ.data!} />
+
+          <MilestonesRecordsSection milestones={milestonesQ.data} topN={topRecordsQ.data} />
+
+          <ServeReturnSection
+            serveStats={serveQ.data}
+            returnStats={returnQ.data}
+            servePct={servePctQ.data}
+            returnPct={retPctQ.data}
+            player={filters.p!}
+            tour={filters.tour}
+          />
+
+          <SimilarProfilesSection
+            similarPlayers={simServeQ.data}
+            similarReturn={simRetQ.data}
+            tour={filters.tour}
+          />
+
+          <RecentMatchesSection recentMatches={matchesQ.data!.recent52w} tour={filters.tour} />
+        </div>
+      )}
+
+      {hasNoMatches && (
+        <div className="mt-[var(--space-md)]">
+          <EmptyState
+            title="No matches found"
+            message="This player has no recorded matches under these specific filters. Try widening the year range or surface."
+          />
+        </div>
+      )}
+
+      {!isSubmitted && (
+        <div className="mt-[var(--space-md)]">
+          <EmptyState
+            title="Pick a player"
+            message="Search for a player by name to view their complete match archive."
+          />
         </div>
       )}
     </div>

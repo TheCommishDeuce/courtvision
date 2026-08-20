@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { RankHistoryPoint } from '../../types/tennis';
-import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS } from './theme';
+import { CHART, monoTick, GRID_PROPS, AXIS_PROPS, LINE_WIDTH, TOOLTIP_CLASS, CHART_FS } from './theme';
 
 interface Props {
   data: RankHistoryPoint[];
@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload, color }: { active?: boolean; payload?:
   const d = payload[0].payload;
   return (
     <div className={TOOLTIP_CLASS}>
-      <div className="text-[var(--mute)] ba-mono ba-meta">{d.date?.slice(0, 10)}</div>
+      <div className="text-mute ba-mono ba-meta">{d.date?.slice(0, 10)}</div>
       <div className="font-bold ba-mono" style={{ color }}>Rank #{d.rank}</div>
     </div>
   );
@@ -69,14 +69,14 @@ export default function RankHistoryChart({
           <XAxis
             dataKey="date"
             tickFormatter={v => v?.slice(0, 4)}
-            tick={monoTick(10, CHART.tickMute)}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
             interval="preserveStartEnd"
             {...AXIS_PROPS}
           />
           <YAxis
             domain={[logMin, logMax]}
             reversed
-            tick={monoTick(10, CHART.tickMute)}
+            tick={monoTick(CHART_FS.tick, CHART.tickMute)}
             ticks={rankTicks.map(toLog)}
             tickFormatter={v => `#${Math.round(Math.pow(10, v))}`}
             width={38}
@@ -88,7 +88,7 @@ export default function RankHistoryChart({
               stroke={CHART.ink}
               strokeDasharray="3 3"
               strokeWidth={1}
-              label={{ value: `career high #${careerHigh}`, position: 'insideTopRight', fontSize: 9, fill: CHART.ink, fontFamily: 'JetBrains Mono' }}
+              label={{ value: `career high #${careerHigh}`, position: 'insideTopRight', fontSize: CHART_FS.label, fill: CHART.ink, fontFamily: 'JetBrains Mono' }}
             />
           )}
           <Tooltip content={<CustomTooltip color={color} />} />
