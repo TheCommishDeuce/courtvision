@@ -58,7 +58,14 @@ if [ "$SKIP_CHECKS" -eq 1 ]; then
     step "Skipping preflight checks (--skip-checks)"
 else
     step "Running backend tests"
-    "${PYTHON:-python3}" -m pytest -q
+    # Prefer the project dependencies, not an unrelated system Python install.
+    # PYTHON overrides local checks; PYTHON_BIN above is only for the remote venv.
+    LOCAL_PYTHON="${PYTHON:-$ROOT/.venv/bin/python}"
+    if [ -z "${PYTHON:-}" ] && [ ! -x "$LOCAL_PYTHON" ]; then
+        LOCAL_PYTHON=python3
+    fi
+    "$LOCAL_PYTHON" -c 'import sys, duckdb; print(f"Python: {sys.executable}"); print(f"DuckDB: {duckdb.__version__}")'
+    "$LOCAL_PYTHON" -m pytest -q
 
     step "Typechecking, linting and testing the frontend"
     (

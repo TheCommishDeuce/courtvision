@@ -310,7 +310,16 @@ browser-header gate remains a deterrent, never authentication.
 
 ### D13 — P2: deployment/readiness/configuration remain operational debt
 
-**Code-inspected; remote state not verified.**
+**Follow-up fixed: local preflight environment.** A deployment attempt reproduced
+an old DuckDB 0.10.3 primary-key/index limitation in the system Python, while the
+same repeatable-reload test passed with the pinned DuckDB 1.5.5 in `.venv`.
+`deploy.sh` now prefers the project virtualenv, honors an explicit `PYTHON`, and
+prints the interpreter and DuckDB version. Isolated shell-block tests cover
+selection, spaces in paths, overrides, fallback, and failure propagation without
+running the deploy entrypoint. The pipeline transaction and rollback tests remain
+unchanged; old, unsupported DuckDB versions are not worked around.
+
+**Remaining code-inspected concerns; remote state not verified.**
 
 - Deploy rsyncs in place, mutates the live virtualenv, then restarts; it has smoke
   checks but no automatic prior-release rollback.

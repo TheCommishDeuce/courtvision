@@ -107,6 +107,13 @@ The script builds the frontend, creates an artifact from committed files, syncs
 it to `/opt/courtvision`, installs the pinned Python dependencies, restarts the
 existing systemd service, and waits for `/api/health` to become ready.
 
+Local backend checks use `PYTHON` when explicitly set, otherwise the project's
+`.venv/bin/python`, falling back to `python3` only when that virtualenv is absent.
+The preflight prints the interpreter path and DuckDB version. Install the pinned
+`requirements.txt` into the chosen environment; an unrelated system DuckDB can
+fail tests even when the project environment passes. `PYTHON_BIN` configures
+remote virtualenv creation and does not select the local test interpreter.
+
 ```bash
 REMOTE_HOST=root@192.168.0.122 REMOTE_DIR=/opt/courtvision ./deploy/deploy.sh
 ```
