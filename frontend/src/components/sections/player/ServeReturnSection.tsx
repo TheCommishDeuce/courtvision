@@ -24,7 +24,7 @@ export function ServeReturnSection({
   if (!serveStats && !returnStats && !servePct && !returnPct) return null;
   return (
     <section>
-      <SectionHeader title="Serve and return" kicker="Against the rest of the tour" />
+      <SectionHeader title="Serve and return" kicker="Selected-match statistics · career-wide tour percentiles" />
       {/* The two radars sit side by side rather than stacked. Stacked, this one
           section ran to roughly twice the height of every section around it for
           no extra information — the two charts are peers and read better as a
@@ -35,9 +35,8 @@ export function ServeReturnSection({
           {returnPct && Object.keys(returnPct).length > 0 && <div className="ba-card"><ReturnRadarChart percentiles={returnPct} labelA={lastName(player)} title="Return" tour={tour} /></div>}
         </div>
         <div className="xl:col-span-2 flex flex-col">
-          {/* The section header above already says "Serve and return"; this
-              table is the numbers behind the two radars beside it. */}
-          <StatTable stretch title="Every figure" rows={[
+          {/* Raw rates follow match filters; the percentile panels stay career-wide. */}
+          <StatTable stretch title="Selected-match statistics" rows={[
             ...(serveStats && Object.keys(serveStats).length > 0 ? [
               { label: 'Ace %', value: serveStats['ace%'] != null ? `${serveStats['ace%']}%` : null },
               { label: 'Double Fault %', value: serveStats['df%'] != null ? `${serveStats['df%']}%` : null },

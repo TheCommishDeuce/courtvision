@@ -54,7 +54,7 @@ export function KpiDossier({
       {/* The figure the reader came for, at the size that says so. */}
       <div className="ba-kpi ba-kpi-hero flex flex-wrap items-end justify-between gap-x-[var(--space-lg)] gap-y-[var(--space-xs)]">
         <div>
-          <div className="ba-label text-on-clay-soft mb-1.5">Win rate</div>
+          <div className="ba-label text-on-clay-soft mb-1.5">Filtered win rate</div>
           <div className="ba-stat-hero text-spark">{filteredWinPct}</div>
         </div>
         <div className="ba-mono ba-cell text-on-clay-soft pb-1">
@@ -64,11 +64,11 @@ export function KpiDossier({
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-rule border-b border-rule">
       <DossierCell
-        label="Peak rank"
+        label="Career peak rank"
         value={summary.career_high_rank ? `#${summary.career_high_rank}` : '—'}
       />
       <DossierCell
-        label="Titles"
+        label="Filtered titles"
         value={String(
           summary.gs_titles + summary.tour_titles + summary.challenger_titles + summary.itf_titles,
         )}

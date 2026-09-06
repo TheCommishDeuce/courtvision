@@ -60,7 +60,7 @@ export default function PlayerPage() {
       player: filters.p,
       tour: filters.tour,
       surface: filters.surface === 'All' ? undefined : filters.surface,
-      level: filters.level === 'All Tour' ? undefined : filters.level,
+      level: filters.level === 'All' ? undefined : filters.level || undefined,
       year_min: filters.y0,
       year_max: filters.y1,
     };
@@ -84,8 +84,8 @@ export default function PlayerPage() {
   //
   // The bounds come from an unfiltered read of their matches, deliberately:
   // taking them from `matchesQ` would let a narrowed range narrow the bounds
-  // under it, one drag at a time, with no way back. On first load this is the
-  // same request the page already makes, so it is a cache hit, not a fetch.
+  // under it, one drag at a time, with no way back. This request stays
+  // career-wide even when the default All Tour filter narrows the dossier.
   const careerQ = usePlayerMatches({ player: runParams?.player ?? '', tour: filters.tour }, !!runParams);
   const careerYears = (careerQ.data?.by_year ?? [])
     .map(r => r.year)
@@ -137,9 +137,9 @@ export default function PlayerPage() {
         <div className="ba-flow mt-[var(--space-md)]">
           <KpiDossier
             summary={summaryQ.data!}
-            filteredWins={matchesQ.data!.total > 0 ? (matchesQ.data!.by_surface.reduce((acc, r) => acc + r.wins, 0)) : 0}
-            filteredLosses={matchesQ.data!.total > 0 ? (matchesQ.data!.by_surface.reduce((acc, r) => acc + (r.total - r.wins), 0)) : 0}
-            filteredWinPct={matchesQ.data!.total > 0 ? ((matchesQ.data!.by_surface.reduce((acc, r) => acc + r.wins, 0) / matchesQ.data!.by_surface.reduce((acc, r) => acc + r.total, 0)) * 100).toFixed(1) + '%' : '—'}
+            filteredWins={summaryQ.data!.wins}
+            filteredLosses={summaryQ.data!.losses}
+            filteredWinPct={summaryQ.data!.total > 0 ? (100 * summaryQ.data!.wins / summaryQ.data!.total).toFixed(1) + '%' : '—'}
             topN={topRecordsQ.data}
             playerForm={formQ.data}
           />

@@ -20,6 +20,7 @@ def get_common_opponents(
     surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
     year_min: Optional[int] = Query(None, description="Earliest match year to include."),
     year_max: Optional[int] = Query(None, description="Latest match year to include."),
+    level: Optional[str] = Query(None, description="Tournament level or group, e.g. Grand Slam or All Tour."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     """Compare two players against shared opponents under optional filters."""
@@ -31,4 +32,5 @@ def get_common_opponents(
         surface=surface,
         year_min=year_min,
         year_max=year_max,
+        level=level,
     )

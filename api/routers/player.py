@@ -46,11 +46,12 @@ def get_summary(
     surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
     year_min: Optional[int] = Query(None, description="Earliest match year to include."),
     year_max: Optional[int] = Query(None, description="Latest match year to include."),
+    level: Optional[str] = Query(None, description="Tournament level or group, e.g. Grand Slam or All Tour."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
-    """Summarize a player's career record, titles, rankings, and filtered win/loss totals."""
+    """Filtered records/titles, with career-wide ranking and biographical facts."""
     return q_player_summary(con, player_name=player, tour=tour,
-                            year_min=year_min, year_max=year_max, surface=surface)
+                            year_min=year_min, year_max=year_max, surface=surface, level=level)
 
 
 @router.get("/matches", operation_id="get_player_matches")
@@ -134,11 +135,12 @@ def get_serve_stats(
     surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
     year_min: Optional[int] = Query(None, description="Earliest match year to include."),
     year_max: Optional[int] = Query(None, description="Latest match year to include."),
+    level: Optional[str] = Query(None, description="Tournament level or group, e.g. Grand Slam or All Tour."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
-    """Return aggregated serve metrics for a player, including ace rate, first-serve rates, and break points saved."""
+    """Return aggregated serve metrics under the selected match filters."""
     return q_player_serve_stats(con, player_name=player, tour=tour,
-                                surface=surface, year_min=year_min, year_max=year_max)
+                                surface=surface, year_min=year_min, year_max=year_max, level=level)
 
 
 @router.get("/return-stats", operation_id="get_player_return_stats")
@@ -148,11 +150,12 @@ def get_return_stats(
     surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
     year_min: Optional[int] = Query(None, description="Earliest match year to include."),
     year_max: Optional[int] = Query(None, description="Latest match year to include."),
+    level: Optional[str] = Query(None, description="Tournament level or group, e.g. Grand Slam or All Tour."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
-    """Return aggregated return metrics for a player, including first- and second-serve return points won."""
+    """Return aggregated return metrics under the selected match filters."""
     return q_player_return_stats(con, player_name=player, tour=tour,
-                                 surface=surface, year_min=year_min, year_max=year_max)
+                                 surface=surface, year_min=year_min, year_max=year_max, level=level)
 
 
 @router.get("/serve-percentiles", operation_id="get_player_serve_percentiles")

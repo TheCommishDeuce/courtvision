@@ -1,7 +1,7 @@
 import FilterField from './FilterField';
 
 const LEVELS_ATP: Record<string, string> = {
-  All: '',
+  All: 'All',
   'All ATP': 'All Tour',
   'All Dev': 'All Dev',
   'Grand Slam': 'Grand Slam',
@@ -14,7 +14,7 @@ const LEVELS_ATP: Record<string, string> = {
   ITF: 'ITF',
 };
 const LEVELS_WTA: Record<string, string> = {
-  All: '',
+  All: 'All',
   'All WTA': 'All Tour',
   'All Dev': 'All Dev',
   'Grand Slam': 'Grand Slam',
@@ -39,7 +39,7 @@ export default function LevelSelect({ tour, value, onChange }: Props) {
   const map = tour === 'F' ? LEVELS_WTA : LEVELS_ATP;
   return (
     <FilterField label="Level">
-      <select value={value} onChange={e => onChange(e.target.value)} className="ba-select w-full">
+      <select value={value || 'All'} onChange={e => onChange(e.target.value)} className="ba-select w-full">
         {Object.entries(map).map(([label, code]) => (
           <option key={label} value={code}>{label}</option>
         ))}

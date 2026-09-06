@@ -6,7 +6,7 @@ from typing import Optional
 
 import duckdb
 
-from ._helpers import _TOUR_LEVELS, _level_condition, _where
+from ._helpers import _TOUR_LEVELS, _filter_extras, _level_condition, _where
 
 def q_player_matches(
     con: duckdb.DuckDBPyConnection,
@@ -385,7 +385,9 @@ def q_player_summary(
     year_min: Optional[int] = None,
     year_max: Optional[int] = None,
     surface: Optional[str] = None,
+    level: Optional[str] = None,
 ) -> dict:
+    extra, extra_params = _filter_extras(None, surface, year_min, year_max, level, start_idx=3)
     # Team-event exclusion condition (without leading AND, for use in FILTER clauses)
     _TEAM_COND = """
         tournament NOT ILIKE '%Davis%'
@@ -403,13 +405,15 @@ def q_player_summary(
         SELECT
             COUNT(*)                                     AS total_matches,
             SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) AS wins,
-            SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS losses,
-            MIN(player_rank)                             AS career_high_rank
+            SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS losses
         FROM player_match_view
         WHERE player_name = $1
-          AND ($2 IS NULL OR tour = $2)
-          AND ($3 IS NULL OR year >= $3)
-          AND ($4 IS NULL OR year <= $4)
+          AND ($2 IS NULL OR tour = $2) {extra}
+    ),
+    career AS (
+        SELECT MIN(player_rank) AS career_high_rank
+        FROM player_match_view
+        WHERE player_name = $1 AND ($2 IS NULL OR tour = $2)
     ),
     player_ref AS (
         SELECT country, birthdate, hand, height
@@ -430,18 +434,16 @@ def q_player_summary(
             COUNT(*) FILTER (WHERE level_name = 'ITF')        AS itf_titles
         FROM matches_main
         WHERE winner_name = $1 AND round = 'F'
-          AND ($2 IS NULL OR tour = $2)
-          AND ($3 IS NULL OR year >= $3)
-          AND ($4 IS NULL OR year <= $4)
-          AND ($5 IS NULL OR surface = $5)
+          AND ($2 IS NULL OR tour = $2) {extra}
     )
-    SELECT wl.*, player_ref.country, player_ref.birthdate, player_ref.hand, player_ref.height, titles.*
+    SELECT wl.*, career.career_high_rank, player_ref.country, player_ref.birthdate, player_ref.hand, player_ref.height, titles.*
     FROM wl
     LEFT JOIN player_ref ON TRUE
+    CROSS JOIN career
     CROSS JOIN titles
     """
 
-    row = con.execute(sql, [player_name, tour, year_min, year_max, surface]).fetchone()
+    row = con.execute(sql, [player_name, tour, *extra_params]).fetchone()
     if not row or row[0] is None:
         return {}
 
@@ -475,6 +477,42 @@ def q_player_summary(
 # 7. Aggregated serve stats (sum-then-divide, per mod.py logic)
 # ---------------------------------------------------------------------------
 
+# Use the same per-metric population for rates and their percentile inputs.
+# A missing numerator must not add its points to that metric's denominator.
+_SERVE_RATES_SQL = """
+    SUM(aces) / NULLIF(GREATEST(SUM(pts) FILTER (WHERE aces IS NOT NULL), 0), 0) AS ace_rate,
+    SUM(dfs) / NULLIF(GREATEST(SUM(pts) FILTER (WHERE dfs IS NOT NULL), 0), 0) AS df_rate,
+    SUM(firsts) / NULLIF(GREATEST(SUM(pts) FILTER (WHERE firsts IS NOT NULL), 0), 0) AS first_in_rate,
+    SUM(fwon) FILTER (WHERE firsts IS NOT NULL)
+        / NULLIF(GREATEST(SUM(firsts) FILTER (WHERE fwon IS NOT NULL), 0), 0) AS first_win_rate,
+    SUM(swon) FILTER (WHERE firsts IS NOT NULL)
+        / NULLIF(GREATEST(SUM(pts - firsts) FILTER (WHERE swon IS NOT NULL), 0), 0) AS second_win_rate,
+    SUM(bp_saved) FILTER (WHERE bp_chances IS NOT NULL)
+        / NULLIF(GREATEST(SUM(bp_chances) FILTER (WHERE bp_saved IS NOT NULL), 0), 0) AS bp_saved_rate
+"""
+
+_RETURN_ROWS_SQL = """
+    SELECT winner_name AS player_name, tour, surface, level_name, round, year,
+           loser_pts AS opp_pts, loser_firsts AS opp_firsts,
+           loser_fwon AS opp_fwon, loser_swon AS opp_swon,
+           loser_chances AS opp_chances, loser_saved AS opp_saved
+    FROM matches_main WHERE is_walkover = false
+    UNION ALL
+    SELECT loser_name, tour, surface, level_name, round, year,
+           winner_pts, winner_firsts, winner_fwon, winner_swon, winner_chances, winner_saved
+    FROM matches_main WHERE is_walkover = false
+"""
+
+_RETURN_RATES_SQL = """
+    SUM(opp_firsts - opp_fwon)
+        / NULLIF(GREATEST(SUM(opp_firsts) FILTER (WHERE opp_fwon IS NOT NULL), 0), 0) AS r1_rate,
+    SUM(opp_pts - opp_firsts - opp_swon)
+        / NULLIF(GREATEST(SUM(opp_pts - opp_firsts) FILTER (WHERE opp_swon IS NOT NULL), 0), 0) AS r2_rate,
+    SUM(opp_chances - opp_saved)
+        / NULLIF(GREATEST(SUM(opp_chances) FILTER (WHERE opp_saved IS NOT NULL), 0), 0) AS bpc_rate
+"""
+
+
 def q_player_serve_stats(
     con: duckdb.DuckDBPyConnection,
     player_name: str,
@@ -482,40 +520,20 @@ def q_player_serve_stats(
     surface: Optional[str] = None,
     year_min: Optional[int] = None,
     year_max: Optional[int] = None,
+    level: Optional[str] = None,
 ) -> dict:
-    base_conditions = ["player_name = $1"]
-    params: list = [player_name]
-    idx = 2
-    if tour:
-        base_conditions.append(f"tour = ${idx}"); params.append(tour); idx += 1
-    if surface:
-        base_conditions.append(f"surface = ${idx}"); params.append(surface); idx += 1
-    if year_min:
-        base_conditions.append(f"year >= ${idx}"); params.append(year_min); idx += 1
-    if year_max:
-        base_conditions.append(f"year <= ${idx}"); params.append(year_max); idx += 1
-
-    base_where = _where(base_conditions)
-
+    extra, extra_params = _filter_extras(tour, surface, year_min, year_max, level, start_idx=2)
+    params = [player_name, *extra_params]
     serve_sql = f"""
-        SELECT
-            SUM(pts)        AS total_pts,
-            SUM(aces)       AS total_aces,
-            SUM(dfs)        AS total_dfs,
-            SUM(firsts)     AS total_firsts,
-            SUM(fwon)       AS total_fwon,
-            SUM(swon)       AS total_swon,
-            SUM(bp_saved)   AS total_bp_saved,
-            SUM(bp_chances) AS total_bp_chances,
-            COUNT(*)        AS matches_with_stats
+        SELECT SUM(pts), COUNT(*) AS matches_with_stats, {_SERVE_RATES_SQL}
         FROM player_match_view
-        {base_where} AND pts IS NOT NULL
+        WHERE player_name = $1 AND pts IS NOT NULL {extra}
     """
 
     tb_sql = f"""
         SELECT SUM(tb_won), SUM(tb_lost)
         FROM player_match_view
-        {base_where}
+        WHERE player_name = $1 {extra}
     """
 
     serve_row = con.execute(serve_sql, params).fetchone()
@@ -524,26 +542,25 @@ def q_player_serve_stats(
     if not serve_row or not serve_row[0]:
         return {}
 
-    pts, aces, dfs, firsts, fwon, swon, bp_saved, bp_chances, n = serve_row
+    _, n, ace, df, first_in, first_win, second_win, bp_saved = serve_row
     tb_won  = tb_row[0] or 0 if tb_row else 0
     tb_lost = tb_row[1] or 0 if tb_row else 0
-    second_serves = (pts or 0) - (firsts or 0)
 
-    def pct(num, den):
-        return round(100.0 * num / den, 1) if den and den > 0 else None
+    def pct(rate):
+        return round(100.0 * rate, 1) if rate is not None else None
 
     return {
         'matches_with_stats': n,
-        'ace%':      pct(aces, pts),
-        'df%':       pct(dfs, pts),
-        '1st_in%':   pct(firsts, pts),
-        '1st_win%':  pct(fwon, firsts),
-        '2nd_win%':  pct(swon, second_serves),
-        'bp_saved%': pct(bp_saved, bp_chances),
+        'ace%':      pct(ace),
+        'df%':       pct(df),
+        '1st_in%':   pct(first_in),
+        '1st_win%':  pct(first_win),
+        '2nd_win%':  pct(second_win),
+        'bp_saved%': pct(bp_saved),
         'tb_won':    int(tb_won),
         'tb_lost':   int(tb_lost),
         'tb_W-L':    f"{int(tb_won)}-{int(tb_lost)}",
-        'tb_win%':   pct(tb_won, tb_won + tb_lost),
+        'tb_win%':   pct(tb_won / (tb_won + tb_lost)) if tb_won + tb_lost > 0 else None,
     }
 
 
@@ -558,62 +575,30 @@ def q_player_return_stats(
     surface: Optional[str] = None,
     year_min: Optional[int] = None,
     year_max: Optional[int] = None,
+    level: Optional[str] = None,
 ) -> dict:
-    """Return stats from opponent's serve perspective."""
-    extra_conds: list[str] = []
-    params: list = [player_name]
-    idx = 2
-    if tour:
-        extra_conds.append(f"tour = ${idx}"); params.append(tour); idx += 1
-    if surface:
-        extra_conds.append(f"surface = ${idx}"); params.append(surface); idx += 1
-    if year_min:
-        extra_conds.append(f"year >= ${idx}"); params.append(year_min); idx += 1
-    if year_max:
-        extra_conds.append(f"year <= ${idx}"); params.append(year_max); idx += 1
-
-    extra = (' AND ' + ' AND '.join(extra_conds)) if extra_conds else ''
-
+    """Return stats from opponent's serve perspective, using available stat pairs."""
+    extra, extra_params = _filter_extras(tour, surface, year_min, year_max, level, start_idx=2)
     sql = f"""
-        WITH opp AS (
-            SELECT loser_pts AS opp_pts, loser_firsts AS opp_firsts,
-                   loser_fwon AS opp_fwon, loser_swon AS opp_swon,
-                   loser_chances AS opp_chances, loser_saved AS opp_saved
-            FROM matches_main
-            WHERE winner_name = $1 AND winner_pts IS NOT NULL {extra}
-            UNION ALL
-            SELECT winner_pts, winner_firsts, winner_fwon, winner_swon,
-                   winner_chances, winner_saved
-            FROM matches_main
-            WHERE loser_name = $1 AND winner_pts IS NOT NULL {extra}
-        )
-        SELECT
-            SUM(opp_pts)                         AS total_opp_pts,
-            SUM(opp_firsts)                      AS total_opp_firsts,
-            SUM(opp_fwon)                        AS total_opp_fwon,
-            SUM(opp_swon)                        AS total_opp_swon,
-            SUM(opp_pts - opp_firsts)            AS total_opp_seconds,
-            SUM(opp_chances)                     AS total_opp_chances,
-            SUM(opp_saved)                       AS total_opp_saved,
-            COUNT(*)                             AS matches
+        WITH opp AS ({_RETURN_ROWS_SQL})
+        SELECT SUM(opp_pts), COUNT(*) AS matches_with_stats, {_RETURN_RATES_SQL}
         FROM opp
+        WHERE player_name = $1 AND opp_pts IS NOT NULL {extra}
     """
-
-    row = con.execute(sql, params).fetchone()
-
+    row = con.execute(sql, [player_name, *extra_params]).fetchone()
     if not row or not row[0]:
         return {}
 
-    opp_pts, opp_firsts, opp_fwon, opp_swon, opp_seconds, opp_chances, opp_saved, n = row
+    _, n, first_return, second_return, bp_converted = row
 
-    def pct(num, den):
-        return round(100.0 * num / den, 1) if den and den > 0 else None
+    def pct(rate):
+        return round(100.0 * rate, 1) if rate is not None else None
 
     return {
         'matches_with_stats': n,
-        '1st_return_win%':   pct((opp_firsts or 0) - (opp_fwon or 0), opp_firsts),
-        '2nd_return_win%':   pct((opp_seconds or 0) - (opp_swon or 0), opp_seconds),
-        'bp_converted%':     pct((opp_chances or 0) - (opp_saved or 0), opp_chances),
+        '1st_return_win%': pct(first_return),
+        '2nd_return_win%': pct(second_return),
+        'bp_converted%':   pct(bp_converted),
     }
 
 
@@ -621,6 +606,8 @@ def q_player_return_stats(
 # 7c. Serve/return percentiles vs. tour
 # ---------------------------------------------------------------------------
 
+# tour_size counts eligible players. Each axis ranks only those with a known
+# rate, partitioning NULLs out without dropping their other, valid metrics.
 _SERVE_PERCENTILE_MIN_MATCHES = 20
 
 
@@ -631,46 +618,31 @@ def q_player_serve_percentiles(
 ) -> dict:
     """Percentile rank (0-100) for this player's serve metrics vs all tour players
     with at least _SERVE_PERCENTILE_MIN_MATCHES of stat-bearing matches."""
-    sql = """
-        WITH per_player AS (
-            SELECT
-                player_name,
-                SUM(pts)        AS total_pts,
-                SUM(aces)       AS total_aces,
-                SUM(dfs)        AS total_dfs,
-                SUM(firsts)     AS total_firsts,
-                SUM(fwon)       AS total_fwon,
-                SUM(swon)       AS total_swon,
-                SUM(bp_saved)   AS total_bp_saved,
-                SUM(bp_chances) AS total_bp_chances,
-                SUM(tb_won)     AS total_tb_won,
-                SUM(tb_lost)    AS total_tb_lost,
-                COUNT(*)        AS n
+    sql = f"""
+        WITH rates AS (
+            SELECT player_name, {_SERVE_RATES_SQL},
+                SUM(tb_won) FILTER (WHERE tb_lost IS NOT NULL)
+                    / NULLIF(GREATEST(SUM(tb_won + tb_lost), 0), 0) AS tb_win_rate
             FROM player_match_view
             WHERE pts IS NOT NULL AND tour = $1
             GROUP BY player_name
-            HAVING n >= $2
-        ),
-        rates AS (
-            SELECT
-                player_name,
-                CASE WHEN total_pts > 0 THEN total_aces * 1.0 / total_pts END AS ace_rate,
-                CASE WHEN total_pts > 0 THEN total_firsts * 1.0 / total_pts END AS first_in_rate,
-                CASE WHEN total_firsts > 0 THEN total_fwon * 1.0 / total_firsts END AS first_win_rate,
-                CASE WHEN (total_pts - total_firsts) > 0 THEN total_swon * 1.0 / (total_pts - total_firsts) END AS second_win_rate,
-                CASE WHEN total_bp_chances > 0 THEN total_bp_saved * 1.0 / total_bp_chances END AS bp_saved_rate,
-                CASE WHEN (total_tb_won + total_tb_lost) > 0 THEN total_tb_won * 1.0 / (total_tb_won + total_tb_lost) END AS tb_win_rate
-            FROM per_player
+            HAVING COUNT(*) >= $2
         ),
         ranked AS (
             SELECT
                 player_name,
-                PERCENT_RANK() OVER (ORDER BY ace_rate) * 100        AS ace_pct,
-                PERCENT_RANK() OVER (ORDER BY first_in_rate) * 100   AS first_in_pct,
-                PERCENT_RANK() OVER (ORDER BY first_win_rate) * 100  AS first_win_pct,
-                PERCENT_RANK() OVER (ORDER BY second_win_rate) * 100 AS second_win_pct,
-                PERCENT_RANK() OVER (ORDER BY bp_saved_rate) * 100   AS bp_saved_pct,
-                PERCENT_RANK() OVER (ORDER BY tb_win_rate) * 100     AS tb_win_pct,
+                CASE WHEN ace_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY ace_rate IS NULL ORDER BY ace_rate) * 100 END AS ace_pct,
+                CASE WHEN first_in_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY first_in_rate IS NULL ORDER BY first_in_rate) * 100 END AS first_in_pct,
+                CASE WHEN first_win_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY first_win_rate IS NULL ORDER BY first_win_rate) * 100 END AS first_win_pct,
+                CASE WHEN second_win_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY second_win_rate IS NULL ORDER BY second_win_rate) * 100 END AS second_win_pct,
+                CASE WHEN bp_saved_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY bp_saved_rate IS NULL ORDER BY bp_saved_rate) * 100 END AS bp_saved_pct,
+                CASE WHEN tb_win_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY tb_win_rate IS NULL ORDER BY tb_win_rate) * 100 END AS tb_win_pct,
                 COUNT(*) OVER ()                                      AS tour_size
             FROM rates
         )
@@ -701,59 +673,24 @@ def q_player_return_percentiles(
 ) -> dict:
     """Percentile rank (0-100) for this player's return metrics vs all tour players
     with at least _SERVE_PERCENTILE_MIN_MATCHES stat-bearing matches."""
-    sql = """
-        WITH opp AS (
-            SELECT
-                winner_name AS player_name,
-                loser_pts     AS opp_pts,
-                loser_firsts  AS opp_firsts,
-                loser_fwon    AS opp_fwon,
-                loser_swon    AS opp_swon,
-                loser_chances AS opp_chances,
-                loser_saved   AS opp_saved,
-                tour
-            FROM matches_main
-            WHERE winner_pts IS NOT NULL
-            UNION ALL
-            SELECT
-                loser_name,
-                winner_pts, winner_firsts, winner_fwon, winner_swon,
-                winner_chances, winner_saved, tour
-            FROM matches_main
-            WHERE winner_pts IS NOT NULL
-        ),
-        per_player AS (
-            SELECT
-                player_name,
-                SUM(opp_firsts)               AS total_opp_firsts,
-                SUM(opp_fwon)                 AS total_opp_fwon,
-                SUM(opp_pts - opp_firsts)     AS total_opp_seconds,
-                SUM(opp_swon)                 AS total_opp_swon,
-                SUM(opp_chances)              AS total_opp_chances,
-                SUM(opp_saved)                AS total_opp_saved,
-                COUNT(*)                       AS n
-            FROM opp
-            WHERE tour = $1
-            GROUP BY player_name
-            HAVING n >= $2
-        ),
+    sql = f"""
+        WITH opp AS ({_RETURN_ROWS_SQL}),
         rates AS (
-            SELECT
-                player_name,
-                CASE WHEN total_opp_firsts > 0
-                     THEN (total_opp_firsts - total_opp_fwon) * 1.0 / total_opp_firsts END AS r1_rate,
-                CASE WHEN total_opp_seconds > 0
-                     THEN (total_opp_seconds - total_opp_swon) * 1.0 / total_opp_seconds END AS r2_rate,
-                CASE WHEN total_opp_chances > 0
-                     THEN (total_opp_chances - total_opp_saved) * 1.0 / total_opp_chances END AS bpc_rate
-            FROM per_player
+            SELECT player_name, {_RETURN_RATES_SQL}
+            FROM opp
+            WHERE tour = $1 AND opp_pts IS NOT NULL
+            GROUP BY player_name
+            HAVING COUNT(*) >= $2
         ),
         ranked AS (
             SELECT
                 player_name,
-                PERCENT_RANK() OVER (ORDER BY r1_rate) * 100  AS first_return_win_pct,
-                PERCENT_RANK() OVER (ORDER BY r2_rate) * 100  AS second_return_win_pct,
-                PERCENT_RANK() OVER (ORDER BY bpc_rate) * 100 AS bp_converted_pct,
+                CASE WHEN r1_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY r1_rate IS NULL ORDER BY r1_rate) * 100 END AS first_return_win_pct,
+                CASE WHEN r2_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY r2_rate IS NULL ORDER BY r2_rate) * 100 END AS second_return_win_pct,
+                CASE WHEN bpc_rate IS NOT NULL THEN
+                    PERCENT_RANK() OVER (PARTITION BY bpc_rate IS NULL ORDER BY bpc_rate) * 100 END AS bp_converted_pct,
                 COUNT(*) OVER ()                               AS tour_size
             FROM rates
         )

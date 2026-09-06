@@ -63,7 +63,7 @@ export default function H2HSection({ f }: { f: VersusFilters }) {
       player_b: f.b!,
       tour: f.tour,
       surface: f.surface === 'All' ? undefined : f.surface,
-      level: f.level === 'All Tour' ? undefined : f.level,
+      level: f.level === 'All' ? undefined : f.level || undefined,
       year_min: f.y0,
       year_max: f.y1,
     },

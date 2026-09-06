@@ -147,6 +147,13 @@ tests/      Backend query, route, and pipeline safety tests
 deploy/     Manual deployment script and systemd reference unit
 ```
 
+## Maintenance
+
+See the [technical-debt register](docs/tech-debt.md) for verified findings,
+completed fixes, preserved workflows, and acceptance criteria for the next
+cleanup batches. It distinguishes reproduced bugs from risks that still need
+measurement or a product decision.
+
 ## Data and licensing
 
 Runtime data under `data/` is not committed. No project license has been

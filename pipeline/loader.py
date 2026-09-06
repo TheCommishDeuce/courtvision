@@ -98,7 +98,8 @@ def load_parquet_to_duckdb(
     Load parquet file(s) into matches_main.
     mode='full'        → DELETE + INSERT (idempotent full reload)
     mode='incremental' → INSERT OR IGNORE (skip existing keys)
-    Returns number of rows inserted.
+    Returns the total row count after loading. The caller owns the transaction
+    and checkpoints only after all related tables have been loaded and committed.
     """
     where = "WHERE winner_name IS NOT NULL AND loser_name IS NOT NULL AND tour IS NOT NULL"
     if mode == 'full':
@@ -115,14 +116,11 @@ def load_parquet_to_duckdb(
         )
     count = con.execute("SELECT COUNT(*) FROM matches_main").fetchone()[0]
     logger.info(f"matches_main now has {count} rows")
-    # Flush the WAL into the main DB file so the database is not left held open
-    # by a lingering .wal and disk space from the prior DELETE is reclaimed.
-    con.execute("CHECKPOINT")
     return count
 
 
 def load_players_to_duckdb(con: duckdb.DuckDBPyConnection, csv_path: Path, *, clear: bool = False) -> None:
-    """Load players reference CSV into players table."""
+    """Load player references within the caller's reload transaction."""
     if clear:
         con.execute("DELETE FROM players")
     con.execute(

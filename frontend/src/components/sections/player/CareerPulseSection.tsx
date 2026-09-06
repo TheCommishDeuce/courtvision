@@ -15,7 +15,7 @@ function toLineData(rows: WinPctRow[]) {
 export function CareerPulseSection({ matchData, rankHistory, summary }: { matchData: PlayerMatchesResponse; rankHistory?: RankHistoryPoint[]; summary: PlayerSummary }) {
   return (
     <section>
-      <SectionHeader title="Career shape" kicker="How the years went" />
+      <SectionHeader title="Career shape" kicker="Selected match filters · ranking history follows years only" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div className="ba-card">
           <LineChart data={toLineData(matchData.by_year)} title="Win % by year" referenceLine={50} />

@@ -86,9 +86,9 @@ def add_derived_columns(df: pd.DataFrame) -> pd.DataFrame:
     # is_complete: has at least one set and is not retirement or walkover
     df['is_complete'] = (~df['is_retirement']) & (~df['is_walkover']) & (df['num_sets'].fillna(0) > 0)
 
-    # had_tiebreak — vectorized check for 7-6 set score
+    # A match winner can lose its only tiebreak: recognize both orientations.
     df['had_tiebreak'] = df['score'].fillna('').str.contains(
-        '7' + _DASH + '6', na=False
+        r'\b(?:7' + _DASH + r'6|6' + _DASH + r'7)\b', na=False
     )
 
     # rank_diff and is_upset

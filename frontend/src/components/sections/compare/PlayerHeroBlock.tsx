@@ -29,7 +29,7 @@ export default function PlayerHeroBlock({
 
   const rows = [
     { k: 'Record', v: record },
-    { k: 'Peak rank', v: peakRank ? `#${peakRank}` : '—' },
+    { k: 'Career peak rank', v: peakRank ? `#${peakRank}` : '—' },
     { k: 'Titles', v: String(titles) },
   ];
 

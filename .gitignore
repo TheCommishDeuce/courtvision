@@ -15,9 +15,10 @@ __pycache__/
 .claude/
 .pi/
 
-# documentation (no markdown in repo, except the README)
+# documentation (keep the README and maintained debt register)
 *.md
 !README.md
+!docs/tech-debt.md
 
 # data + generated artifacts
 data/

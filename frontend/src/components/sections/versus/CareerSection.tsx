@@ -54,7 +54,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
   const { data: rankA } = useRankHistory(paramsA, on);
   const { data: rankB } = useRankHistory(paramsB, on);
   const { data: common } = useCommonOpponents(
-    { player_a: f.a!, player_b: f.b!, tour: f.tour },
+    { player_a: f.a!, player_b: f.b!, tour: f.tour, surface: paramsA.surface, level: paramsA.level, year_min: f.y0, year_max: f.y1 },
     on,
   );
 
@@ -80,14 +80,6 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
       />
     );
   }
-
-  const totals = (m: typeof matchA) => {
-    const wins = m.by_year.reduce((s, r) => s + r.wins, 0);
-    const total = m.by_year.reduce((s, r) => s + r.total, 0);
-    return { wins, losses: total - wins, total };
-  };
-  const tA = totals(matchA);
-  const tB = totals(matchB);
 
   const surfaces = [
     ...new Set([
@@ -145,39 +137,35 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
     <section id="careers" className="space-y-5">
       <SectionHeader
         title="The two careers"
-        kicker={
-          f.level
-            ? 'Follows surface and years · the level filter applies to the head-to-head only'
-            : 'Follows the filters above'
-        }
+        kicker="Records, rates, and titles follow the filters above · peak ranks are career-wide"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <PlayerHeroBlock
           name={f.a!}
           tour={f.tour}
-          winPct={pct(tA.wins, tA.total)}
-          record={`${tA.wins}–${tA.losses}`}
+          winPct={pct(sumA.wins, sumA.total)}
+          record={`${sumA.wins}–${sumA.losses}`}
           peakRank={sumA.career_high_rank}
-          titles={sumA.gs_titles + sumA.tour_titles}
+          titles={sumA.gs_titles + sumA.tour_titles + sumA.challenger_titles + sumA.itf_titles}
           variant="clay"
         />
         <PlayerHeroBlock
           name={f.b!}
           tour={f.tour}
-          winPct={pct(tB.wins, tB.total)}
-          record={`${tB.wins}–${tB.losses}`}
+          winPct={pct(sumB.wins, sumB.total)}
+          record={`${sumB.wins}–${sumB.losses}`}
           peakRank={sumB.career_high_rank}
-          titles={sumB.gs_titles + sumB.tour_titles}
+          titles={sumB.gs_titles + sumB.tour_titles + sumB.challenger_titles + sumB.itf_titles}
           variant="ink"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-        <ComparisonCard title="Career" playerA={f.a!} playerB={f.b!}>
+        <ComparisonCard title="Filtered record" playerA={f.a!} playerB={f.b!}>
           <CompareRow label="W–L" a={`${sumA.wins}–${sumA.losses}`} b={`${sumB.wins}–${sumB.losses}`} better="none" />
           <CompareRow label="Win %" a={`${pct(sumA.wins, sumA.total)}%`} b={`${pct(sumB.wins, sumB.total)}%`} />
-          <CompareRow label="Peak rank" a={sumA.career_high_rank ? `#${sumA.career_high_rank}` : '—'} b={sumB.career_high_rank ? `#${sumB.career_high_rank}` : '—'} better="lower" />
+          <CompareRow label="Career peak rank" a={sumA.career_high_rank ? `#${sumA.career_high_rank}` : '—'} b={sumB.career_high_rank ? `#${sumB.career_high_rank}` : '—'} better="lower" />
           <CompareRow label="Grand slams" a={sumA.gs_titles} b={sumB.gs_titles} />
           <CompareRow label="Tour titles" a={sumA.tour_titles} b={sumB.tour_titles} />
           <CompareRow label="Challenger" a={sumA.challenger_titles} b={sumB.challenger_titles} />
@@ -209,7 +197,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
 
       {(hasServePct || hasReturnPct) && (
         <div>
-          <SectionHeader level="sub" title="Profile overlay" kicker="Tour percentiles" />
+          <SectionHeader level="sub" title="Profile overlay" kicker="Career-wide tour percentiles · unaffected by match filters" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {hasServePct && (
               <div className="ba-card">
@@ -241,7 +229,7 @@ export default function CareerSection({ f }: { f: VersusFilters }) {
 
       {((rankA && rankA.length > 0) || (rankB && rankB.length > 0)) && (
         <div>
-          <SectionHeader level="sub" title="Ranking trajectory" />
+          <SectionHeader level="sub" title="Ranking trajectory" kicker="Selected years · all surfaces and levels" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {rankA && rankA.length > 0 && (
               <div className="ba-card">

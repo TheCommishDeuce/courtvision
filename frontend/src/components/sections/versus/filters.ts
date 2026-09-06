@@ -24,8 +24,7 @@ export function playerParams(f: VersusFilters, p: string) {
     player: p,
     tour: f.tour,
     surface: f.surface === 'All' ? undefined : f.surface,
-    // The career comparison ignores the level filter — it only scopes the H2H table.
-    // Level is omitted here by design.
+    level: f.level === 'All' ? undefined : f.level || undefined,
     year_min: f.y0,
     year_max: f.y1,
   };

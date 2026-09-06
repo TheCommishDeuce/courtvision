@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api, get } from './http';
 import type {
   YearRange,
   Constants,
@@ -42,14 +42,6 @@ import type {
   CountryLeadersResponse,
   ComebackScatterResponse,
 } from '../types/tennis';
-
-const api = axios.create({
-  baseURL: '/api',
-  headers: { 'X-CourtVision-Client': 'dashboard' },
-});
-
-const get = <T,>(path: string, params?: object): Promise<T> =>
-  api.get<T>(path, { params }).then(r => r.data);
 
 // ── Meta ──────────────────────────────────────────────────────────────────────
 
@@ -103,7 +95,7 @@ export interface PlayerParams {
   tour?: string;
 }
 
-export const fetchPlayerSummary = (params: { player: string; tour?: string; year_min?: number; year_max?: number; surface?: string }): Promise<PlayerSummary> =>
+export const fetchPlayerSummary = (params: PlayerParams): Promise<PlayerSummary> =>
   get<PlayerSummary>('/player/summary', params);
 
 export const fetchPlayerMatches = (params: PlayerParams): Promise<PlayerMatchesResponse> =>
@@ -375,14 +367,7 @@ export const fetchLeadersSlamRecord = (params: LeadersParams & { min_matches?: n
 export const fetchLeadersTiebreaks = (params: LeadersParams & { min_matches?: number }): Promise<TiebreakLeaderRow[]> =>
   get<TiebreakLeaderRow[]>('/leaders/tiebreaks', params);
 
-export const fetchCommonOpponents = (params: {
-  player_a: string;
-  player_b: string;
-  tour?: string;
-  surface?: string;
-  year_min?: number;
-  year_max?: number;
-}): Promise<CommonOpponentsResponse> =>
+export const fetchCommonOpponents = (params: H2HParams): Promise<CommonOpponentsResponse> =>
   get<CommonOpponentsResponse>('/compare/common-opponents', params);
 
 // ── Ad-hoc SQL (query builder) ────────────────────────────────────────────────

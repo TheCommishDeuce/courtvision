@@ -15,8 +15,9 @@ def q_common_opponents(
     surface: Optional[str] = None,
     year_min: Optional[int] = None,
     year_max: Optional[int] = None,
+    level: Optional[str] = None,
 ) -> dict:
-    extra, extra_params = _filter_extras(tour, surface, year_min, year_max, None, start_idx=3)
+    extra, extra_params = _filter_extras(tour, surface, year_min, year_max, level, start_idx=3)
     params = [player_a, player_b, *extra_params]
     sql = f"""
         WITH a_matches AS (

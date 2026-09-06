@@ -22,6 +22,8 @@ _TOUR_LEVELS = (
 
 def _level_condition(level: str, conditions: list[str], params: list, idx: int) -> int:
     """Append level filter condition(s). Returns updated param index."""
+    if level == 'All':
+        return idx
     if level == 'All Tour':
         conditions.append(
             f"(level_name IN ({_TOUR_LEVELS}) "
@@ -29,7 +31,7 @@ def _level_condition(level: str, conditions: list[str], params: list, idx: int) 
         )
     elif level == 'All Dev':
         conditions.append(
-            f"(level_name = 'Challenger' OR "
+            f"(level_name IN ('Challenger', 'ITF') OR "
             f"(level_name IN ({_TOUR_LEVELS}) "
             "AND round IN ('Q1', 'Q2', 'Q3', 'ER')))"
         )

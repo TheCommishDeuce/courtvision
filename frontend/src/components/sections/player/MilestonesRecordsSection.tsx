@@ -6,7 +6,7 @@ export function MilestonesRecordsSection({ milestones, topN }: { milestones?: Pl
   if (!milestones && !topN) return null;
   return (
     <section>
-      <SectionHeader title="Milestones and records" />
+      <SectionHeader title="Milestones and records" kicker="Milestones are career-wide · opponent records follow match filters" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {milestones && Object.keys(milestones).length > 0 && (
           <StatTable title="Career milestones" rows={[
