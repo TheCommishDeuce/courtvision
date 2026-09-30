@@ -13,6 +13,7 @@ import SearchBox from '../../components/SearchBox';
 import Section from '../../components/Section';
 import { BlockError, EmptyState, Skeleton, SkeletonRows } from '../../components/States';
 import { SurfaceTag, TourTag } from '../../components/Tags';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Tour } from '../../lib/filters';
 import { fmtDate, fmtDayMonth, fmtDuration, fmtInt, fmtRankParen, roundName, tourLabel } from '../../lib/format';
 import { fromWinnerLoser } from '../../lib/matches';
@@ -64,6 +65,7 @@ function TourToggle({ tour, onChange, big = false, available = ['M', 'F'] }: {
 // ── Browse ───────────────────────────────────────────────────────────────────
 
 function Browse() {
+  useDocumentTitle('Tournaments');
   const [params, set] = useQueryState();
   const tour = asTour(params.get('tour')) ?? 'M';
   const q = useQuery({
@@ -208,6 +210,7 @@ function StatLeaders({ recap, scope }: { recap: TournamentRecap; scope: string }
 }
 
 function Edition({ name, tour, year, years, tours }: { name: string; tour: Tour; year: number; years: number[]; tours: Tour[] }) {
+  useDocumentTitle(`${name} ${year}`);
   const navigate = useNavigate();
   const [params, set] = useQueryState();
   const showQ = params.get('qualifying') === '1';

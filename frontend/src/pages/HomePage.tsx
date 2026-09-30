@@ -8,6 +8,7 @@ import { get } from '../api/http';
 import { useMetaStats, useRecentUpsets, useStorylines } from '../hooks';
 import type { RecentChampion, RecentUpset, Storyline } from '../types/tennis';
 import SearchBox from '../components/SearchBox';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { BlockError, SkelBar, Skeleton } from '../components/States';
 import { SurfaceTag, TourTag } from '../components/Tags';
 import { LAB_EXAMPLES } from '../lab/examples';
@@ -240,6 +241,7 @@ function Upsets() {
 }
 
 export default function HomePage() {
+  useDocumentTitle(null);
   return (
     <main className="cv-main">
       <Hero />

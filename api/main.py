@@ -10,11 +10,12 @@ _ROOT = Path(__file__).parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
+from api import link_preview
 from api.dashboard_access import DashboardAccessMiddleware
 from api.routers import analysis, compare, directory, h2h, leaders, meta, player, query, search, tournament
 from db.connection import get_db as open_tennis_db
@@ -97,7 +98,7 @@ if _DIST.exists():
     _DIST_RESOLVED = _DIST.resolve()
 
     @app.get("/{full_path:path}")
-    def spa_fallback(full_path: str):
+    def spa_fallback(full_path: str, request: Request):
         unavailable = {"api", "mcp", "docs", "redoc", "openapi.json"}
         if full_path in unavailable or full_path.startswith("api/") or full_path.startswith("mcp/"):
             raise HTTPException(status_code=404, detail="Not Found")
@@ -109,4 +110,8 @@ if _DIST.exists():
                 raise HTTPException(status_code=404, detail="Not Found")
             if candidate.is_file():
                 return FileResponse(str(candidate))
-        return FileResponse(str(_INDEX), headers={"Cache-Control": "no-cache"})
+        # Page routes: index.html with this URL's title and link-preview tags.
+        preview = link_preview.preview_for(full_path, request.url.query, lambda: open_tennis_db(read_only=True))
+        return HTMLResponse(
+            link_preview.render_index(_INDEX.read_text(), preview), headers={"Cache-Control": "no-cache"},
+        )

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { EmptyState } from '../components/States';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function NotFoundPage() {
+  useDocumentTitle('Not found');
   return (
     <main className="cv-main">
       <EmptyState

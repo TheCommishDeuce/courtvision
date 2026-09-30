@@ -43,6 +43,7 @@ describe('App routes', () => {
     expect(await screen.findByText('ATP & WTA', { exact: false })).toBeInTheDocument();
     expect(await screen.findByText(/ATP 599,831 · WTA 469,579/)).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: 'About the data' })).toBeInTheDocument();
+    expect(document.title).toBe('About the data — courtvision');
   });
 
   it('marks the current section in the nav', async () => {

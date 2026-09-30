@@ -79,6 +79,7 @@ describe('PlayerPage', () => {
     expect(screen.getByText('Italy')).toBeInTheDocument();
     expect(screen.getByText('Plays right-handed')).toBeInTheDocument();
     expect(await screen.findByText(/first reached/)).toBeInTheDocument();
+    expect(document.title).toBe('Jannik Sinner — courtvision');
   });
 
   it('renders every section with real figures', async () => {

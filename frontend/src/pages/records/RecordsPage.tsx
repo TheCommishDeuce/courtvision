@@ -13,6 +13,7 @@ import {
 import CopyButton from '../../components/CopyButton';
 import FilterBar from '../../components/FilterBar';
 import { BlockError, EmptyState, SkelBar, Skeleton } from '../../components/States';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useFilters } from '../../hooks/useFilters';
 import { useIsPhone } from '../../hooks/useViewport';
 import { MIN_COUNT_MATCHES, MIN_RATE_MATCHES } from '../../lib/constants';
@@ -197,6 +198,7 @@ export default function RecordsPage() {
   const { filters, setFilters, resetFilters } = useFilters(defaults);
   const [params, setParams] = useSearchParams();
   const board = boardById(params.get('board'));
+  useDocumentTitle(board ? board.title : 'Records');
   const sources = useSources(filters);
   const active = countActive(filters, defaults);
   const summary = [filters.tour === 'F' ? 'WTA' : 'ATP', describeFilters(filters, 'All matches', [1968, SEASON])].join(' · ');

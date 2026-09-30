@@ -117,13 +117,14 @@ builds an endpoint for it.
 | C10 | Popular rivalries (Matchup, no pair chosen), Home example chips | Static lists |
 | C11 | Footer freshness and scale line | `/api/meta/stats` (`data_through`, `total_matches`, `year_min/max`) |
 
-### Optional, not in v1
+### Link previews ✅
 
-- **Link previews.** Journalists will paste links into social apps and chat,
-  and an SPA gives every URL the same generic preview. The FastAPI SPA
-  fallback could inject per-URL `<title>` / Open Graph tags (player name +
-  record, matchup score, event champion) before returning `index.html`. Cheap,
-  and high value for the audience, but not required to ship.
+Done after v1 shipped (`api/link_preview.py`). The SPA fallback renders
+`index.html` with the URL's own `<title>`, description, Open Graph and Twitter
+tags: a player's career line, a matchup's leader and last meeting, a
+tournament-year's final, a Lab example's question. Unknown entities and any
+lookup failure fall back to the site-wide tags, never an error. Pages set the
+same titles client-side (`hooks/useDocumentTitle`). No preview image yet.
 
 ---
 

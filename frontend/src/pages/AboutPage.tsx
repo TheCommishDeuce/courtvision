@@ -1,5 +1,6 @@
 /** About the data (About.dc.html; brief 04-data-dictionary.md). */
 import { useMetaStats } from '../hooks';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { fmtDate, fmtInt } from '../lib/format';
 import { MIN_RATE_MATCHES } from '../lib/constants';
 
@@ -25,6 +26,7 @@ const TERMS: [string, string][] = [
 ];
 
 export default function AboutPage() {
+  useDocumentTitle('About the data');
   const { data } = useMetaStats();
   return (
     <main className="cv-main cv-main--narrow" style={{ paddingTop: 'clamp(28px, 5vw, 56px)' }}>
