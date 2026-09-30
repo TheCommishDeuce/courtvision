@@ -270,8 +270,13 @@ without touching the URL. Every route now has its real page. Changes:
 state, utilities, Courtside CSS, the specimen and the `/_kit` dev page are
 gone; `recharts`, `tailwindcss` and `@tailwindcss/vite` are uninstalled; fonts
 load from `index.html`. Shared code that survived: `api/http.ts`,
-`api/client.ts`, `types/tennis.ts`, `domain/rounds.ts`, and three hooks in
-`hooks/index.ts`. `npm run audit:prod` is clean.
+`api/client.ts`, `types/tennis.ts`, and three hooks in `hooks/index.ts`.
+`npm run audit:prod` is clean. A follow-up pass pruned `api/client.ts` and
+`types/tennis.ts` to what v1 calls (31 fetchers and 26 response types only
+the old pages used), folded the round names into `lib/format.ts` and removed
+`domain/`. The backend endpoints behind the cut features (scatter,
+nationalities, similar profiles, common opponents, match search) are kept
+for the second wave.
 
 **Before the first deploy of v1:** run the pipeline on the server once
 (tournament names, B3) and restart the API; nothing else server-side changes.

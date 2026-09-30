@@ -1,5 +1,4 @@
 /** Number, date and record formatting (docs/design-brief/05-constraints.md). */
-import { ROUND_LABEL } from '../domain/rounds';
 
 const INT = new Intl.NumberFormat('en-US');
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -58,10 +57,13 @@ export function record(wins: number, losses: number): RecordFigures {
   };
 }
 
-export const roundName = (round: string): string => ROUND_LABEL[round] ?? {
-  RR: 'Round robin', BR: 'Bronze medal match', ER: 'Early round', Q1: 'Qualifying round 1',
-  Q2: 'Qualifying round 2', Q3: 'Qualifying round 3',
-}[round] ?? round;
+const ROUND_NAME: Record<string, string> = {
+  F: 'Final', SF: 'Semifinal', QF: 'Quarterfinal', R16: 'Round of 16', R32: 'Round of 32', R64: 'Round of 64',
+  R128: 'Round of 128', RR: 'Round robin', BR: 'Bronze medal match', ER: 'Early round',
+  Q1: 'Qualifying round 1', Q2: 'Qualifying round 2', Q3: 'Qualifying round 3',
+};
+
+export const roundName = (round: string): string => ROUND_NAME[round] ?? round;
 
 export const tourLabel = (tour: string | null | undefined): string => (tour === 'F' ? 'WTA' : tour === 'M' ? 'ATP' : '');
 

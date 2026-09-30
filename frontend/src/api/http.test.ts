@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { api } from './http';
-import { fetchPlayers, runQuery } from './client';
+import { fetchRecentUpsets, runQuery } from './client';
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -14,10 +14,10 @@ describe('shared dashboard transport', () => {
   it('routes GET helpers through the shared client and unwraps the response', async () => {
     // Intercept every Axios instance so a duplicate client fails the assertion
     // below without accidentally sending a real network request.
-    vi.spyOn(axios.Axios.prototype, 'request').mockResolvedValue({ data: { players: ['Serena Williams'] } });
+    vi.spyOn(axios.Axios.prototype, 'request').mockResolvedValue({ data: [{ winner_name: 'Serena Williams' }] });
     const get = vi.spyOn(api, 'get');
-    await expect(fetchPlayers('F')).resolves.toEqual(['Serena Williams']);
-    expect(get).toHaveBeenCalledWith('/meta/players', { params: { tour: 'F' } });
+    await expect(fetchRecentUpsets('F', 3)).resolves.toEqual([{ winner_name: 'Serena Williams' }]);
+    expect(get).toHaveBeenCalledWith('/meta/recent-upsets', { params: { tour: 'F', limit: 3 } });
   });
 
   it('routes SQL POSTs through the same client', async () => {

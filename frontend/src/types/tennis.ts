@@ -1,24 +1,4 @@
-export interface YearRange {
-  year_min: number;
-  year_max: number;
-}
 
-export interface Constants {
-  surfaces: string[];
-  levels_atp: Record<string, string>;
-  levels_wta: Record<string, string>;
-  level_groups: Record<string, string>;
-  tours: Record<string, string>;
-  rounds: string[];
-  hands?: Record<string, string>;
-  opp_relations?: Record<string, string>;
-  opp_age_relations?: Record<string, string>;
-}
-
-export interface CountryInfo {
-  country: string;
-  players: number;
-}
 
 export interface RelationalMatchRow {
   date: string;
@@ -77,122 +57,6 @@ export interface RelationalResponse {
   shown: number;
   summary: RelationalSummary;
   matches: RelationalMatchRow[];
-}
-
-export interface MatchExtremeRow {
-  metric_value: number | null;
-  date: string;
-  tournament: string;
-  level_name: string;
-  round: string;
-  surface: string;
-  score: string;
-  time: number | null;
-  winner_name: string;
-  winner_rank: number | null;
-  loser_name: string;
-  loser_rank: number | null;
-  num_sets: number | null;
-  is_upset: boolean;
-  rank_diff: number | null;
-  tour: string;
-  year: number;
-  is_retirement: boolean;
-  w_aces: number | null;
-  l_aces: number | null;
-  winner_dfs: number | null;     loser_dfs: number | null;
-  winner_pts: number | null;     loser_pts: number | null;
-  winner_firsts: number | null;  loser_firsts: number | null;
-  winner_fwon: number | null;    loser_fwon: number | null;
-  winner_swon: number | null;    loser_swon: number | null;
-  winner_saved: number | null;   loser_saved: number | null;
-  winner_chances: number | null; loser_chances: number | null;
-}
-
-export interface MatchExtremesResponse {
-  filters: Record<string, unknown>;
-  results: MatchExtremeRow[];
-}
-
-export interface NationalityStageRow {
-  player_name: string;
-  tour: string;
-  country: string;
-  reached_date: string;
-  tournament: string;
-  year: number;
-  surface: string;
-  level_name: string;
-  won_title: number;
-  deepest_round: string | null;
-}
-
-export interface NationalityStageResponse {
-  filters: Record<string, unknown>;
-  results: NationalityStageRow[];
-}
-
-export interface CountryLeaderRow {
-  country: string;
-  players: number;
-  titles: number;
-  finals: number;
-  semis_or_better: number;
-  wins: number;
-  metric_value: number;
-}
-
-export interface CountryLeadersResponse {
-  filters: Record<string, unknown>;
-  results: CountryLeaderRow[];
-}
-
-export interface ComebackScatterPoint {
-  current_rank: number;
-  player_name: string;
-  country: string | null;
-  total_matches: number;
-  total_wins: number;
-  ace_pct: number | null;
-  df_pct: number | null;
-  first_in_pct: number | null;
-  first_win_pct: number | null;
-  second_win_pct: number | null;
-  serve_points_won_pct: number | null;
-  bp_saved_pct: number | null;
-  tb_played: number;
-  tb_win_pct: number | null;
-  first_return_win_pct: number | null;
-  second_return_win_pct: number | null;
-  return_points_won_pct: number | null;
-  comeback_wins: number;
-  upset_wins: number;
-  upset_losses: number;
-  bagels_given: number;
-  bagels_received: number;
-  breadsticks_given: number;
-  breadsticks_received: number;
-  is_live_top10: boolean;
-  is_highlight: boolean;
-  is_top10_comebacker: boolean;
-}
-
-export interface ComebackScatterResponse {
-  meta: {
-    tour: string;
-    cohort: string;
-    year_min: number;
-    year_max: number | null;
-    level: string | null;
-    surface: string | null;
-    x_metric: string;
-    y_metric: string;
-    median: {
-      [metric: string]: number | null;
-    };
-    source: string;
-  };
-  points: ComebackScatterPoint[];
 }
 
 export interface MatchRow {
@@ -407,15 +271,6 @@ export interface TournamentMeta {
   total_upsets: number;
 }
 
-export interface KeyMatch {
-  round: string;
-  winner_name: string;
-  winner_rank: number | null;
-  loser_name: string;
-  loser_rank: number | null;
-  score: string;
-}
-
 export interface TournamentMatchRow {
   date?: string;
   round: string;
@@ -475,11 +330,6 @@ export interface RecentChampion {
   date: string;
 }
 
-export interface SearchResponse {
-  total: number;
-  matches: MatchRow[];
-}
-
 // Rank history
 export interface RankHistoryPoint {
   date: string;
@@ -492,15 +342,6 @@ export interface HeatmapCell {
   level_name: string;
   wins: number;
   total: number;
-  win_pct: number;
-}
-
-// Stat leaders
-export interface WinsLeaderRow {
-  player_name: string;
-  tour: string;
-  total: number;
-  wins: number;
   win_pct: number;
 }
 
@@ -523,41 +364,6 @@ export interface ReturnLeaderRow {
   first_return_win_pct: number | null;
   second_return_win_pct: number | null;
   bp_converted_pct: number | null;
-}
-
-export interface UpsetLeaderRow {
-  player: string;
-  tour: string;
-  upset_wins?: number;
-  upset_losses?: number;
-}
-
-export interface ComebackLeaderRow {
-  player: string;
-  tour: string;
-  comebacks: number;
-}
-
-export interface ActivityLeaderRow {
-  player_name: string;
-  tour: string;
-  matches: number;
-  tb_played: number;
-  tb_won: number;
-  tb_win_pct: number | null;
-  finals_played: number;
-  finals_won: number;
-  finals_win_pct: number | null;
-}
-
-export interface BakeryLeaderRow {
-  player_name: string;
-  tour: string;
-  matches: number;
-  bagels_given: number;
-  bagels_received: number;
-  breadsticks_given: number;
-  breadsticks_received: number;
 }
 
 export interface MetaStats {
@@ -583,30 +389,6 @@ export interface PlayerMilestones {
   first_title_tournament: string | null;
   first_tour_title_date: string | null;
   first_tour_title_tournament: string | null;
-}
-
-// Similar players
-export interface SimilarPlayerRow {
-  player_name: string;
-  tour: string;
-  n_matches: number;
-  ace_pct: number | null;
-  first_in_pct: number | null;
-  first_win_pct: number | null;
-  second_win_pct: number | null;
-  bp_saved_pct: number | null;
-  distance: number;
-}
-
-// Similar players — return profile
-export interface SimilarReturnPlayerRow {
-  player_name: string;
-  tour: string;
-  n_matches: number;
-  first_return_win_pct: number | null;
-  second_return_win_pct: number | null;
-  bp_converted_pct: number | null;
-  distance: number;
 }
 
 // Streaks leaders
@@ -673,63 +455,6 @@ export interface PlayerForm {
   last52w: PlayerFormWindow;
   top_wins_recent: PlayerFormMatchRow[];
   upset_losses_recent: PlayerFormMatchRow[];
-}
-
-export interface CommonOpponentRow {
-  opponent_name: string;
-  a_wins: number;
-  a_losses: number;
-  b_wins: number;
-  b_losses: number;
-  total_matches: number;
-}
-
-export interface CommonOpponentsResponse {
-  summary: {
-    player_a: string;
-    player_b: string;
-    common_opponents: number;
-    a_total_wins: number;
-    a_total_losses: number;
-    b_total_wins: number;
-    b_total_losses: number;
-  };
-  opponents: CommonOpponentRow[];
-}
-
-export interface Top10WinsLeaderRow {
-  player_name: string;
-  tour: string;
-  top10_matches: number;
-  top10_wins: number;
-  top10_win_pct: number | null;
-}
-
-export interface FinalsLeaderRow {
-  player_name: string;
-  tour: string;
-  finals: number;
-  titles: number;
-  finals_win_pct: number | null;
-  gs_finals: number;
-  gs_titles: number;
-}
-
-export interface SlamRecordLeaderRow {
-  player_name: string;
-  tour: string;
-  slam_matches: number;
-  slam_wins: number;
-  slam_win_pct: number | null;
-}
-
-export interface TiebreakLeaderRow {
-  player_name: string;
-  tour: string;
-  tb_played: number;
-  tb_won: number;
-  tb_lost: number;
-  tb_win_pct: number | null;
 }
 
 export interface Storyline {
