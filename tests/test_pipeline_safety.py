@@ -134,7 +134,8 @@ def test_interrupted_reload_rolls_back(pipeline_files, monkeypatch: pytest.Monke
 
 
 def test_successful_reload_commits_both_tours_and_is_repeatable(pipeline_files) -> None:
-    expected = ([('new-match',)], [('F', 'New WTA'), ('M', 'New ATP')])
+    # The fixture's stored key is stale; the merge recomputes it from the row.
+    expected = ([('20250101fnewatpopponent',)], [('F', 'New WTA'), ('M', 'New ATP')])
     run_pipeline.main.callback()
     assert _database_snapshot() == expected
     run_pipeline.main.callback()

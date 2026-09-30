@@ -25,7 +25,12 @@ CSV_COLUMNS_ORDER = [
 def make_unique_key(row) -> str:
     """
     Canonical unique key: date + round + winner_name + loser_name,
-    with all spaces and hyphens stripped.
+    with all spaces and hyphens stripped, lowercased.
+
+    Lowercased because the same player reaches us spelled differently: their
+    own page's name comes from the rankings/reference list ("John Mcenroe"),
+    while opponents' pages spell it Tennis Abstract's way ("John McEnroe").
+    A case-sensitive key kept both copies of every match between them.
     """
     parts = [
         str(row.get('date', '') or ''),
@@ -34,7 +39,7 @@ def make_unique_key(row) -> str:
         str(row.get('loser_name', '') or ''),
     ]
     combined = ''.join(parts)
-    return re.sub(r'[\s\-]', '', combined)
+    return re.sub(r'[\s\-]', '', combined).lower()
 
 
 def _make_unique_key_vectorized(df: pd.DataFrame) -> pd.Series:
@@ -45,7 +50,56 @@ def _make_unique_key_vectorized(df: pd.DataFrame) -> pd.Series:
         df['winner_name'].fillna('').astype(str).str.replace(r'[\s\-]', '', regex=True) +
         df['loser_name'].fillna('').astype(str).str.replace(r'[\s\-]', '', regex=True)
     )
-    return combined.str.replace(r'\s', '', regex=True)
+    return combined.str.replace(r'\s', '', regex=True).str.lower()
+
+
+def _fold_name(names: pd.Series) -> pd.Series:
+    """The identity a name contributes to unique_match_key: no spaces/hyphens, lowercased."""
+    return names.astype(str).str.replace(r'[\s\-]', '', regex=True).str.lower()
+
+
+def canonicalize_names(df: pd.DataFrame, preferred_names=()) -> pd.DataFrame:
+    """
+    Collapse spellings of one player onto a single display name.
+
+    Spellings are the same player when they fold to the same key identity
+    (so "Juan Martin Del Potro", "Juan Martin del Potro" and the url slug
+    "JuanMartinDelPotro" all group together). Within a group the winner is,
+    in order: a spelling in `preferred_names` (the players reference table,
+    which API queries join on by exact name), one containing a space (never a
+    url slug), then the most frequent.
+    """
+    occurrences = pd.concat([df['winner_name'], df['loser_name']]).dropna()
+    counts = occurrences.value_counts()
+    if counts.empty:
+        return df
+
+    spellings = pd.DataFrame({'name': counts.index.astype(str), 'n': counts.to_numpy()})
+    spellings['fold'] = _fold_name(spellings['name'])
+    variants = spellings[spellings.duplicated('fold', keep=False)]
+    if variants.empty:
+        return df
+
+    preferred = set(preferred_names)
+    variants = variants.assign(
+        preferred=variants['name'].isin(preferred),
+        has_space=variants['name'].str.contains(' ', regex=False),
+    ).sort_values(
+        ['fold', 'preferred', 'has_space', 'n', 'name'],
+        ascending=[True, False, False, False, True],
+    )
+    canonical = variants.drop_duplicates('fold').set_index('fold')['name']
+    rename = {
+        name: canonical[fold]
+        for name, fold in zip(variants['name'], variants['fold'])
+        if name != canonical[fold]
+    }
+    logger.info(f"Canonicalized {len(rename)} name variants across {len(canonical)} players")
+
+    df = df.copy()
+    for col in ('winner_name', 'loser_name'):
+        df[col] = df[col].map(rename).fillna(df[col])
+    return df
 
 
 def load_player_csvs(folder: Path, tour: str) -> pd.DataFrame:
@@ -130,10 +184,12 @@ def merge_all_tours(
 def merge_all_tours_from_parquets(
     atp_dir: Path,
     wta_dir: Path,
+    preferred_names=(),
 ) -> pd.DataFrame:
     """
-    Load all per-player parquets written by the scraper, compute any missing
-    unique_match_key values, deduplicate, and return a combined DataFrame.
+    Load all per-player parquets written by the scraper, collapse name
+    spellings (see canonicalize_names), recompute unique_match_key,
+    deduplicate, and return a combined DataFrame.
     """
     files = list(atp_dir.glob('*.parquet')) + list(wta_dir.glob('*.parquet'))
     if not files:
@@ -151,11 +207,11 @@ def merge_all_tours_from_parquets(
         return pd.DataFrame()
 
     combined = pd.concat(dfs, ignore_index=True)
+    combined = canonicalize_names(combined, preferred_names)
 
-    # Compute unique_match_key for rows where it's missing
-    missing = combined['unique_match_key'].isna() | (combined['unique_match_key'] == '')
-    if missing.any():
-        combined.loc[missing, 'unique_match_key'] = _make_unique_key_vectorized(combined[missing])
+    # Always recompute: keys stored in older parquets are case-sensitive, and
+    # canonicalization may have changed the names they were built from.
+    combined['unique_match_key'] = _make_unique_key_vectorized(combined)
 
     # Drop rows with no key (can't deduplicate without one)
     combined = combined[combined['unique_match_key'].notna() & (combined['unique_match_key'] != '')]

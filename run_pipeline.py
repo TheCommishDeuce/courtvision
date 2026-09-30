@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 import click
+import pandas as pd
 
 BASE_DIR = Path(__file__).parent
 PARQUET_ATP = BASE_DIR / 'data' / 'parquet' / 'atp'
@@ -55,7 +56,12 @@ def main() -> None:
 
     parquet_files = list(PARQUET_ATP.glob('*.parquet')) + list(PARQUET_WTA.glob('*.parquet'))
     logger.info(f'Step 1/3: Loading and deduplicating {len(parquet_files)} scraper parquets ...')
-    df = merge_all_tours_from_parquets(PARQUET_ATP, PARQUET_WTA)
+    # API queries join `players` on exact name, so its spellings win when one
+    # player's matches arrive under several.
+    reference_names = set(pd.concat(
+        [pd.read_csv(csv, usecols=['name'])['name'] for csv in player_csvs]
+    ).dropna())
+    df = merge_all_tours_from_parquets(PARQUET_ATP, PARQUET_WTA, preferred_names=reference_names)
     logger.info(f'Loaded {len(df):,} unique matches')
 
     logger.info('Step 2/3: Cleaning, enriching, and writing master parquet ...')
