@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
 import duckdb
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.deps import get_db
 from api.serializers import df_to_records
@@ -24,6 +24,7 @@ from db.queries import (
     q_similar_players,
     q_similar_players_return,
     q_player_form,
+    q_player_splits,
 )
 
 router = APIRouter(tags=["player"])
@@ -276,3 +277,25 @@ def get_player_form(
     return q_player_form(con, player_name=player, tour=tour,
                          surface=surface, level=level,
                          year_min=year_min, year_max=year_max)
+
+
+@router.get("/splits", operation_id="get_player_splits")
+def get_splits(
+    player: str = Query(..., description="Full player name."),
+    tour: Optional[Literal["M", "F"]] = Query(None, description="Optional tour filter: M for ATP men, F for WTA women."),
+    surface: Optional[str] = Query(None, description="Optional surface filter: Hard, Clay, Grass, or Carpet."),
+    level: Optional[str] = Query(None, description="Tournament level or group, e.g. Grand Slam or All Tour."),
+    year_min: Optional[int] = Query(None, description="Earliest match year to include."),
+    year_max: Optional[int] = Query(None, description="Latest match year to include."),
+    con: duckdb.DuckDBPyConnection = Depends(get_db),
+):
+    """Every Player-page split (opponent, situation, stage) in one call: career,
+    last-5-years and last-52-weeks records, the relational-search params that
+    list each row's matches, and the equivalent Lab SQL."""
+    try:
+        groups = q_player_splits(
+            con, player=player, tour=tour, surface=surface, level=level, year_min=year_min, year_max=year_max,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"groups": groups}

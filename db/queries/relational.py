@@ -316,3 +316,98 @@ def q_relational_summary(
     data["y5_win_pct"] = _pct(data["y5_wins"], data["y5_total"])
     data["w52_win_pct"] = _pct(data["w52_wins"], data["w52_total"])
     return data
+
+
+# --- Lab SQL -----------------------------------------------------------------
+
+def _sql_literal(value) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return repr(value)
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def relational_lab_sql(**filters) -> str:
+    """The relational search as standalone SQL over the Lab's exposed relations.
+
+    Built from the same conditions as q_relational_summary with the parameters
+    inlined as literals, so "Open in Lab" lists exactly the matches the
+    summary counted.
+    """
+    conditions, params = _relational_filters(
+        **{k: filters.get(k) for k in (
+            "player", "tour", "opp_hand", "opp_country", "opp_rank_max", "opp_age_min",
+            "opp_age_max", "opp_height_min", "opp_height_max", "relation", "age_relation",
+            "min_stage", "situation", "surface", "level", "round_", "result", "year_min", "year_max",
+        )}
+    )
+    where = _where(conditions)
+    # Highest index first so $1 never clobbers the start of $10.
+    for i in range(len(params), 0, -1):
+        where = where.replace(f"${i}", _sql_literal(params[i - 1]))
+    return (
+        f"WITH {PLAYER_ATTRS_CTE.strip()}\n"
+        "SELECT pmv.date, pmv.tournament, pmv.round, pmv.opponent_name, pmv.opponent_rank,\n"
+        "       pmv.result, pmv.score\n"
+        f"{_FROM_JOIN.strip()}\n"
+        f"{where.strip()}\n"
+        f"ORDER BY pmv.date DESC, ({_ROUND_ORDER_PMV}) DESC"
+    )
+
+
+# --- Player splits -----------------------------------------------------------
+
+# (group id, group title, [(row id, label, relational filter params)]).
+# Param names are the relational search's keyword arguments; `round_` is sent
+# to the API as `round`.
+PLAYER_SPLITS: list[tuple[str, str, list[tuple[str, str, dict]]]] = [
+    ("opponent", "Opponent", [
+        ("vs_left", "vs left-handers", {"opp_hand": "L"}),
+        ("vs_right", "vs right-handers", {"opp_hand": "R"}),
+        ("vs_top10", "vs top 10", {"opp_rank_max": 10}),
+        ("vs_top50", "vs top 50", {"opp_rank_max": 50}),
+        ("vs_younger", "vs younger players", {"age_relation": "younger"}),
+        ("vs_older", "vs older players", {"age_relation": "older"}),
+        ("vs_compatriots", "vs compatriots", {"relation": "compatriot"}),
+    ]),
+    ("situation", "Situation", [
+        ("won_first", "After winning the 1st set", {"situation": "won_first"}),
+        ("lost_first", "After losing the 1st set", {"situation": "lost_first"}),
+        ("deciding_set", "In a deciding set", {"situation": "deciding_set"}),
+        ("led_2_0", "After leading 2–0 in sets", {"situation": "led_2_0"}),
+        ("trailed_0_2", "After trailing 0–2 in sets", {"situation": "trailed_0_2"}),
+    ]),
+    ("stage", "Stage", [
+        ("finals", "In finals", {"round_": "F"}),
+        ("qf_or_later", "Quarterfinal or later", {"min_stage": "QF"}),
+    ]),
+]
+
+
+def q_player_splits(
+    con: duckdb.DuckDBPyConnection,
+    player: str,
+    tour: Optional[str] = None,
+    surface: Optional[str] = None,
+    level: Optional[str] = None,
+    year_min: Optional[int] = None,
+    year_max: Optional[int] = None,
+) -> list[dict]:
+    """Every Player-page split row: summary (career / 5y / 52w), the params to
+    list its matches through /api/search/relational, and its Lab SQL."""
+    base = dict(player=player, tour=tour, surface=surface, level=level, year_min=year_min, year_max=year_max)
+    groups = []
+    for gid, title, rows in PLAYER_SPLITS:
+        out_rows = []
+        for rid, label, extra in rows:
+            filters = {**base, **extra}
+            out_rows.append({
+                "id": rid,
+                "label": label,
+                "params": {("round" if k == "round_" else k): v for k, v in extra.items()},
+                "summary": q_relational_summary(con, **filters),
+                "lab_sql": relational_lab_sql(**filters),
+            })
+        groups.append({"id": gid, "title": title, "rows": out_rows})
+    return groups

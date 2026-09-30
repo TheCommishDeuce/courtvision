@@ -30,7 +30,7 @@ from .meta import (
     q_year_range,
 )
 from .nationality import q_country_leaders, q_nationality_stage
-from .relational import q_relational_match_search, q_relational_summary
+from .relational import q_player_splits, q_relational_match_search, q_relational_summary, relational_lab_sql
 from .superlatives import q_match_extremes
 from .player import (
     q_player_form,
