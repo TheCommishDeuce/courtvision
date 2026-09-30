@@ -11,6 +11,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { downloadQueryCsv, fetchQuerySchema, runQuery, type QueryResult, type QuerySchema } from '../../api/client';
 import CopyButton from '../../components/CopyButton';
 import { BlockError, SkeletonRows } from '../../components/States';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useIsPhone } from '../../hooks/useViewport';
 import { buildSql, RELATIONS, type BuilderState, type Relation } from '../../lab/builder';
 import { LAB_EXAMPLES, labExample } from '../../lab/examples';
@@ -185,6 +186,7 @@ function Results({ result }: { result: QueryResult }) {
 
 export default function LabPage() {
   const [params, setParams] = useSearchParams();
+  useDocumentTitle('Lab');
   const phone = useIsPhone();
   const initial = labExample(params.get('example')) ?? (params.get('sql') ? null : labExample(DEFAULT_EXAMPLE));
   const [sql, setSql] = useState(() => initial?.sql ?? params.get('sql') ?? '');

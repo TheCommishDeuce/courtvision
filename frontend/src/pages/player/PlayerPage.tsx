@@ -12,6 +12,7 @@ import FilterBar from '../../components/FilterBar';
 import SearchBox from '../../components/SearchBox';
 import { playerItem } from '../../components/searchItems';
 import { BlockError, SkeletonRows } from '../../components/States';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useFilters, type FilterKey } from '../../hooks/useFilters';
 import { countActive, describeFilters, LEVELS, toApiParams, type Filters, type Tour } from '../../lib/filters';
 import { record } from '../../lib/format';
@@ -68,6 +69,7 @@ function NotFound({ slug }: { slug: string }) {
 }
 
 function PlayerBody({ player, namesakes }: { player: DirectoryPlayer; namesakes: DirectoryPlayer[] }) {
+  useDocumentTitle(player.name);
   const who = useMemo(() => ({ player: player.name, tour: player.tour }), [player.name, player.tour]);
   const defaults = useMemo<Filters>(() => ({ tour: player.tour, surface: 'All', level: 'All', from: null, to: null }), [player.tour]);
   const { filters, setFilters, resetFilters } = useFilters(defaults, FILTER_KEYS);

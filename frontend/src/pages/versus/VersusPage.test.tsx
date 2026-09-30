@@ -74,6 +74,7 @@ describe('VersusPage', () => {
     const score = await screen.findByLabelText('Jannik Sinner 7, Carlos Alcaraz 11');
     expect(score).toBeInTheDocument();
     expect(screen.getByText('LEADS')).toBeInTheDocument();
+    expect(document.title).toBe('Sinner vs Alcaraz — courtvision');
     expect(screen.getByText('First meeting')).toBeInTheDocument();
     const surface = screen.getByRole('table', { name: 'Head-to-head by surface' });
     expect(within(surface).getAllByRole('row')).toHaveLength(4); // header + hard, clay, grass

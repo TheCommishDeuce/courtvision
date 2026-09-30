@@ -17,6 +17,7 @@ import SearchBox from '../../components/SearchBox';
 import Section from '../../components/Section';
 import { BlockError, Skeleton, SkeletonRows } from '../../components/States';
 import { SurfaceTag, TourTag } from '../../components/Tags';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useFilters, type FilterKey } from '../../hooks/useFilters';
 import { CARD_ROWS_MAX, useViewportWidth } from '../../hooks/useViewport';
 import { countActive, describeFilters, toApiParams, type Filters, type Tour } from '../../lib/filters';
@@ -392,6 +393,7 @@ export default function VersusPage() {
   const A = useResolved(slugA ?? search.get('a') ?? undefined, tour);
   const B = useResolved(slugB, A.player?.tour ?? tour);
   const pair = slugA && slugB;
+  useDocumentTitle(A.player && B.player ? shortNames(A.player.name, B.player.name).join(' vs ') : 'Matchup');
 
   let problem: string | null = null;
   if (pair && (A.player === null || B.player === null)) {
