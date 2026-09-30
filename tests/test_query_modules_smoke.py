@@ -13,6 +13,7 @@ from db.queries import (
     q_meta_stats,
     q_match_search,
     q_player_matches,
+    q_recent_champions,
     q_tournament_years,
 )
 
@@ -101,3 +102,11 @@ def test_compare_query_module_smoke(con: duckdb.DuckDBPyConnection) -> None:
     data = q_common_opponents(con, "Alice Ace", "Bob Base", tour="M")
     assert data["summary"]["common_opponents"] == 1
     assert data["opponents"][0]["opponent_name"] == "Cara Court"
+
+
+def test_recent_champions_week_vs_recent(con: duckdb.DuckDBPyConnection) -> None:
+    week = q_recent_champions(con, tour="M", limit=5)
+    assert week["tournament"].tolist() == ["Dallas"]
+    recent = q_recent_champions(con, tour="M", limit=5, span="recent")
+    assert recent["tournament"].tolist() == ["Dallas", "Adelaide"]
+    assert q_recent_champions(con, tour="M", limit=1, span="recent")["winner_name"].tolist() == ["Alice Ace"]

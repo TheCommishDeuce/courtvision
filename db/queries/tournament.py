@@ -89,9 +89,28 @@ def q_recent_champions(
     con: duckdb.DuckDBPyConnection,
     tour: Optional[str] = None,
     limit: int = 20,
+    span: str = 'week',
 ) -> 'pd.DataFrame':
-    """Latest set of main-tour finals (however old) + latest week's Challenger finals."""
+    """Recent tournament champions.
+
+    span='week': the latest week of main-tour finals (however old) plus the
+    latest week's Challenger finals, biggest events first.
+    span='recent': the latest `limit` main-tour finals across weeks, newest
+    first, so a quiet week still fills a list.
+    """
     tour_lvl = f"({_TOUR_LEVELS})"
+    if span == 'recent':
+        return con.execute(f"""
+            SELECT tournament, year, winner_name, loser_name, score, surface, level, level_name, date
+            FROM matches_main
+            WHERE round = 'F'
+              AND level_name IN {tour_lvl}
+              AND ($1 IS NULL OR tour = $1)
+            ORDER BY date DESC, CASE level_name
+                        WHEN 'Grand Slam' THEN 1 WHEN 'Masters 1000' THEN 2 WHEN 'Tour Finals' THEN 2
+                        WHEN 'Olympics' THEN 2 ELSE 3 END, tournament
+            LIMIT $2
+        """, [tour, limit]).df()
     sql = f"""
         WITH latest_tour_week AS (
             SELECT MAX(date) AS md

@@ -36,10 +36,11 @@ def get_years(
 def get_recent_champions(
     tour: Optional[Literal["M", "F"]] = Query(None, description="Optional tour filter: M for ATP men, F for WTA women."),
     limit: int = Query(20, ge=1, le=50, description="Maximum number of recent champions to return."),
+    span: Literal["week", "recent"] = Query("week", description="'week': the latest week of finals; 'recent': the latest finals across weeks."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     """Return recent tournament champions."""
-    df = q_recent_champions(con, tour=tour, limit=limit)
+    df = q_recent_champions(con, tour=tour, limit=limit, span=span)
     return df_to_records(df)
 
 
