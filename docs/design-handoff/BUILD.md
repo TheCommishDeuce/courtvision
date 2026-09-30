@@ -151,7 +151,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 | **1. Foundation** ✅ | Tokens + fonts, theme switch, `SiteHeader`, `SiteFooter`, `SearchBox` (all variants), `FilterBar`, `MatchRow`, `Record`, state blocks, the router with every route and legacy redirect, `/about` | Every component matches its `prototype/*.dc.html` in light and dark at 390 and 1280 px; there's no sideways scroll at 320 px |
 | **2. Home** ✅ | All five blocks; B7 examples | Matches `Home.dc.html` incl. its error state |
 | **3. Player** ✅ | Every block; Splits via fan-out, switched to B5 when it lands | Matches `Player.dc.html` incl. `?state=loading/error/notfound/nostats` and `?surface=Carpet` |
-| **4. Matchup** | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
+| **4. Matchup** ✅ | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
 | **5. Tournament** | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
 | **6. Records** | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
 | **7. Lab** | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
@@ -228,3 +228,12 @@ between namesakes. Changes:
   counts use (`relational_lab_sql`); a test runs every row's SQL through the
   hardened Lab path and checks it returns exactly the row's count.
 - Question lines use the player's surname rather than a pronoun.
+
+**Phase 4 (Matchup), done 30 Sep 2026.** Pair picker (players-only search
+limited to the other player's tour, swap, partial pair as `/versus?a=`),
+popular rivalries, headline record with first / last meeting and current run,
+surface and level splits, momentum linked to each meeting row, every meeting,
+and the two careers (always the whole career, better figure marked). Never
+met, different tours and unknown slugs each get a plain message. Short names
+fall back to initials for shared surnames (the Williams sisters). No backend
+changes: the career rows reuse the Player endpoints.

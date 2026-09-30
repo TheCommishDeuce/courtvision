@@ -1,0 +1,52 @@
+/* Matchup (prototype/Versus.dc.html). */
+.vs-picker { padding: clamp(24px, 4vw, 40px) 0 24px; }
+.vs-slots { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; }
+.vs-slot-label { font-size: 12px; color: var(--ink2); margin-bottom: 4px; }
+.vs-slot-search { height: 48px; font-size: 16px; }
+.vs-slot {
+  width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); cursor: pointer; text-align: left;
+}
+.vs-slot-name { font-size: clamp(17px, 2.4vw, 22px); font-weight: 700; letter-spacing: -0.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vs-slot-change { font-size: 13px; color: var(--acc); flex: none; }
+.vs-swap { width: 44px; height: 48px; border: 1px solid var(--line); border-radius: 6px; background: transparent; cursor: pointer; font-size: 18px; color: var(--ink); }
+.vs-swap:disabled { opacity: 0.4; cursor: default; }
+.vs-rivalries { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+.vs-rivalry {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink);
+}
+.vs-rivalry:hover { border-color: var(--ink2); text-decoration: none; }
+
+.vs-head { padding: 40px 0 36px; }
+.vs-score-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: clamp(10px, 3vw, 32px); align-items: end; }
+.vs-name { display: block; font-size: clamp(18px, 3vw, 28px); color: var(--ink); overflow-wrap: anywhere; }
+.vs-leads { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--acc); }
+.vs-score { display: flex; align-items: baseline; gap: clamp(8px, 2vw, 20px); font-size: clamp(56px, 11vw, 120px); font-weight: 800; letter-spacing: -0.04em; line-height: 0.9; }
+.vs-score-dash { font-size: 0.4em; color: var(--ink2); font-weight: 400; }
+.vs-sub { text-align: center; margin: 14px 0 0; font-size: 14px; color: var(--ink2); }
+.vs-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px 28px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line2); }
+.vs-fact-v { font-size: 17px; font-weight: 600; }
+
+.vs-splits { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 28px 56px; }
+.vs-split-row { display: grid; grid-template-columns: minmax(90px, 1fr) 34px minmax(0, 2fr) 34px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line2); font-size: 15px; }
+.vs-split-row--head { padding: 0 0 6px; border-bottom: 1px solid var(--ink); font-size: 12px; color: var(--ink2); }
+.vs-split-bar { display: flex; height: 10px; gap: 2px; }
+.vs-split-bar > span { border-radius: 1px; }
+
+.vs-mom { display: flex; gap: 10px; }
+.vs-mom-axis { flex: none; display: flex; flex-direction: column; justify-content: space-between; height: 88px; font-size: 12px; font-weight: 600; text-align: right; width: 72px; overflow-wrap: anywhere; }
+.vs-mom-list { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 0; display: grid; gap: 4px; }
+.vs-mom-item { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
+.vs-mom-cell { display: grid; grid-template-rows: 42px 4px 42px; text-decoration: none; }
+.vs-mom-cell:hover { text-decoration: none; opacity: 0.85; }
+.vs-mom-cell > span { border-radius: 2px; font-size: 11px; font-weight: 700; display: grid; place-items: center; overflow: hidden; }
+.vs-mom-line { border-top: 1px solid var(--ink); margin-top: 2px; }
+.vs-mom-year { font-size: 11px; color: var(--ink2); text-align: center; margin-top: 4px; white-space: nowrap; overflow: hidden; }
+
+.vs-careers-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, 1.2fr) minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line2); font-size: 15px; align-items: center; }
+.vs-careers-row--head { padding: 8px 0; border-bottom: 1px solid var(--ink); font-weight: 700; }
+.vs-careers-row > :first-child { text-align: right; }
+.vs-careers-label { text-align: center; font-size: 13px; color: var(--ink2); }
+.vs-better { font-weight: 700; }
+.vs-meeting:target { outline: 2px solid var(--acc); outline-offset: 2px; }
