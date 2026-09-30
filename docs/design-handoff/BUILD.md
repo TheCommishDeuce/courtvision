@@ -73,7 +73,7 @@ keeps serving `frontend/dist` as an SPA, so no SSR.
 `/player?p=<name>` → `/player/<slug>` · `/versus?a=&b=` → `/versus/<a>/<b>` ·
 `/tournament?t=&year=` → `/tournament/<slug>/<year>` · `/search` → `/lab` ·
 the existing `/leaders`, `/h2h`, `/compare` redirects are retargeted. All of
-these need the slug resolver (B2).
+these need the slug resolver (B2, `/api/directory/*`).
 
 ---
 
@@ -87,8 +87,8 @@ builds an endpoint for it.
 
 | # | Work | Why | Notes |
 |---|---|---|---|
-| B1 | **`GET /api/search/suggest?q=&tour=&kind=players\|events`**: players ranked by career-high rank, then match count, each with `name, slug, tour, country, first_year, last_year, career_high`; tournaments with `name, slug, tour, level`; a detected matchup (two fragments that resolve to two players on the same tour) and a tournament-year (`name + year`) | Every search box (header, hero, pair picker, events-only) | Replaces loading 38k names from `/api/meta/players`. The sub-line in the design (`ITA · 2018–2026 · career high #1`) needs all these fields |
-| B2 | **Slugs**: `slug ↔ name` for players and tournaments. Collision rule: `-atp` / `-wta` suffix, then `-2`. Every API response that names a player or event also returns its slug, or the client resolves slugs through one lookup endpoint | Every route and every name link, including Lab result columns | Resolve via one API rather than guessing slugs client-side |
+| B1 ✅ | **`GET /api/directory/suggest?q=&tour=&kind=all\|players\|tournaments&exclude=&limit=`** (done: `api/directory.py`). Returns `{matchup, tournament_years[], players[], tournaments[]}`. Players are ranked by career high, then match count, each with `name, slug, tour, country, first_year, last_year, career_high, matches`; tournaments are ranked by level, then match count. `"sinner alcaraz"` / `"a vs b"` → matchup (same tour only; a full single name is never split); `"wimbledon 2025"` → tournament-years. `exclude` + `tour` + `kind=players` is the pair picker | Every search box (header, hero, pair picker, events-only) | An in-memory index built on first use (~0.8 s) and rebuilt when the DB file changes; warm queries take 20–70 ms. Kept out of the DB so the Lab's four-relation boundary holds |
+| B2 ✅ | **Slugs** (done). A slug is a **pure function of the display name**: lowercase → NFKD → drop marks → transliterate ø/æ/œ/ß/ł/đ/ð/þ/ı → drop apostrophes → non-`[a-z0-9]` runs become `-`. So slugs never change as data grows, and the frontend computes them itself; its `slugify` must pass `tests/fixtures/slug_vectors.json`. Resolvers: `GET /api/directory/players/{slug}?tour=` and `GET /api/directory/tournaments/{slug}?tour=` (the latter includes `years`), returning every match, most prominent first; 404 if none | Every route and every name link, including Lab result columns | A slug shared by two entries (the same name on both tours; Wimbledon ATP and WTA) is disambiguated with `?tour=`. With no `tour`, take the first (most prominent) |
 | B3 ✅ | **Tournament name normalisation** (done: `pipeline/tournaments.py`; 17,386 → 16,656 names, 136 qualifying events folded in) in the pipeline: a canonical event name + slug; qualifying events (`… Q`) folded into their parent event with a qualifying flag; tour prefixes (`ATP Stuttgart`, `WTA 'S-Hertogenbosch`) stripped | Tournament slugs (B2), search results, the browse list | Pipeline change + a re-run. Do before tournament slugs, or they'll change later |
 
 ### Blocking individual screens
@@ -97,7 +97,7 @@ builds an endpoint for it.
 |---|---|---|---|
 | B4 | **`main_draw_only` (default true)** on `/api/tournament/recap` (biggest upsets, longest matches, stat leaders) and `/api/tournament/draw-strength` | Tournament | The draw itself can filter Q1–Q3 on the client; the server-computed lists can't. Without this, Jarry "leads" Wimbledon 2025 aces with 150 |
 | B5 | **`GET /api/player/splits`**: every Splits row (opponent / situation / stage groups) with career, 5-year and 52-week W–L in one call; the same filters as the other player endpoints | Player | Fallback until then: fan out 14 `/api/search/relational` calls (it works, it's just slow). Expanding a row still calls `/api/search/relational` for its match list |
-| B6 | **Storylines rotate daily**: seed `random` with the date in `q_storylines` | Home | One-line change |
+| B6 ✅ | **Storylines rotate daily** (done): `q_storylines` seeds its RNG with the date | Home | — |
 | B7 | **Lab examples registry**: move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
 | B8 | **Fresh data**: incremental scrape + pipeline. The DB ends 10 Aug 2026 | Launch | Every "data through" line shows it |
 
@@ -157,9 +157,11 @@ there's one pair of hands.
    accurate to the last match, not to the latest official ranking. That's fine
    for v1 if labelled; `players.current_rank` is an alternative for "current"
    if it's kept fresh.
-2. **Slug stability.** Once links are shared, slugs are permanent. Settle B3
-   (event names) before publishing tournament URLs, and keep a redirect table
-   if a canonical name ever changes.
+2. **Slug stability.** Slugs derive from display names, so they're stable as
+   long as canonical names are. They change only if the pipeline's canonical
+   spelling for a player or event changes (a new `DISPLAY_OVERRIDES` entry, a
+   new reference spelling). Before merging such a change, check whether it
+   renames anything already linked; if it does, add a redirect.
 3. **Splits cost.** Until B5 lands, 14 calls per player-page load, re-run on
    every filter change. Debounce the filters and let React Query cache.
 4. **Google Fonts** is the only third-party request the new design adds (same

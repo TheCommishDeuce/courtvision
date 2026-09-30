@@ -1,0 +1,27 @@
+{
+  "_comment": "Shared by the Python and TypeScript slugify implementations; both must produce these exact slugs.",
+  "vectors": [
+    ["Jannik Sinner", "jannik-sinner"],
+    ["Jo-Wilfried Tsonga", "jo-wilfried-tsonga"],
+    ["Juan Martin del Potro", "juan-martin-del-potro"],
+    ["Stan Wawrinka", "stan-wawrinka"],
+    ["Serena D'Ercole", "serena-dercole"],
+    ["'s-Hertogenbosch", "s-hertogenbosch"],
+    ["Queen's Club", "queens-club"],
+    ["Roland Garros", "roland-garros"],
+    ["M25 Vila Real de Santo António", "m25-vila-real-de-santo-antonio"],
+    ["Pune 25K", "pune-25k"],
+    ["Aix-en-Provence CH", "aix-en-provence-ch"],
+    ["Dominic Thiem ", "dominic-thiem"],
+    ["Petra Kvitová", "petra-kvitova"],
+    ["Iga Świątek", "iga-swiatek"],
+    ["Holger Rune", "holger-rune"],
+    ["Bjørn Borg", "bjorn-borg"],
+    ["Caroline Wozniacki", "caroline-wozniacki"],
+    ["Ørsted Æble", "orsted-aeble"],
+    ["İpek Soylu", "ipek-soylu"],
+    ["Jerzy Janowicz Łódź", "jerzy-janowicz-lodz"],
+    ["Nadia Podoroska   ", "nadia-podoroska"],
+    ["S. Kuznetsova", "s-kuznetsova"]
+  ]
+}
