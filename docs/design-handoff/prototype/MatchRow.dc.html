@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="border-bottom:1px solid var(--line2);font-variant-numeric:tabular-nums">
+  <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+    <div onClick="{{ toggle }}" style="display:grid;grid-template-columns:30px 100px minmax(0,1.1fr) 36px 70px minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,1.3fr) 40px 32px;gap:12px;align-items:center;padding:8px 4px;min-height:48px;font-size:14px;cursor:pointer" style-hover="background:var(--bg2)">
+      <span style="display:inline-grid;place-items:center;width:24px;height:24px;border-radius:3px;font-size:12px;font-weight:700;background:{{ chipBg }};color:{{ chipFg }};border:1px solid {{ chipBd }}">{{ m.result }}</span>
+      <span style="color:var(--ink2);white-space:nowrap">{{ m.date }}</span>
+      <a href="{{ m.thref }}" onClick="{{ stop }}" style="color:var(--ink);min-width:0;overflow-wrap:break-word">{{ m.tournament }}</a>
+      <abbr title="{{ m.roundFull }}" style="text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:13px">{{ m.round }}</abbr>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2)"><span aria-hidden="true" style="color:{{ m.sc }};font-size:11px">{{ m.sg }}</span>{{ m.surface }}</span>
+      <span style="min-width:0;line-height:1.3"><a href="{{ m.whref }}" onClick="{{ stop }}" style="color:var(--ink);font-weight:650">{{ m.winner }}</a> <span style="color:var(--ink2);white-space:nowrap">{{ m.wrank }}</span><sc-if value="{{ m.upset }}" hint-placeholder-val="{{ false }}"> <span title="Upset: the winner was ranked lower" style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 4px;border:1px solid var(--loss);color:var(--loss);border-radius:3px;white-space:nowrap">UPSET</span></sc-if></span>
+      <span style="min-width:0;line-height:1.3"><a href="{{ m.lhref }}" onClick="{{ stop }}" style="color:var(--ink)">{{ m.loser }}</a> <span style="color:var(--ink2);white-space:nowrap">{{ m.lrank }}</span></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;min-width:0;overflow-wrap:anywhere">{{ m.score }}</span>
+      <span style="color:var(--ink2);text-align:right">{{ m.time }}</span>
+      <button onClick="{{ toggleBtn }}" aria-expanded="{{ open }}" aria-label="Match statistics" style="width:32px;height:32px;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;color:var(--ink2);font-size:12px">{{ chev }}</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ toggle }}" style="display:flex;flex-direction:column;gap:6px;padding:12px 0;cursor:pointer">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2)">
+        <span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:3px;font-size:11px;font-weight:700;background:{{ chipBg }};color:{{ chipFg }};border:1px solid {{ chipBd }}">{{ m.result }}</span>
+        <span>{{ m.date }}</span>
+        <a href="{{ m.thref }}" onClick="{{ stop }}" style="color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.tournament }}</a>
+        <span style="font-family:'IBM Plex Mono',monospace">{{ m.round }}</span>
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;white-space:nowrap"><span aria-hidden="true" style="color:{{ m.sc }};font-size:10px">{{ m.sg }}</span>{{ m.surface }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;font-size:15px">
+        <div><a href="{{ m.whref }}" onClick="{{ stop }}" style="color:var(--ink);font-weight:650">{{ m.winner }}</a> <span style="color:var(--ink2);font-size:13px">{{ m.wrank }}</span> <span style="font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink2)">WON</span><sc-if value="{{ m.upset }}" hint-placeholder-val="{{ false }}"> <span title="Upset: the winner was ranked lower" style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 4px;border:1px solid var(--loss);color:var(--loss);border-radius:3px;white-space:nowrap">UPSET</span></sc-if></div>
+        <div><a href="{{ m.lhref }}" onClick="{{ stop }}" style="color:var(--ink)">{{ m.loser }}</a> <span style="color:var(--ink2);font-size:13px">{{ m.lrank }}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;flex:1;min-width:0;overflow-wrap:anywhere">{{ m.score }}</span>
+        <span style="font-size:13px;color:var(--ink2)">{{ m.time }}</span>
+        <button onClick="{{ toggleBtn }}" aria-expanded="{{ open }}" aria-label="Match statistics" style="width:44px;height:36px;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;color:var(--ink2);font-size:12px">{{ chev }}</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:4px 4px 18px">
+      <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ true }}">
+        <div role="table" aria-label="Match statistics" style="max-width:560px;margin-left:auto;margin-right:auto;font-size:14px">
+          <div role="row" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.3fr);gap:12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink2)">
+            <span role="columnheader"></span><span role="columnheader" style="text-align:right;font-weight:650;color:var(--ink)">{{ m.winner }}</span><span role="columnheader" style="text-align:right">{{ m.loser }}</span>
+          </div>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+            <div role="row" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.3fr);gap:12px;padding:6px 0;border-bottom:1px solid var(--line2)">
+              <span role="rowheader" style="color:var(--ink2)">{{ r.k }}</span><span style="text-align:right">{{ r.w }}</span><span style="text-align:right">{{ r.l }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noStats }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0;padding:12px;text-align:center;font-size:14px;color:var(--ink2);background:var(--bg2);border-radius:4px">No point statistics for this match.</p>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;m&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;phone&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const pc=(a,b)=>b?`${(a/b*100).toFixed(1)}%`:'—';
+class Component extends DCLogic {
+  state={open:false};
+  renderVals(){
+    const m=this.props.m||{},s=m.stats,phone=!!this.props.phone;
+    const rows=s?[
+      {k:'Aces',w:s.w.aces,l:s.l.aces},
+      {k:'Double faults',w:s.w.dfs,l:s.l.dfs},
+      {k:'1st serve in',w:`${pc(s.w.firsts,s.w.pts)} · ${s.w.firsts}/${s.w.pts}`,l:`${pc(s.l.firsts,s.l.pts)} · ${s.l.firsts}/${s.l.pts}`},
+      {k:'1st serve won',w:pc(s.w.fwon,s.w.firsts),l:pc(s.l.fwon,s.l.firsts)},
+      {k:'2nd serve won',w:pc(s.w.swon,s.w.pts-s.w.firsts),l:pc(s.l.swon,s.l.pts-s.l.firsts)},
+      {k:'Break points saved',w:`${s.w.saved}/${s.w.faced}`,l:`${s.l.saved}/${s.l.faced}`}]:[];
+    const W=m.result==='W',L=m.result==='L';
+    const t=()=>this.setState(x=>({open:!x.open}));
+    return {m,phone,desk:!phone,open:this.state.open,rows,hasStats:!!s,noStats:!s,chev:this.state.open?'▲':'▼',
+      chipBg:W?'var(--acc)':'transparent',chipFg:W?'var(--onacc)':'var(--loss)',chipBd:W?'var(--acc)':(L?'var(--loss)':'transparent'),
+      toggle:t,toggleBtn:e=>{e.stopPropagation();t()},stop:e=>e.stopPropagation()};
+  }
+}
+</script>
+</body>
+</html>

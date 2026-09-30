@@ -1,0 +1,363 @@
+{
+  "leading_this_season": {
+    "request": "GET /api/meta/storylines",
+    "params": {
+      "limit": 4
+    },
+    "response": [
+      {
+        "type": "best_ace_pct",
+        "label": "Ace Rate",
+        "headline": "Reilly Opelka aces at will",
+        "detail": "Highest ace rate this season at tour level.",
+        "player_name": "Reilly Opelka",
+        "tour": "M",
+        "value": "27.2%",
+        "link": "/records?tab=players&board=ace_pct&tour=M&level=All%20Tour&y0=2026&y1=2026"
+      },
+      {
+        "type": "most_wins",
+        "label": "Win Leader",
+        "headline": "Jannik Sinner leads the ATP in wins",
+        "detail": "Most tour-level match wins this season.",
+        "player_name": "Jannik Sinner",
+        "tour": "M",
+        "value": "37",
+        "link": "/records?tab=players&board=wins&tour=M&level=All%20Tour&y0=2026&y1=2026"
+      },
+      {
+        "type": "most_upsets",
+        "label": "Upsets",
+        "headline": "Karolina Pliskova is the giant-killer",
+        "detail": "Most upset wins this season at tour level.",
+        "player_name": "Karolina Pliskova",
+        "tour": "F",
+        "value": "14",
+        "link": "/records?tab=players&board=upset_wins&tour=F&level=All%20Tour&y0=2026&y1=2026"
+      },
+      {
+        "type": "best_first_win",
+        "label": "First Serve",
+        "headline": "Sebastian Korda owns the first serve",
+        "detail": "Best first-serve points won this season.",
+        "player_name": "Sebastian Korda",
+        "tour": "M",
+        "value": "80.1%",
+        "link": "/records?tab=players&board=first_win_pct&tour=M&level=All%20Tour&y0=2026&y1=2026"
+      }
+    ]
+  },
+  "latest_champions_atp": {
+    "request": "GET /api/tournament/recent-champions",
+    "params": {
+      "tour": "M",
+      "limit": 8
+    },
+    "response": [
+      {
+        "tournament": "Roland Garros",
+        "year": 2026,
+        "winner_name": "Alexander Zverev",
+        "loser_name": "Flavio Cobolli",
+        "score": "6-1 4-6 6-4 6-7(5) 6-1",
+        "surface": "Clay",
+        "level": "G",
+        "level_name": "Grand Slam",
+        "date": "2026-05-25T00:00:00"
+      },
+      {
+        "tournament": "Centurion 2 CH",
+        "year": 2026,
+        "winner_name": "Philip Henning",
+        "loser_name": "Alexander Donski",
+        "score": "6-2 3-6 7-6(6)",
+        "surface": "Hard",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Prostejov CH",
+        "year": 2026,
+        "winner_name": "Sebastian Baez",
+        "loser_name": "Alex Molcan",
+        "score": "6-4 6-2",
+        "surface": "Clay",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Perugia CH",
+        "year": 2026,
+        "winner_name": "Henrique Rocha",
+        "loser_name": "Daniel Merida Aguilar",
+        "score": "7-6(5) 6-3",
+        "surface": "Clay",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Heilbronn CH",
+        "year": 2026,
+        "winner_name": "Emilio Nava",
+        "loser_name": "Luka Mikrut",
+        "score": "W/O",
+        "surface": "Clay",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Tyler CH",
+        "year": 2026,
+        "winner_name": "Adam Walton",
+        "loser_name": "Andre Ilagan",
+        "score": "7-5 6-1",
+        "surface": "Hard",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Birmingham CH",
+        "year": 2026,
+        "winner_name": "Bu Yunchaokete",
+        "loser_name": "Otto Virtanen",
+        "score": "2-6 7-6(3) 6-3",
+        "surface": "Grass",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      }
+    ]
+  },
+  "latest_champions_wta": {
+    "request": "GET /api/tournament/recent-champions",
+    "params": {
+      "tour": "F",
+      "limit": 8
+    },
+    "response": [
+      {
+        "tournament": "Roland Garros",
+        "year": 2026,
+        "winner_name": "Mirra Andreeva",
+        "loser_name": "Maja Chwalinska",
+        "score": "6-3 6-2",
+        "surface": "Clay",
+        "level": "G",
+        "level_name": "Grand Slam",
+        "date": "2026-05-25T00:00:00"
+      },
+      {
+        "tournament": "Makarska 125",
+        "year": 2026,
+        "winner_name": "Maria Timofeeva",
+        "loser_name": "Darja Semenistaja",
+        "score": "6-2 6-3",
+        "surface": "Clay",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-02T00:00:00"
+      },
+      {
+        "tournament": "Bari 125",
+        "year": 2026,
+        "winner_name": "Leyre Romero Gormaz",
+        "loser_name": "Tyra Caterina Grant",
+        "score": "7-5 0-6 6-2",
+        "surface": "Clay",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      },
+      {
+        "tournament": "Birmingham 125",
+        "year": 2026,
+        "winner_name": "Alexandra Eala",
+        "loser_name": "Nikola Bartunkova",
+        "score": "5-7 6-3 7-5",
+        "surface": "Grass",
+        "level": "C",
+        "level_name": "Challenger",
+        "date": "2026-06-01T00:00:00"
+      }
+    ]
+  },
+  "recent_upsets_atp": {
+    "request": "GET /api/meta/recent-upsets",
+    "params": {
+      "tour": "M",
+      "limit": 6
+    },
+    "response": [
+      {
+        "date": "2026-06-29T00:00:00",
+        "tournament": "Cary CH",
+        "round": "R16",
+        "level_name": "Challenger",
+        "winner_name": "Jack Kennedy",
+        "winner_rank": 414.0,
+        "loser_name": "Liam Broady",
+        "loser_rank": 209.0,
+        "score": "2-6 7-5 7-6(5)",
+        "tour": "M",
+        "rank_diff": 205.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "San Miguel de Tucuman Challenger",
+        "round": "QF",
+        "level_name": "Challenger",
+        "winner_name": "Johan Alexander Rodriguez Rodriguez",
+        "winner_rank": 693.0,
+        "loser_name": "Matheus Pucinelli De Almeida",
+        "loser_rank": 419.0,
+        "score": "7-5 6-4",
+        "tour": "M",
+        "rank_diff": 274.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "Lyon Challenger",
+        "round": "QF",
+        "level_name": "Challenger",
+        "winner_name": "Felix Balshaw",
+        "winner_rank": 412.0,
+        "loser_name": "Clement Tabur",
+        "loser_rank": 190.0,
+        "score": "6-2 6-4",
+        "tour": "M",
+        "rank_diff": 222.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "ATP 's-Hertogenbosch",
+        "round": "QF",
+        "level_name": "ATP 250/500",
+        "winner_name": "Kamil Majchrzak",
+        "winner_rank": 76.0,
+        "loser_name": "Felix Auger Aliassime",
+        "loser_rank": 4.0,
+        "score": "6-4 6-3",
+        "tour": "M",
+        "rank_diff": 72.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "San Miguel de Tucuman Challenger",
+        "round": "R16",
+        "level_name": "Challenger",
+        "winner_name": "Federico Coria",
+        "winner_rank": 999.0,
+        "loser_name": "Andrea Collarini",
+        "loser_rank": 304.0,
+        "score": "7-6(5) 7-5",
+        "tour": "M",
+        "rank_diff": 695.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "San Miguel de Tucuman Challenger",
+        "round": "R16",
+        "level_name": "Challenger",
+        "winner_name": "Thiago Cigarran",
+        "winner_rank": 818.0,
+        "loser_name": "Juan Estevez",
+        "loser_rank": 385.0,
+        "score": "6-7(5) 6-3 6-2",
+        "tour": "M",
+        "rank_diff": 433.0
+      }
+    ]
+  },
+  "recent_upsets_wta": {
+    "request": "GET /api/meta/recent-upsets",
+    "params": {
+      "tour": "F",
+      "limit": 6
+    },
+    "response": [
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA 'S-Hertogenbosch",
+        "round": "SF",
+        "level_name": "WTA",
+        "winner_name": "Robin Montgomery",
+        "winner_rank": 484.0,
+        "loser_name": "Ajla Tomljanovic",
+        "loser_rank": 109.0,
+        "score": "6-4 6-2",
+        "tour": "F",
+        "rank_diff": 375.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA Ilkley 125",
+        "round": "SF",
+        "level_name": "WTA",
+        "winner_name": "Celine Naef",
+        "winner_rank": 206.0,
+        "loser_name": "Mary Stoiana",
+        "loser_rank": 142.0,
+        "score": "1-6 6-3 6-4",
+        "tour": "F",
+        "rank_diff": 64.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA 'S-Hertogenbosch",
+        "round": "QF",
+        "level_name": "WTA",
+        "winner_name": "Robin Montgomery",
+        "winner_rank": 484.0,
+        "loser_name": "Daria Snigur",
+        "loser_rank": 84.0,
+        "score": "6-4 6-4",
+        "tour": "F",
+        "rank_diff": 400.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA Queens",
+        "round": "QF",
+        "level_name": "WTA",
+        "winner_name": "Katie Boulter",
+        "winner_rank": 73.0,
+        "loser_name": "Elena Rybakina",
+        "loser_rank": 2.0,
+        "score": "7-5 2-6 6-4",
+        "tour": "F",
+        "rank_diff": 71.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA 'S-Hertogenbosch",
+        "round": "QF",
+        "level_name": "WTA",
+        "winner_name": "Ajla Tomljanovic",
+        "winner_rank": 109.0,
+        "loser_name": "Caty Mcnally",
+        "loser_rank": 59.0,
+        "score": "6-4 6-4",
+        "tour": "F",
+        "rank_diff": 50.0
+      },
+      {
+        "date": "2026-06-08T00:00:00",
+        "tournament": "WTA 'S-Hertogenbosch",
+        "round": "R16",
+        "level_name": "WTA",
+        "winner_name": "Robin Montgomery",
+        "winner_rank": 484.0,
+        "loser_name": "Greet Minnen",
+        "loser_rank": 202.0,
+        "score": "6-4 7-6(4)",
+        "tour": "F",
+        "rank_diff": 282.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>courtvision — find the story in the numbers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Home" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" no-slash="{{ true }}" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+
+    <section aria-labelledby="hero-h" style="padding:clamp(40px,8vw,88px) 0 clamp(40px,6vw,64px)">
+      <h1 id="hero-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(38px,6.4vw,68px);line-height:1;letter-spacing:-0.025em;margin:0;max-width:13ch;text-wrap:balance">Find the story in a century of tennis results</h1>
+      <div style="margin-top:28px;max-width:720px;height:60px;font-size:19px">
+        <dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="hero" slash-focus="{{ true }}" placeholder="A player, a tournament, or two names" hint-size="100%,60px"></dc-import>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center">
+        <span style="font-size:14px;color:var(--ink2);margin-right:4px">Try</span>
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+          <button onClick="{{ c.run }}" style="min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;font-size:14px;color:var(--ink)" style-hover="border-color:var(--ink2);background:var(--bg2)">{{ c.label }}</button>
+        </sc-for>
+      </div>
+      <p style="margin:28px 0 0;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink2)">1,069,410 matches · 1910–2026 · data through 10 Aug 2026</p>
+    </section>
+
+    <section aria-labelledby="lead-h" style="padding:40px 0;border-top:1px solid var(--line)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 24px;margin-bottom:22px">
+        <h2 id="lead-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.01em;margin:0">Leading this season</h2>
+        <span style="font-size:14px;color:var(--ink2)">Tour level · 2026 · today’s four</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px">
+        <sc-if value="{{ leadLoading }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ skel4 }}" as="s" hint-placeholder-count="4">
+            <div aria-hidden="true" style="height:218px;border:1px solid var(--line2);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:12px;animation:cvpulse 1.4s ease-in-out infinite">
+              <div style="width:40%;height:12px;background:var(--skel);border-radius:2px"></div>
+              <div style="width:90%;height:22px;background:var(--skel);border-radius:2px"></div>
+              <div style="width:45%;height:40px;background:var(--skel);border-radius:2px"></div>
+              <div style="width:75%;height:12px;background:var(--skel);border-radius:2px;margin-top:auto"></div>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-for list="{{ cards }}" as="c" hint-placeholder-count="0">
+          <a href="{{ c.href }}" style="display:flex;flex-direction:column;gap:10px;padding:20px;min-height:218px;background:var(--card);border:1px solid var(--line);border-radius:4px;color:var(--ink);text-decoration:none" style-hover="border-color:var(--ink2)">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);letter-spacing:.04em">
+              <span style="font-size:10px;font-weight:600;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);border-radius:3px">{{ c.tour }}</span>
+              <span style="text-transform:uppercase;letter-spacing:.08em;font-weight:600">{{ c.label }}</span>
+            </div>
+            <div style="font-family:'Schibsted Grotesk',sans-serif;font-size:22px;line-height:1.15;font-weight:700;text-wrap:balance">{{ c.headline }}</div>
+            <div style="font-size:42px;font-weight:600;letter-spacing:-0.02em;line-height:1">{{ c.value }}</div>
+            <div style="font-size:14px;color:var(--ink2);margin-top:auto">{{ c.detail }}</div>
+            <div style="font-size:14px;color:var(--acc)">See the leaderboard →</div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-labelledby="ask-h" style="padding:40px 0;border-top:1px solid var(--line)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 24px;margin-bottom:10px">
+        <h2 id="ask-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.01em;margin:0">Try asking</h2>
+        <span style="font-size:14px;color:var(--ink2)">Each question opens the Lab with the query already run</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));column-gap:40px">
+        <sc-for list="{{ questions }}" as="q" hint-placeholder-count="6">
+          <a href="{{ q.href }}" style="display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line2);color:var(--ink);text-decoration:none" style-hover="color:var(--acc)">
+            <span style="flex:1;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:18px;line-height:1.3;font-weight:500;text-wrap:pretty">{{ q.q }}</span>
+              <span style="font-size:14px;color:var(--ink2)">{{ q.teaser }}</span>
+            </span>
+            <span aria-hidden="true" style="font-size:18px;color:var(--acc)">→</span>
+          </a>
+        </sc-for>
+      </div>
+      <a href="Lab.dc.html" style="display:inline-block;margin-top:18px;font-size:15px;font-weight:500">Write your own →</a>
+    </section>
+
+    <section aria-labelledby="champ-h" style="padding:40px 0;border-top:1px solid var(--line)">
+      <h2 id="champ-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.01em;margin:0 0 18px">Latest champions</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:32px 48px">
+        <sc-for list="{{ champCols }}" as="col" hint-placeholder-count="2">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ink)">
+              <span style="font-size:12px;font-weight:700;letter-spacing:.08em">{{ col.tour }}</span>
+            </div>
+            <sc-if value="{{ champLoading }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ skel6 }}" as="s" hint-placeholder-count="6">
+                <div aria-hidden="true" style="padding:14px 0;border-bottom:1px solid var(--line2);display:flex;flex-direction:column;gap:8px;animation:cvpulse 1.4s ease-in-out infinite">
+                  <div style="width:55%;height:12px;background:var(--skel);border-radius:2px"></div>
+                  <div style="width:85%;height:16px;background:var(--skel);border-radius:2px"></div>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-for list="{{ col.rows }}" as="r" hint-placeholder-count="0">
+              <div style="padding:12px 0;border-bottom:1px solid var(--line2);display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;color:var(--ink2)">
+                  <a href="{{ r.thref }}" style="font-size:15px;font-weight:600;color:var(--ink)">{{ r.tournament }}</a>
+                  <span>{{ r.level }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px"><span aria-hidden="true" style="color:{{ r.sc }};font-size:10px">{{ r.sg }}</span>{{ r.surface }}</span>
+                  <span style="margin-left:auto">{{ r.date }}</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;font-size:15px">
+                  <span><a href="{{ r.whref }}" style="color:var(--ink);font-weight:650">{{ r.winner }}</a> <span style="color:var(--ink2)">d.</span> <a href="{{ r.lhref }}" style="color:var(--ink)">{{ r.loser }}</a></span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink2);margin-left:auto">{{ r.score }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <a href="Tournament.dc.html" style="display:inline-block;margin-top:18px;font-size:15px;font-weight:500">All tournaments →</a>
+    </section>
+
+    <section aria-labelledby="ups-h" style="padding:40px 0;border-top:1px solid var(--line)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 24px;margin-bottom:18px">
+        <h2 id="ups-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.01em;margin:0">Recent upsets</h2>
+        <span style="font-size:14px;color:var(--ink2)">Biggest ranking gaps, last few weeks · gap = loser’s rank minus winner’s</span>
+      </div>
+      <sc-if value="{{ upsErr }}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:20px;border:1px solid var(--line);border-radius:4px;background:var(--bg2)">
+          <span style="font-size:15px">Recent upsets didn’t load. The rest of the page is unaffected.</span>
+          <button onClick="{{ retryUps }}" style="min-height:40px;padding:8px 16px;border:1px solid var(--ink);border-radius:4px;background:transparent;cursor:pointer;font-weight:600">Retry</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ upsOk }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:32px 48px">
+          <sc-for list="{{ upsCols }}" as="col" hint-placeholder-count="2">
+            <div>
+              <div style="padding-bottom:8px;border-bottom:1px solid var(--ink);font-size:12px;font-weight:700;letter-spacing:.08em">{{ col.tour }}</div>
+              <sc-if value="{{ upsLoading }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ skel6 }}" as="s" hint-placeholder-count="6">
+                  <div aria-hidden="true" style="padding:14px 0;border-bottom:1px solid var(--line2);display:flex;gap:16px;animation:cvpulse 1.4s ease-in-out infinite">
+                    <div style="width:56px;height:26px;background:var(--skel);border-radius:2px"></div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="width:85%;height:14px;background:var(--skel);border-radius:2px"></div><div style="width:60%;height:12px;background:var(--skel);border-radius:2px"></div></div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-for list="{{ col.rows }}" as="r" hint-placeholder-count="0">
+                <div style="display:flex;gap:16px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line2)">
+                  <span style="flex:none;width:60px;font-size:22px;font-weight:600;letter-spacing:-0.01em;line-height:1.1" aria-label="{{ r.gapAria }}">{{ r.gap }}</span>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                    <div style="font-size:15px"><a href="{{ r.whref }}" style="color:var(--ink);font-weight:650">{{ r.winner }}</a> <span style="color:var(--ink2)">({{ r.wr }}) d.</span> <a href="{{ r.lhref }}" style="color:var(--ink)">{{ r.loser }}</a> <span style="color:var(--ink2)">({{ r.lr }})</span></div>
+                    <div style="display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px;color:var(--ink2)">
+                      <a href="{{ r.thref }}" style="color:var(--ink2);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px">{{ r.tournament }}</a>
+                      <span style="font-family:'IBM Plex Mono',monospace">{{ r.round }}</span>
+                      <span style="font-family:'IBM Plex Mono',monospace">{{ r.score }}</span>
+                      <span>{{ r.date }}</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fd=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]}`};
+const SURF={Hard:['var(--hard)','■'],Clay:['var(--clay)','●'],Grass:['var(--grass)','▲'],Carpet:['var(--carpet)','◆']};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const clean=t=>t.replace(/^(ATP|WTA)\s+/,'').replace(/'S-/,"'s-").replace(/ CH$/,' Challenger');
+const pl=n=>`Player.dc.html?p=${slug(n)}`;
+const QS=[
+['slam-final-comebacks','Who came back from two sets down to win a Grand Slam final?','Latest: Alcaraz d. Sinner, Roland Garros 2025'],
+['most-tiebreaks','Which matches had the most tiebreaks?','Top: Cerundolo d. Landaluce, four tiebreaks, Roland Garros 2026'],
+['teens-beat-no1','Which teenagers have beaten a world No. 1?','Latest: Andreeva, 17, d. Sabalenka, Indian Wells 2025'],
+['slam-upsets','Who were the lowest-ranked players to beat a top-10 player at a Grand Slam?','Top: Serena Williams (605) d. Kontaveit (2), US Open 2022'],
+['most-aces-match','Who hit the most aces in a single ATP tour-level match?','Top: Isner, 113 aces against Mahut, Wimbledon 2010'],
+['bagel-finals','Which Grand Slam finals were won with a 6-0 set?','Latest: Swiatek d. Anisimova 6-0 6-0, Wimbledon 2025']];
+class Component extends DCLogic {
+  state={d:null,lead:false,champ:false,ups:false,upsErr:false};
+  componentDidMount(){
+    this.mode=new URLSearchParams(location.search).get('state');
+    if(this.mode==='loading')return;
+    fetch('uploads/design-brief/samples/home.json').then(r=>r.json()).then(d=>{
+      this.setState({d});
+      setTimeout(()=>this.setState({lead:true}),160);
+      setTimeout(()=>this.setState({champ:true}),340);
+      setTimeout(()=>this.mode==='error'?this.setState({upsErr:true}):this.setState({ups:true}),520);
+    });
+  }
+  champRows(list){return list.map(c=>({tournament:clean(c.tournament),level:c.level_name,surface:c.surface,sc:SURF[c.surface][0],sg:SURF[c.surface][1],date:fd(c.date),winner:c.winner_name,loser:c.loser_name,score:c.score,whref:pl(c.winner_name),lhref:pl(c.loser_name),thref:`Tournament.dc.html?event=${slug(clean(c.tournament))}&year=${c.year}`}))}
+  upRows(list){return [...list].sort((a,b)=>b.rank_diff-a.rank_diff).map(u=>({gap:`+${u.rank_diff}`,gapAria:`Ranking gap ${u.rank_diff}`,winner:u.winner_name,wr:u.winner_rank,loser:u.loser_name,lr:u.loser_rank,tournament:clean(u.tournament),round:u.round,score:u.score,date:fd(u.date),whref:pl(u.winner_name),lhref:pl(u.loser_name),thref:`Tournament.dc.html?event=${slug(clean(u.tournament))}&year=2026`}))}
+  renderVals(){
+    const d=this.state.d,s=this.state;
+    const chipQ=['Sinner vs Alcaraz','Iga Swiatek','Wimbledon 2025','Roland Garros'];
+    return {
+      chips:chipQ.map(q=>({label:q,run:()=>window.dispatchEvent(new CustomEvent('cv-search',{detail:{channel:'hero',q}}))})),
+      skel4:[1,2,3,4],skel6:[1,2,3,4,5,6],
+      leadLoading:!s.lead,
+      cards:s.lead&&d?d.leading_this_season.response.map(c=>({...c,tour:c.tour==='M'?'ATP':'WTA',href:'Records.dc.html'+c.link.slice(8)})):[],
+      questions:QS.map(([id,q,teaser])=>({q,teaser,href:`Lab.dc.html?example=${id}`})),
+      champLoading:!s.champ,
+      champCols:[{tour:'ATP',rows:s.champ&&d?this.champRows(d.latest_champions_atp.response):[]},{tour:'WTA',rows:s.champ&&d?this.champRows(d.latest_champions_wta.response):[]}],
+      upsErr:s.upsErr,upsOk:!s.upsErr,upsLoading:!s.ups,
+      upsCols:[{tour:'ATP',rows:s.ups&&d?this.upRows(d.recent_upsets_atp.response):[]},{tour:'WTA',rows:s.ups&&d?this.upRows(d.recent_upsets_wta.response):[]}],
+      retryUps:()=>{this.setState({upsErr:false,ups:false});setTimeout(()=>this.setState({ups:true}),700)}
+    };
+  }
+}
+</script>
+</body>
+</html>

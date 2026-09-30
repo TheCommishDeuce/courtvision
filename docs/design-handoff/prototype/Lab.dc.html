@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Lab — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Lab" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" current="lab" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:1320px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+    <section style="padding:clamp(28px,5vw,48px) 0 20px">
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(34px,5vw,52px);letter-spacing:-0.025em;margin:0">Lab</h1>
+      <p style="margin:6px 0 0;color:var(--ink2);font-size:17px;max-width:62ch">Ask the database anything. Start from a question, or write SQL over all 1,069,410 matches.</p>
+    </section>
+
+    <section aria-labelledby="ex-h" style="padding:0 0 24px">
+      <h2 id="ex-h" style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:700;margin:0 0 10px">Example questions</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px">
+        <sc-for list="{{ examples }}" as="e" hint-placeholder-count="6">
+          <button onClick="{{ e.pick }}" aria-pressed="{{ e.on }}" style="text-align:left;min-height:52px;padding:10px 14px;border:1px solid {{ e.bd }};border-radius:6px;background:{{ e.bg }};color:var(--ink);cursor:pointer;font-size:15px;line-height:1.3;font-weight:{{ e.fw }}" style-hover="border-color:var(--ink2)">{{ e.q }}</button>
+        </sc-for>
+      </div>
+    </section>
+
+    <div style="display:grid;grid-template-columns:{{ labCols }};gap:28px;align-items:start">
+      <div style="grid-column:{{ mainCol }};min-width:0;display:flex;flex-direction:column;gap:16px">
+        <details style="border:1px solid var(--line);border-radius:6px;background:var(--card)">
+          <summary style="cursor:pointer;padding:12px 14px;min-height:44px;font-weight:600;font-size:15px">Build a query <span style="font-weight:400;color:var(--ink2);font-size:14px">· pick filters, get SQL you can edit</span></summary>
+          <div style="padding:4px 14px 16px;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end">
+            <sc-for list="{{ bFields }}" as="b" hint-placeholder-count="6">
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)">{{ b.label }}
+                <select value="{{ b.value }}" onChange="{{ b.set }}" style="min-height:42px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font-size:14px">
+                  <sc-for list="{{ b.opts }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+            </sc-for>
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)">Player name
+              <input value="{{ bPlayer }}" onChange="{{ setBPlayer }}" placeholder="e.g. Iga Swiatek" style="min-height:42px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font-size:14px;width:180px">
+            </label>
+            <button onClick="{{ build }}" style="min-height:42px;padding:0 16px;border:1px solid var(--ink);border-radius:6px;background:transparent;cursor:pointer;font-weight:600">Write SQL ↓</button>
+          </div>
+        </details>
+
+        <div>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px">
+            <label for="sql" style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)">SQL</label>
+            <span style="font-size:12px;color:{{ charCol }}">{{ chars }} / 20,000 characters · one read-only SELECT or WITH query</span>
+          </div>
+          <div style="position:relative;border:1px solid var(--line);border-radius:6px;background:var(--card);overflow:auto;max-height:520px">
+            <div style="position:relative;min-width:100%;width:max-content">
+              {{ highlight }}
+              <textarea id="sql" ref="{{ taRef }}" value="{{ sql }}" onChange="{{ onSql }}" onKeyDown="{{ onKey }}" spellcheck="false" aria-label="SQL editor" style="position:absolute;inset:0;width:100%;height:100%;margin:0;padding:14px 16px;border:0;outline:0;resize:none;background:transparent;color:transparent;caret-color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:14px;line-height:1.6;white-space:pre;overflow:hidden;tab-size:2"></textarea>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px">
+            <button onClick="{{ run }}" style="min-height:44px;padding:0 20px;border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:700;font-size:15px">Run</button>
+            <kbd style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink2)">⌘ / Ctrl + Enter</kbd>
+            <span style="flex:1"></span>
+            <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openSchema }}" style="min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer">Schema</button></sc-if>
+            <button onClick="{{ copyLink }}" style="min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer">{{ copyLabel }}</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="border:1px solid var(--loss);border-radius:6px;padding:14px 16px;background:var(--card)">
+            <div style="font-size:14px;font-weight:700;color:var(--loss);margin-bottom:6px">{{ errTitle }}</div>
+            <pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)">{{ errText }}</pre>
+          </div>
+        </sc-if>
+
+        <section aria-labelledby="res-h" aria-live="polite">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+            <h2 id="res-h" style="margin:0;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)">Results</h2>
+            <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ false }}"><button onClick="{{ csv }}" style="min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:14px">Download CSV</button></sc-if>
+          </div>
+          <sc-if value="{{ running }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="height:280px;border-radius:4px;background:var(--skel);animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ idle }}" hint-placeholder-val="{{ true }}"><p style="margin:0;padding:28px;text-align:center;border:1px dashed var(--line);border-radius:6px;color:var(--ink2)">{{ idleText }}</p></sc-if>
+          <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 8px;font-size:14px"><strong style="font-weight:700">{{ status }}</strong> <span style="color:var(--ink2)">{{ statusNote }}</span></p>
+            <div style="overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:4px">
+              <table style="border-collapse:collapse;font-size:13px;min-width:100%;font-variant-numeric:tabular-nums">
+                <thead><tr>
+                  <sc-for list="{{ cols }}" as="c" hint-placeholder-count="6">
+                    <th scope="col" aria-sort="{{ c.sort }}" style="position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--ink);padding:0;text-align:{{ c.align }}">
+                      <button onClick="{{ c.pick }}" style="all:unset;cursor:pointer;display:block;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;white-space:nowrap;color:{{ c.col }}">{{ c.name }}{{ c.arrow }}</button>
+                    </th>
+                  </sc-for>
+                </tr></thead>
+                <tbody>
+                  <sc-for list="{{ rows }}" as="r" hint-placeholder-count="0">
+                    <tr>
+                      <sc-for list="{{ r }}" as="c" hint-placeholder-count="0">
+                        <td style="padding:8px 12px;border-bottom:1px solid var(--line2);white-space:nowrap;text-align:{{ c.align }};font-family:{{ c.ff }}"><sc-if value="{{ c.link }}" hint-placeholder-val="{{ false }}"><a href="{{ c.h }}" style="color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px">{{ c.v }}</a></sc-if><sc-if value="{{ c.plain }}" hint-placeholder-val="{{ true }}">{{ c.v }}</sc-if></td>
+                      </sc-for>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin:8px 0 0;font-size:12px;color:var(--ink2)">Up to 1,000 rows on screen · CSV up to 50,000 rows · queries stop after 20 seconds.</p>
+          </sc-if>
+        </section>
+      </div>
+
+      <sc-if value="{{ schemaVisible }}" hint-placeholder-val="{{ true }}">
+        <aside aria-label="Schema" style="{{ asideStyle }}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h2 style="margin:0;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)">Schema</h2>
+            <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}"><button onClick="{{ closeSchema }}" style="min-height:44px;padding:0 10px;border:0;background:transparent;color:var(--acc);font-size:16px;cursor:pointer">Done</button></sc-if>
+          </div>
+          <p style="margin:0 0 10px;font-size:13px;color:var(--ink2)">Click a column to insert it at the cursor.</p>
+          <sc-for list="{{ rels }}" as="rel" hint-placeholder-count="4">
+            <details open="{{ rel.open }}" style="border-top:1px solid var(--line)">
+              <summary style="cursor:pointer;padding:10px 0;min-height:44px;display:flex;justify-content:space-between;gap:8px;align-items:baseline">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600">{{ rel.name }}</span><span style="font-size:12px;color:var(--ink2)">{{ rel.rows }}</span>
+              </summary>
+              <p style="margin:0 0 6px;font-size:13px;color:var(--ink2)">{{ rel.desc }}</p>
+              <ul style="list-style:none;margin:0 0 10px;padding:0">
+                <sc-for list="{{ rel.cols }}" as="c" hint-placeholder-count="0">
+                  <li><button onClick="{{ c.ins }}" style="all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 4px;border-radius:3px" style-hover="background:var(--bg2)">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--acc)">{{ c.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink2)">{{ c.type }}</span>
+                    <span style="grid-column:1 / -1;font-size:12px;color:var(--ink2)">{{ c.meaning }}</span>
+                  </button></li>
+                </sc-for>
+              </ul>
+            </details>
+          </sc-for>
+        </aside>
+      </sc-if>
+    </div>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const slug=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const NAMECOLS=['winner_name','loser_name','player_name','opponent_name','name','player','opponent','player_a','player_b'];
+const KW=new Set('SELECT FROM WHERE AND OR NOT AS ORDER BY GROUP LIMIT WITH JOIN LEFT INNER ON DESC ASC CAST INT IN LIKE IS NULL CASE WHEN THEN ELSE END HAVING DISTINCT UNION ALL OVER PARTITION BETWEEN TRUE FALSE'.split(' '));
+const FN=/^(count|sum|avg|min|max|floor|round|date_diff|string_split|regexp_replace|list_contains|coalesce|row_number|len|abs)$/i;
+const REL={matches_main:'One row per match, with winner and loser columns.',player_match_view:'One row per player per match, from that player’s side (result W / L).',h2h_view:'One row per match, with the pair in alphabetical order (player_a, player_b).',players:'One row per player: country, birthdate, hand, height, current rank.'};
+const MEAN={unique_match_key:'Unique id for the match',date:'Tournament start date',tournament:'Event name',surface:'Hard, Clay, Grass or Carpet',level:'Tier code (G = Grand Slam, M = Masters…)',level_name:'Tier name',round:'F, SF, QF, R16… Q1–Q3',score:'Score as stored, e.g. 6-7(5) 7-6(8)',time:'Duration in minutes (some values are wrong)',winner_name:'Player who won',loser_name:'Player who lost',winner_rank:'Winner’s rank at the time (lower is better)',loser_rank:'Loser’s rank at the time',rank_diff:'Loser rank minus winner rank',tour:'M = ATP, F = WTA',year:'Season',num_sets:'Sets played',is_retirement:'Ended early through injury (counts)',is_walkover:'Never played (excluded from records)',is_complete:'Played to the finish',had_tiebreak:'At least one tiebreak',is_upset:'Lower-ranked player won',player_name:'The player this row is about',opponent_name:'Their opponent',result:'W or L for player_name',player_rank:'Player’s rank at the time',opponent_rank:'Opponent’s rank at the time',aces:'Aces served',dfs:'Double faults',fwon:'1st-serve points won',swon:'2nd-serve points won',firsts:'1st serves in',pts:'Serve points played',bp_saved:'Break points saved',bp_chances:'Break points faced',tb_won:'Tiebreaks won',tb_lost:'Tiebreaks lost',player_a:'First player, alphabetically',player_b:'Second player, alphabetically',player_id:'Player id',name:'Player name',url_name:'Slug used in links',country:'Three-letter country code',birthdate:'Date of birth',current_rank:'Latest ranking',hand:'R or L',height:'Height in cm',historically_ranked:'Has ever held a ranking',saved:'Break points saved',chances:'Break points faced',games:'Games won',tb_won:'Tiebreaks won',tb_lost:'Tiebreaks lost'};
+const mean=n=>{if(MEAN[n])return MEAN[n];const m=n.match(/^(winner|loser)_(.+)$/);if(m){const x=MEAN[m[2]]||m[2].replace(/_/g,' ');return `${x} (${m[1]})`}return n.replace(/_/g,' ')};
+const esc=s=>s.replace(/'/g,"''");
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,d:null,sql:'',ex:null,res:null,err:null,running:false,sort:null,dir:1,schemaOpen:false,copied:false,custom:false,
+    b:{Relation:'player_match_view',Tour:'ATP',Surface:'All',Level:'All','From':'2020','To':'2026','Order by':'date (newest)',Limit:'100'},bPlayer:'Iga Swiatek'};
+  taRef=React.createRef();
+  componentDidMount(){
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    const q=new URLSearchParams(location.search);
+    fetch('uploads/design-brief/samples/lab.json').then(r=>r.json()).then(d=>{
+      this.setState({d});
+      if(q.get('state')==='error'){this.setState({sql:'SELECT nope FROM matches_main\nLIMIT 10'},()=>this.run());return}
+      const ex=d.examples.find(e=>e.id===q.get('example'));
+      if(ex)this.pick(ex);else if(q.get('sql'))this.setState({sql:q.get('sql')},()=>this.run());
+      else this.pick(d.examples[2]);
+    });
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR)}
+  url(p){const q=new URLSearchParams();Object.entries(p).forEach(([k,v])=>q.set(k,v));try{history.replaceState(null,'',location.pathname+'?'+q.toString())}catch(e){}}
+  pick(ex){this.setState({sql:ex.sql,ex:ex.id,custom:false},()=>this.run());this.url({example:ex.id})}
+  run(){
+    const {d,sql}=this.state;if(!d)return;
+    this.setState({running:true,err:null,res:null,sort:null});
+    const s=sql.trim(),ex=d.examples.find(e=>e.sql.trim()===s);
+    setTimeout(()=>{
+      if(!/^(select|with)\b/i.test(s.replace(/^(--[^\n]*\n\s*)+/,'')))this.setState({running:false,err:{t:'Query not allowed',x:'Only a single read-only SELECT or WITH query can run in the Lab.'}});
+      else if(/;\s*\S/.test(s))this.setState({running:false,err:{t:'Query not allowed',x:'Run one statement at a time.'}});
+      else if(ex)this.setState({running:false,res:ex.result,ex:ex.id});
+      else if(/\bnope\b/.test(s))this.setState({running:false,err:{t:'Database error',x:d.error_example.body.detail}});
+      else this.setState({running:false,res:null,err:null,custom:true});
+    },ex?380:520);
+  }
+  insert(txt){const ta=this.taRef.current,sql=this.state.sql;const a=ta?ta.selectionStart:sql.length,b=ta?ta.selectionEnd:sql.length;this.setState({sql:sql.slice(0,a)+txt+sql.slice(b),schemaOpen:false},()=>{if(ta){ta.focus();ta.setSelectionRange(a+txt.length,a+txt.length)}})}
+  build(){
+    const b=this.state.b,p=this.state.bPlayer.trim(),rel=b.Relation,w=[];
+    w.push(`tour = '${b.Tour==='ATP'?'M':'F'}'`);
+    if(b.Surface!=='All')w.push(`surface = '${b.Surface}'`);
+    if(b.Level!=='All')w.push(`level_name = '${b.Level}'`);
+    if(rel!=='players')w.push(`year BETWEEN ${b.From} AND ${b.To}`);
+    if(p){if(rel==='player_match_view')w.push(`player_name = '${esc(p)}'`);else if(rel==='matches_main')w.push(`(winner_name = '${esc(p)}' OR loser_name = '${esc(p)}')`);else if(rel==='h2h_view')w.push(`'${esc(p)}' IN (player_a, player_b)`);else w.push(`name = '${esc(p)}'`)}
+    const cols={player_match_view:'date, tournament, round, opponent_name, opponent_rank, result, score',matches_main:'date, tournament, round, winner_name, loser_name, score',h2h_view:'date, tournament, round, winner_name, loser_name, score',players:'name, country, birthdate, hand, height, current_rank'}[rel];
+    const ord=rel==='players'?'current_rank':b['Order by']==='date (newest)'?'date DESC':'date';
+    this.setState({sql:`SELECT ${cols}\nFROM ${rel}\nWHERE ${w.join('\n  AND ')}\nORDER BY ${ord}\nLIMIT ${b.Limit}`,ex:null});
+  }
+  hl(sql){
+    const out=[],re=/(--[^\n]*)|('(?:[^']|'')*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)|(\s+|.)/g;let m,i=0;
+    while((m=re.exec(sql))){const t=m[0];let st=null;
+      if(m[1])st={color:'var(--ink2)'};else if(m[2])st={color:'var(--clay)'};else if(m[3])st={color:'var(--hard)'};else if(m[4]&&KW.has(t.toUpperCase()))st={color:'var(--acc)',fontWeight:600};else if(m[4]&&FN.test(t))st={color:'var(--grass)'};
+      out.push(st?React.createElement('span',{key:i++,style:st},t):t);}
+    return React.createElement('pre',{'aria-hidden':true,style:{margin:0,padding:'14px 16px',fontFamily:"'IBM Plex Mono',monospace",fontSize:14,lineHeight:1.6,whiteSpace:'pre',color:'var(--ink)',minHeight:220,tabSize:2}},out,'\n');
+  }
+  renderVals(){
+    const {d,w,sql,res,err,running,sort,dir,schemaOpen,copied,custom}=this.state,phone=w<760,wide=w>=1100;
+    const base={phone,sql,taRef:this.taRef,highlight:this.hl(sql),chars:sql.length.toLocaleString('en-US'),charCol:sql.length>20000?'var(--loss)':'var(--ink2)',
+      onSql:e=>this.setState({sql:e.target.value.slice(0,20000),ex:null}),
+      onKey:e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();this.run()}else if(e.key==='Tab'){e.preventDefault();this.insert('  ')}},
+      run:()=>this.run(),copyLink:()=>{this.url(this.state.ex?{example:this.state.ex}:{sql});try{navigator.clipboard.writeText(location.href).catch(()=>{})}catch(e){}this.setState({copied:true});setTimeout(()=>this.setState({copied:false}),1600)},copyLabel:copied?'Link copied':'Copy link',
+      mainCol:'auto',labCols:phone?'minmax(0,1fr)':(wide?'minmax(0,1fr) 340px':'minmax(0,1fr) 280px'),schemaVisible:!phone||schemaOpen,
+      asideStyle:phone?{position:'fixed',inset:0,zIndex:100,background:'var(--bg)',padding:'12px 16px',overflow:'auto'}:{position:'sticky',top:16,maxHeight:'calc(100vh - 32px)',overflow:'auto',borderLeft:'1px solid var(--line)',paddingLeft:20},
+      openSchema:()=>this.setState({schemaOpen:true}),closeSchema:()=>this.setState({schemaOpen:false}),
+      err:!!err,errTitle:err?err.t:'',errText:err?err.x:'',running,hasRows:!!res&&!running,idle:!res&&!running&&!err,
+      idleText:custom?'This prototype returns results only for the six example questions. Your query would run against the live database.':'Pick an example question or write a query, then Run.',
+      bPlayer:this.state.bPlayer,setBPlayer:e=>this.setState({bPlayer:e.target.value}),build:()=>this.build(),
+      bFields:Object.entries({Relation:['player_match_view','matches_main','h2h_view','players'],Tour:['ATP','WTA'],Surface:['All','Hard','Clay','Grass','Carpet'],Level:['All','Grand Slam','Masters 1000','ATP 250/500','Tour Finals','Olympics','Challenger','ITF'],From:Array.from({length:59},(_,i)=>String(2026-i)),To:Array.from({length:59},(_,i)=>String(2026-i)),'Order by':['date (newest)','date (oldest)'],Limit:['100','1000','50000']}).map(([k,opts])=>({label:k,opts,value:this.state.b[k],set:e=>this.setState(s=>({b:{...s.b,[k]:e.target.value}}))})),
+      examples:[],cols:[],rows:[],rels:[]};
+    if(!d)return base;
+    base.examples=d.examples.map(e=>{const on=this.state.ex===e.id;return{q:e.question,on,bd:on?'var(--ink)':'var(--line)',bg:on?'var(--bg2)':'var(--card)',fw:on?600:400,pick:()=>this.pick(e)}});
+    base.rels=d.schema.response.relations.map((r,i)=>({name:r.name,rows:`${r.rows.toLocaleString('en-US')} rows`,desc:REL[r.name],open:i===0,cols:r.columns.map(c=>({name:c.name,type:c.type,meaning:mean(c.name),ins:()=>this.insert(c.name)}))}));
+    if(res){
+      const num=res.columns.map((c,i)=>res.rows.every(r=>r[i]==null||typeof r[i]==='number'));
+      let rows=res.rows.map((r,i)=>({r,i}));
+      if(sort!=null)rows.sort((a,b)=>{const x=a.r[sort],y=b.r[sort];return (typeof x==='number'?x-y:String(x).localeCompare(String(y)))*dir});
+      base.cols=res.columns.map((c,i)=>({name:c,align:num[i]?'right':'left',col:sort===i?'var(--ink)':'var(--ink2)',arrow:sort===i?(dir>0?' ↑':' ↓'):'',sort:sort===i?(dir>0?'ascending':'descending'):'none',pick:()=>this.setState(s=>({sort:i,dir:s.sort===i?-s.dir:(num[i]?-1:1)}))}));
+      base.rows=rows.slice(0,1000).map(({r})=>r.map((v,i)=>{const nm=NAMECOLS.includes(res.columns[i]);return{v:v==null?'NULL':typeof v==='number'&&!/year|age/.test(res.columns[i])&&v>=10000?v.toLocaleString('en-US'):String(v),align:num[i]?'right':'left',ff:res.columns[i]==='score'?"'IBM Plex Mono',monospace":'inherit',link:nm&&v!=null,plain:!(nm&&v!=null),h:`Player.dc.html?p=${slug(v)}`}}));
+      base.status=`${res.row_count.toLocaleString('en-US')} rows · ${res.elapsed_ms} ms`;
+      base.statusNote=res.truncated?'· Showing the first 1,000 rows: download CSV for up to 50,000':'';
+      base.csv=()=>{const q=v=>v==null?'':/[",\n]/.test(String(v))?`"${String(v).replace(/"/g,'""')}"`:String(v);const txt=[res.columns.join(','),...res.rows.map(r=>r.map(q).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'}));a.download=`courtvision-${this.state.ex||'query'}.csv`;a.click()};
+    }
+    return base;
+  }
+}
+</script>
+</body>
+</html>

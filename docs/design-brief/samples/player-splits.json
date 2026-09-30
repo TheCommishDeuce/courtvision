@@ -1,0 +1,400 @@
+{
+  "note": "One call per split today (GET /api/search/relational). Each summary gives career, last-5-years and last-52-weeks W-L. 'example_match_rows' shows the per-match rows behind one split.",
+  "splits": {
+    "vs left-handers": {
+      "params": {
+        "opp_hand": "L"
+      },
+      "summary": {
+        "total": 53,
+        "wins": 42,
+        "losses": 11,
+        "y5_total": 31,
+        "y5_wins": 28,
+        "y5_losses": 3,
+        "w52_total": 10,
+        "w52_wins": 9,
+        "w52_losses": 1,
+        "win_pct": 79.2,
+        "y5_win_pct": 90.3,
+        "w52_win_pct": 90.0
+      }
+    },
+    "vs right-handers": {
+      "params": {
+        "opp_hand": "R"
+      },
+      "summary": {
+        "total": 481,
+        "wins": 374,
+        "losses": 107,
+        "y5_total": 310,
+        "y5_wins": 262,
+        "y5_losses": 48,
+        "w52_total": 46,
+        "w52_wins": 43,
+        "w52_losses": 3,
+        "win_pct": 77.8,
+        "y5_win_pct": 84.5,
+        "w52_win_pct": 93.5
+      }
+    },
+    "vs top 10": {
+      "params": {
+        "opp_rank_max": 10
+      },
+      "summary": {
+        "total": 104,
+        "wins": 67,
+        "losses": 37,
+        "y5_total": 89,
+        "y5_wins": 63,
+        "y5_losses": 26,
+        "w52_total": 19,
+        "w52_wins": 18,
+        "w52_losses": 1,
+        "win_pct": 64.4,
+        "y5_win_pct": 70.8,
+        "w52_win_pct": 94.7
+      }
+    },
+    "vs top 50": {
+      "params": {
+        "opp_rank_max": 50
+      },
+      "summary": {
+        "total": 266,
+        "wins": 198,
+        "losses": 68,
+        "y5_total": 214,
+        "y5_wins": 170,
+        "y5_losses": 44,
+        "w52_total": 42,
+        "w52_wins": 39,
+        "w52_losses": 3,
+        "win_pct": 74.4,
+        "y5_win_pct": 79.4,
+        "w52_win_pct": 92.9
+      }
+    },
+    "vs younger": {
+      "params": {
+        "age_relation": "younger"
+      },
+      "summary": {
+        "total": 68,
+        "wins": 51,
+        "losses": 17,
+        "y5_total": 62,
+        "y5_wins": 47,
+        "y5_losses": 15,
+        "w52_total": 18,
+        "w52_wins": 16,
+        "w52_losses": 2,
+        "win_pct": 75.0,
+        "y5_win_pct": 75.8,
+        "w52_win_pct": 88.9
+      }
+    },
+    "vs older": {
+      "params": {
+        "age_relation": "older"
+      },
+      "summary": {
+        "total": 478,
+        "wins": 373,
+        "losses": 105,
+        "y5_total": 280,
+        "y5_wins": 244,
+        "y5_losses": 36,
+        "w52_total": 39,
+        "w52_wins": 37,
+        "w52_losses": 2,
+        "win_pct": 78.0,
+        "y5_win_pct": 87.1,
+        "w52_win_pct": 94.9
+      }
+    },
+    "vs compatriots": {
+      "params": {
+        "relation": "compatriot"
+      },
+      "summary": {
+        "total": 46,
+        "wins": 42,
+        "losses": 4,
+        "y5_total": 17,
+        "y5_wins": 17,
+        "y5_losses": 0,
+        "w52_total": 3,
+        "w52_wins": 3,
+        "w52_losses": 0,
+        "win_pct": 91.3,
+        "y5_win_pct": 100.0,
+        "w52_win_pct": 100.0
+      }
+    },
+    "after winning 1st set": {
+      "params": {
+        "situation": "won_first"
+      },
+      "summary": {
+        "total": 396,
+        "wins": 360,
+        "losses": 36,
+        "y5_total": 268,
+        "y5_wins": 251,
+        "y5_losses": 17,
+        "w52_total": 51,
+        "w52_wins": 49,
+        "w52_losses": 2,
+        "win_pct": 90.9,
+        "y5_win_pct": 93.7,
+        "w52_win_pct": 96.1
+      }
+    },
+    "after losing 1st set": {
+      "params": {
+        "situation": "lost_first"
+      },
+      "summary": {
+        "total": 137,
+        "wins": 57,
+        "losses": 80,
+        "y5_total": 63,
+        "y5_wins": 35,
+        "y5_losses": 28,
+        "w52_total": 4,
+        "w52_wins": 3,
+        "w52_losses": 1,
+        "win_pct": 41.6,
+        "y5_win_pct": 55.6,
+        "w52_win_pct": 75.0
+      }
+    },
+    "in a deciding set": {
+      "params": {
+        "situation": "deciding_set"
+      },
+      "summary": {
+        "total": 148,
+        "wins": 96,
+        "losses": 52,
+        "y5_total": 81,
+        "y5_wins": 55,
+        "y5_losses": 26,
+        "w52_total": 7,
+        "w52_wins": 4,
+        "w52_losses": 3,
+        "win_pct": 64.9,
+        "y5_win_pct": 67.9,
+        "w52_win_pct": 57.1
+      }
+    },
+    "in finals": {
+      "params": {
+        "round": "F"
+      },
+      "summary": {
+        "total": 46,
+        "wins": 35,
+        "losses": 11,
+        "y5_total": 33,
+        "y5_wins": 25,
+        "y5_losses": 8,
+        "w52_total": 8,
+        "w52_wins": 8,
+        "w52_losses": 0,
+        "win_pct": 76.1,
+        "y5_win_pct": 75.8,
+        "w52_win_pct": 100.0
+      }
+    },
+    "quarterfinal or later": {
+      "params": {
+        "min_stage": "QF"
+      },
+      "summary": {
+        "total": 181,
+        "wins": 137,
+        "losses": 44,
+        "y5_total": 128,
+        "y5_wins": 97,
+        "y5_losses": 31,
+        "w52_total": 26,
+        "w52_wins": 24,
+        "w52_losses": 2,
+        "win_pct": 75.7,
+        "y5_win_pct": 75.8,
+        "w52_win_pct": 92.3
+      }
+    }
+  },
+  "example_match_rows": {
+    "request": "GET /api/search/relational",
+    "params": {
+      "player": "Jannik Sinner",
+      "tour": "M",
+      "situation": "lost_first",
+      "limit": 3
+    },
+    "response": {
+      "total": 137,
+      "shown": 3,
+      "summary": {
+        "total": 137,
+        "wins": 57,
+        "losses": 80,
+        "y5_total": 63,
+        "y5_wins": 35,
+        "y5_losses": 28,
+        "w52_total": 4,
+        "w52_wins": 3,
+        "w52_losses": 1,
+        "win_pct": 41.6,
+        "y5_win_pct": 55.6,
+        "w52_win_pct": 75.0
+      },
+      "matches": [
+        {
+          "date": "2026-04-22T00:00:00",
+          "tournament": "Madrid Masters",
+          "level_name": "Masters 1000",
+          "round": "R64",
+          "surface": "Clay",
+          "result": "W",
+          "player_name": "Jannik Sinner",
+          "player_rank": 1.0,
+          "opponent_name": "Benjamin Bonzi",
+          "opponent_rank": 104.0,
+          "opp_hand": "R",
+          "opp_country": "FRA",
+          "opp_height": 183.0,
+          "opp_age": 29.9,
+          "player_age": 24.7,
+          "score": "6-7(6) 6-1 6-4",
+          "time": 140.0,
+          "tour": "M",
+          "year": 2026,
+          "is_upset": false,
+          "is_retirement": false,
+          "num_sets": 3,
+          "p_aces": 10.0,
+          "o_aces": 4.0,
+          "p_dfs": 1.0,
+          "o_dfs": 3.0,
+          "p_pts": 82.0,
+          "o_pts": 95.0,
+          "p_firsts": 53.0,
+          "o_firsts": 66.0,
+          "p_fwon": 45.0,
+          "o_fwon": 45.0,
+          "p_swon": 20.0,
+          "o_swon": 15.0,
+          "p_games": 15.0,
+          "o_games": 14.0,
+          "p_saved": 0.0,
+          "o_saved": 10.0,
+          "p_chances": 0.0,
+          "o_chances": 13.0,
+          "p_tb_won": 0,
+          "o_tb_won": 1,
+          "p_tb_lost": 1,
+          "o_tb_lost": 0
+        },
+        {
+          "date": "2026-02-16T00:00:00",
+          "tournament": "Doha",
+          "level_name": "ATP 250/500",
+          "round": "QF",
+          "surface": "Hard",
+          "result": "L",
+          "player_name": "Jannik Sinner",
+          "player_rank": 2.0,
+          "opponent_name": "Jakub Mensik",
+          "opponent_rank": 16.0,
+          "opp_hand": "R",
+          "opp_country": "CZE",
+          "opp_height": 193.0,
+          "opp_age": 20.5,
+          "player_age": 24.5,
+          "score": "7-6(3) 2-6 6-3",
+          "time": 131.0,
+          "tour": "M",
+          "year": 2026,
+          "is_upset": true,
+          "is_retirement": false,
+          "num_sets": 3,
+          "p_aces": 6.0,
+          "o_aces": 11.0,
+          "p_dfs": 1.0,
+          "o_dfs": 4.0,
+          "p_pts": 90.0,
+          "o_pts": 85.0,
+          "p_firsts": 57.0,
+          "o_firsts": 60.0,
+          "p_fwon": 41.0,
+          "o_fwon": 49.0,
+          "p_swon": 21.0,
+          "o_swon": 9.0,
+          "p_games": 15.0,
+          "o_games": 14.0,
+          "p_saved": 2.0,
+          "o_saved": 5.0,
+          "p_chances": 4.0,
+          "o_chances": 7.0,
+          "p_tb_won": 0,
+          "o_tb_won": 1,
+          "p_tb_lost": 1,
+          "o_tb_lost": 0
+        },
+        {
+          "date": "2026-01-19T00:00:00",
+          "tournament": "Australian Open",
+          "level_name": "Grand Slam",
+          "round": "R32",
+          "surface": "Hard",
+          "result": "W",
+          "player_name": "Jannik Sinner",
+          "player_rank": 2.0,
+          "opponent_name": "Eliot Spizzirri",
+          "opponent_rank": 85.0,
+          "opp_hand": "R",
+          "opp_country": "USA",
+          "opp_height": 183.0,
+          "opp_age": 24.1,
+          "player_age": 24.4,
+          "score": "4-6 6-3 6-4 6-4",
+          "time": 225.0,
+          "tour": "M",
+          "year": 2026,
+          "is_upset": false,
+          "is_retirement": false,
+          "num_sets": 4,
+          "p_aces": 17.0,
+          "o_aces": 6.0,
+          "p_dfs": 4.0,
+          "o_dfs": 3.0,
+          "p_pts": 132.0,
+          "o_pts": 108.0,
+          "p_firsts": 88.0,
+          "o_firsts": 70.0,
+          "p_fwon": 57.0,
+          "o_fwon": 46.0,
+          "p_swon": 19.0,
+          "o_swon": 17.0,
+          "p_games": 20.0,
+          "o_games": 19.0,
+          "p_saved": 10.0,
+          "o_saved": 3.0,
+          "p_chances": 16.0,
+          "o_chances": 11.0,
+          "p_tb_won": 0,
+          "o_tb_won": 0,
+          "p_tb_lost": 0,
+          "o_tb_lost": 0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Jannik Sinner — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Player" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" hint-size="100%,64px"></dc-import>
+
+  <sc-if value="{{ notFound }}" hint-placeholder-val="{{ false }}">
+    <main style="width:100%;max-width:760px;margin:0 auto;padding:clamp(48px,10vw,96px) clamp(16px,4vw,40px);flex:1">
+      <p style="margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:600">Player not found</p>
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.1;margin:0;overflow-wrap:anywhere">No player called ‘{{ badSlug }}’</h1>
+      <p style="margin:16px 0 8px;font-size:16px;color:var(--ink2)">Did you mean</p>
+      <div style="display:flex;flex-direction:column;border-top:1px solid var(--line)">
+        <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
+          <a href="Player.dc.html?p=jannik-sinner" style="display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:14px 0;min-height:48px;border-bottom:1px solid var(--line2);color:var(--ink)">
+            <span style="font-size:18px;font-weight:600">{{ s.n }}</span><span style="font-size:14px;color:var(--ink2)">{{ s.sub }}</span>
+          </a>
+        </sc-for>
+      </div>
+      <p style="margin:28px 0 10px;font-size:15px;color:var(--ink2)">Or search again</p>
+      <div style="height:52px;font-size:17px"><dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="nf" hint-size="100%,52px"></dc-import></div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ found }}" hint-placeholder-val="{{ true }}">
+    <main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+
+      <section aria-label="Player" style="padding:clamp(28px,5vw,48px) 0 28px">
+        <sc-if value="{{ L.id }}" hint-placeholder-val="{{ true }}">
+          <div aria-hidden="true" style="display:flex;flex-direction:column;gap:14px;animation:cvpulse 1.4s ease-in-out infinite">
+            <div style="width:90px;height:14px;background:var(--skel);border-radius:2px"></div>
+            <div style="width:min(420px,80%);height:52px;background:var(--skel);border-radius:2px"></div>
+            <div style="width:min(520px,90%);height:16px;background:var(--skel);border-radius:2px"></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:10px"><div style="height:64px;background:var(--skel);border-radius:2px"></div><div style="height:64px;background:var(--skel);border-radius:2px"></div><div style="height:64px;background:var(--skel);border-radius:2px"></div><div style="height:64px;background:var(--skel);border-radius:2px"></div></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ R.id }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2)">
+            <span style="font-size:10px;font-weight:600;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);border-radius:3px">ATP</span>
+            <span>{{ id.country }}</span>
+          </div>
+          <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,7vw,72px);line-height:1;letter-spacing:-0.025em;margin:10px 0 12px">{{ id.name }}</h1>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:15px;color:var(--ink2)">
+            <span>Age {{ id.age }} (born {{ id.born }})</span><span>Plays {{ id.hand }}</span><span>{{ id.height }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:18px 28px;margin-top:26px;padding-top:20px;border-top:1px solid var(--line2)">
+            <div><div style="font-size:12px;color:var(--ink2)">Career record</div><div style="font-size:26px;font-weight:600;letter-spacing:-0.01em">{{ id.pct }}</div><div style="font-size:14px;color:var(--ink2)">{{ id.wl }} · {{ id.total }} matches</div></div>
+            <div><div style="font-size:12px;color:var(--ink2)">Current rank</div><div style="font-size:26px;font-weight:600">{{ id.cur }}</div><div style="font-size:14px;color:var(--ink2)">as of {{ id.curDate }}</div></div>
+            <div><div style="font-size:12px;color:var(--ink2)">Career high</div><div style="font-size:26px;font-weight:600">{{ id.high }}</div><div style="font-size:14px;color:var(--ink2)">first reached {{ id.highDate }}</div></div>
+            <div><div style="font-size:12px;color:var(--ink2)">Titles</div><div style="font-size:26px;font-weight:600">{{ id.titles }}</div><div style="font-size:14px;color:var(--ink2)">Slams · tour · Challenger · ITF</div></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:22px">
+            <button onClick="{{ compare }}" style="min-height:44px;padding:0 16px;border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:600;font-size:15px">Compare with…</button>
+            <button onClick="{{ copyLink }}" style="min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:15px">{{ copyLinkLabel }}</button>
+            <button onClick="{{ copyCite }}" style="min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:15px">{{ copyCiteLabel }}</button>
+          </div>
+        </sc-if>
+      </section>
+
+      <div style="position:sticky;top:0;z-index:30;background:var(--bg);border-top:1px solid var(--ink);border-bottom:1px solid var(--line);padding:12px 0;margin:0 calc(-1 * clamp(16px,4vw,40px));padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px)">
+        <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px">
+            <button onClick="{{ toggleFilters }}" aria-expanded="{{ filtersOpen }}" style="min-height:44px;padding:0 14px;border:1px solid var(--ink);border-radius:6px;background:transparent;cursor:pointer;font-weight:600;font-size:15px">{{ filterBtn }}</button>
+            <div style="flex:1;min-width:0;font-size:14px;line-height:1.3"><span style="font-weight:600">{{ fsum }}</span><br><span style="color:var(--ink2)">{{ frec }}</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showControls }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;margin-top:{{ ctrlGap }}">
+            <div role="group" aria-label="Surface" style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:12px;color:var(--ink2)">Surface</span>
+              <div style="display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;overflow:hidden">
+                <sc-for list="{{ surfOpts }}" as="o" hint-placeholder-count="5">
+                  <button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 12px;border:0;border-right:1px solid var(--line2);cursor:pointer;font-size:14px;background:{{ o.bg }};color:{{ o.fg }}"><span aria-hidden="true" style="font-size:10px;color:{{ o.gc }}">{{ o.g }}</span>{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)">Level
+              <select value="{{ f.level }}" onChange="{{ setLevel }}" style="min-height:42px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-size:14px">
+                <sc-for list="{{ levelOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for>
+              </select>
+            </label>
+            <div style="display:flex;align-items:flex-end;gap:6px">
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)">From
+                <select value="{{ f.from }}" onChange="{{ setFrom }}" style="min-height:42px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-size:14px">
+                  <sc-for list="{{ yearOpts }}" as="y" hint-placeholder-count="0"><option value="{{ y }}">{{ y }}</option></sc-for>
+                </select>
+              </label>
+              <span style="padding-bottom:10px;color:var(--ink2)">–</span>
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)">To
+                <select value="{{ f.to }}" onChange="{{ setTo }}" style="min-height:42px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-size:14px">
+                  <sc-for list="{{ yearOpts }}" as="y" hint-placeholder-count="0"><option value="{{ y }}">{{ y }}</option></sc-for>
+                </select>
+              </label>
+            </div>
+            <sc-if value="{{ active }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ reset }}" style="min-height:42px;padding:0 14px;border:0;background:transparent;color:var(--acc);cursor:pointer;font-size:14px;font-weight:600">Reset filters</button>
+            </sc-if>
+            <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-left:auto;text-align:right;font-size:14px;line-height:1.35;padding-bottom:2px"><div style="font-weight:600">{{ fsum }}</div><div style="color:var(--ink2)">{{ frec }}</div></div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <section style="padding:56px 0;text-align:center;border-bottom:1px solid var(--line)">
+          <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">No matches for {{ fsum }}</h2>
+          <p style="margin:10px auto 20px;max-width:46ch;color:var(--ink2);font-size:16px">{{ emptyWhy }} Every filtered block on this page is empty; milestones below are career figures.</p>
+          <button onClick="{{ reset }}" style="min-height:44px;padding:0 18px;border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:600">Reset filters</button>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ notEmpty }}" hint-placeholder-val="{{ true }}">
+        <section aria-labelledby="form-h" style="padding:44px 0">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:20px">
+            <div><h2 id="form-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Form</h2><p style="margin:2px 0 0;color:var(--ink2)">How has Sinner played lately?</p></div>
+            <span style="font-size:13px;color:var(--ink2)">{{ scopeSL }} · always the most recent matches</span>
+          </div>
+          <sc-if value="{{ L.form }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:260px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ R.form }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+              <sc-for list="{{ windows }}" as="w" hint-placeholder-count="3">
+                <div style="padding:14px 0;border-top:2px solid var(--ink)"><div style="font-size:13px;color:var(--ink2)">{{ w.label }}</div><div style="font-size:clamp(22px,4vw,32px);font-weight:600;letter-spacing:-0.01em">{{ w.wl }}</div><div style="font-size:14px;color:var(--ink2)">{{ w.pct }}</div></div>
+              </sc-for>
+            </div>
+            <div style="margin-top:18px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:6px"><span>Last 20 matches, oldest → latest</span><span>19–1</span></div>
+              <div role="list" style="display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:3px">
+                <sc-for list="{{ strip }}" as="s" hint-placeholder-count="20">
+                  <span role="listitem" title="{{ s.title }}" aria-label="{{ s.title }}" style="height:26px;display:grid;place-items:center;border-radius:2px;font-size:11px;font-weight:700;background:{{ s.bg }};color:{{ s.fg }};border:1px solid {{ s.bd }}">{{ s.r }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:28px 48px;margin-top:32px">
+              <div>
+                <h3 style="margin:0 0 6px;font-size:16px;font-weight:600">Recent wins over top-50 players</h3>
+                <sc-for list="{{ topWins }}" as="r" hint-placeholder-count="5">
+                  <div style="display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line2);font-size:15px">
+                    <span style="width:52px;color:var(--ink2);font-size:13px">{{ r.date }}</span>
+                    <span style="flex:1;min-width:160px"><a href="{{ r.href }}" style="color:var(--ink);font-weight:600">{{ r.opp }}</a> <span style="color:var(--ink2)">{{ r.rank }}</span></span>
+                    <span style="font-size:13px;color:var(--ink2)">{{ r.event }} · <span style="font-family:'IBM Plex Mono',monospace">{{ r.round }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div>
+                <h3 style="margin:0 0 6px;font-size:16px;font-weight:600">Recent losses to lower-ranked players</h3>
+                <sc-for list="{{ upLosses }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line2);font-size:15px">
+                    <span style="width:52px;color:var(--ink2);font-size:13px">{{ r.date }}</span>
+                    <span style="flex:1;min-width:160px"><a href="{{ r.href }}" style="color:var(--ink);font-weight:600">{{ r.opp }}</a> <span style="color:var(--ink2)">{{ r.rank }}</span></span>
+                    <span style="font-size:13px;color:var(--ink2)">{{ r.event }} · <span style="font-family:'IBM Plex Mono',monospace">{{ r.round }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="shape-h" style="padding:44px 0;border-top:1px solid var(--line)">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:22px">
+            <div><h2 id="shape-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Career shape</h2><p style="margin:2px 0 0;color:var(--ink2)">How has the career unfolded, year by year and surface by surface?</p></div>
+            <span style="font-size:13px;color:var(--ink2)">{{ scopeSL }} · years narrow the charts</span>
+          </div>
+          <sc-if value="{{ L.shape }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:40px;animation:cvpulse 1.4s ease-in-out infinite"><div style="height:280px;background:var(--skel);border-radius:4px"></div><div style="height:280px;background:var(--skel);border-radius:4px"></div></div></sc-if>
+          <sc-if value="{{ R.shape }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:40px 56px">
+              <figure style="margin:0">
+                <figcaption style="font-size:16px;font-weight:600;margin-bottom:28px">Win % by year <span style="font-weight:400;color:var(--ink2);font-size:14px">· won–lost under each year</span></figcaption>
+                <div style="display:flex;gap:8px">
+                  <div aria-hidden="true" style="position:relative;width:34px;height:160px;flex:none;font-size:11px;color:var(--ink2)">
+                    <span style="position:absolute;right:0;top:-7px">100%</span><span style="position:absolute;right:0;top:73px">50%</span><span style="position:absolute;right:0;bottom:-7px">0%</span>
+                  </div>
+                  <div style="flex:1;min-width:0;position:relative">
+                    <div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;border-top:1px solid var(--line2)"></div>
+                    <div aria-hidden="true" style="position:absolute;left:0;right:0;top:80px;border-top:1px dashed var(--ink2);opacity:.6;z-index:2"></div>
+                    <div role="list" style="display:flex;gap:6px;position:relative">
+                      <sc-for list="{{ years }}" as="y" hint-placeholder-count="9">
+                        <div role="listitem" aria-label="{{ y.aria }}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;opacity:{{ y.op }}">
+                          <div style="height:160px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:1px solid var(--ink)">
+                            <div style="position:relative;width:100%;height:{{ y.h }};background:var(--acc);border-radius:1px 1px 0 0"><span style="position:absolute;left:0;right:0;bottom:100%;padding-bottom:3px;font-size:12px;font-weight:700;text-align:center;color:var(--ink)">{{ y.pct }}</span></div>
+                          </div>
+                          <span style="font-size:12px;text-align:center;margin-top:5px;font-weight:600">{{ y.yr }}</span>
+                          <span style="font-size:11px;text-align:center;color:var(--ink2);white-space:nowrap">{{ y.wl }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <figure style="margin:0">
+                <figcaption style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-bottom:12px">
+                  <span style="font-size:16px;font-weight:600">Ranking trajectory</span>
+                  <span role="group" aria-label="Scale" style="display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px">
+                    <sc-for list="{{ rankViews }}" as="v" hint-placeholder-count="2"><button onClick="{{ v.pick }}" aria-pressed="{{ v.on }}" style="border:0;min-height:32px;padding:0 10px;cursor:pointer;background:{{ v.bg }};color:{{ v.fg }}">{{ v.label }}</button></sc-for>
+                  </span>
+                </figcaption>
+                <div style="position:relative;height:200px;margin-left:40px;margin-top:8px">
+                  <sc-for list="{{ rank.ylabels }}" as="y" hint-placeholder-count="4">
+                    <div aria-hidden="true" style="position:absolute;left:-40px;right:0;top:{{ y.top }};border-top:1px solid var(--line2)"><span style="position:absolute;left:0;top:-8px;font-size:11px;color:var(--ink2);background:var(--bg);padding-right:4px">{{ y.label }}</span></div>
+                  </sc-for>
+                  <svg viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"><path d="{{ rank.path }}" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg>
+                  <div aria-hidden="true" style="position:absolute;left:{{ rank.dotX }};top:{{ rank.dotY }};width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--acc);border:2px solid var(--bg)"></div>
+                </div>
+                <div aria-hidden="true" style="position:relative;height:20px;margin-left:40px;margin-top:6px">
+                  <sc-for list="{{ rank.xlabels }}" as="x" hint-placeholder-count="9"><span style="position:absolute;left:{{ x.left }};transform:translateX(-50%);font-size:11px;color:var(--ink2)">{{ x.label }}</span></sc-for>
+                </div>
+                <p style="margin:10px 0 0;font-size:14px;color:var(--ink2)">{{ rank.caption }}</p>
+                <details style="margin-top:8px;font-size:14px">
+                  <summary style="cursor:pointer;color:var(--acc);min-height:32px">Show as a table</summary>
+                  <div role="table" style="margin-top:6px">
+                    <div role="row" style="display:grid;grid-template-columns:repeat(3,1fr);font-size:12px;color:var(--ink2);padding:4px 0;border-bottom:1px solid var(--line)"><span>Year</span><span style="text-align:right">Best rank</span><span style="text-align:right">Last rank of year</span></div>
+                    <sc-for list="{{ yearEnd }}" as="r" hint-placeholder-count="0"><div role="row" style="display:grid;grid-template-columns:repeat(3,1fr);padding:4px 0;border-bottom:1px solid var(--line2)"><span>{{ r.y }}</span><span style="text-align:right">{{ r.best }}</span><span style="text-align:right">{{ r.end }}</span></div></sc-for>
+                  </div>
+                </details>
+              </figure>
+            </div>
+
+            <figure style="margin:44px 0 0">
+              <figcaption style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;align-items:baseline;margin-bottom:12px">
+                <span style="font-size:16px;font-weight:600">Record by surface and level</span>
+                <span style="font-size:13px;color:var(--ink2)">Darker = higher win % · blank = no matches</span>
+              </figcaption>
+              <div role="table" aria-label="Win percentage by surface and level" style="font-size:14px">
+                <div role="row" style="display:grid;grid-template-columns:minmax(92px,1.3fr) repeat(4,minmax(0,1fr));gap:3px;padding-bottom:6px;border-bottom:1px solid var(--ink)">
+                  <span role="columnheader" style="font-size:12px;color:var(--ink2)">Level</span>
+                  <sc-for list="{{ grid.head }}" as="h" hint-placeholder-count="4"><span role="columnheader" style="font-size:13px;font-weight:600;text-align:center;display:inline-flex;gap:5px;justify-content:center;align-items:center"><span aria-hidden="true" style="font-size:10px;color:{{ h.c }}">{{ h.g }}</span>{{ h.label }}</span></sc-for>
+                </div>
+                <sc-for list="{{ grid.rows }}" as="row" hint-placeholder-count="7">
+                  <div role="row" style="display:grid;grid-template-columns:minmax(92px,1.3fr) repeat(4,minmax(0,1fr));gap:3px;padding:3px 0;font-weight:{{ row.fw }};border-top:{{ row.bt }}">
+                    <span role="rowheader" style="display:flex;align-items:center;font-size:13px">{{ row.label }}</span>
+                    <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="4">
+                      <span role="cell" title="{{ c.title }}" style="min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:2px;background:{{ c.bg }};opacity:{{ c.op }}">
+                        <span style="font-weight:600;font-size:14px">{{ c.pct }}</span><span style="font-size:11px;color:var(--ink2);font-weight:400">{{ c.wl }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </figure>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="topn-h" style="padding:44px 0;border-top:1px solid var(--line)">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:20px">
+            <div><h2 id="topn-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Record against ranked opponents</h2><p style="margin:2px 0 0;color:var(--ink2)">How does he do against the best?</p></div>
+            <span style="font-size:13px;color:var(--ink2)">{{ fsum }}</span>
+          </div>
+          <sc-if value="{{ L.topn }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:110px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ R.topn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:20px 24px">
+              <sc-for list="{{ topn }}" as="t" hint-placeholder-count="5">
+                <div>
+                  <div style="font-size:14px;color:var(--ink2)">{{ t.label }}</div>
+                  <div style="font-size:30px;font-weight:600;letter-spacing:-0.01em">{{ t.pct }}</div>
+                  <div style="height:6px;background:var(--line2);border-radius:1px;margin:4px 0 6px;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ t.w }};background:var(--acc)"></div></div>
+                  <div style="font-size:14px;color:var(--ink2)">{{ t.wl }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="splits-h" style="padding:44px 0;border-top:1px solid var(--line)">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:16px">
+            <div><h2 id="splits-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Splits</h2><p style="margin:2px 0 0;color:var(--ink2)">How does he do in specific situations? Open a row for the matches behind it.</p></div>
+            <span style="font-size:13px;color:var(--ink2)">{{ fsum }}</span>
+          </div>
+          <sc-if value="{{ L.splits }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:520px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ splitsErr }}" hint-placeholder-val="{{ false }}">
+            <div role="alert" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:20px;border:1px solid var(--line);border-radius:4px;background:var(--bg2)">
+              <span style="font-size:15px">Splits didn’t load. Other blocks are unaffected.</span>
+              <button onClick="{{ retrySplits }}" style="min-height:40px;padding:0 16px;border:1px solid var(--ink);border-radius:4px;background:transparent;cursor:pointer;font-weight:600">Retry</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ R.splits }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:0 16px;padding:8px 0;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2)">
+              <span style="flex:1 1 240px"></span>
+              <div style="flex:3 1 330px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 36px;gap:8px"><span style="text-align:right">Career</span><span style="text-align:right">Last 5 years</span><span style="text-align:right">Last 52 weeks</span><span></span></div>
+            </div>
+            <sc-for list="{{ splitGroups }}" as="g" hint-placeholder-count="3">
+              <div style="padding:18px 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)">{{ g.title }}</div>
+              <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                <div style="border-bottom:1px solid var(--line2)">
+                  <div onClick="{{ r.toggle }}" style="display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;padding:8px 0;min-height:52px;cursor:pointer" style-hover="background:var(--bg2)">
+                    <span style="flex:1 1 240px;font-size:15px;font-weight:500">{{ r.label }}</span>
+                    <div style="flex:3 1 330px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 36px;gap:8px;align-items:center">
+                      <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="3">
+                        <span style="text-align:right;display:flex;flex-direction:column;align-items:flex-end" title="{{ c.title }}">
+                          <span style="font-size:16px;font-weight:600;color:{{ c.col }}">{{ c.pct }}</span>
+                          <span style="font-size:12px;color:var(--ink2)">{{ c.wl }}</span>
+                          <sc-if value="{{ c.low }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:var(--ink2);border-bottom:1px dotted var(--ink2)">low sample</span></sc-if>
+                        </span>
+                      </sc-for>
+                      <button onClick="{{ r.toggleBtn }}" aria-expanded="{{ r.open }}" aria-label="{{ r.aria }}" style="width:36px;height:36px;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;color:var(--ink2);font-size:11px">{{ r.chev }}</button>
+                    </div>
+                  </div>
+                  <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:4px 0 16px">
+                      <sc-for list="{{ r.matches }}" as="m" hint-placeholder-count="0">
+                        <dc-import name="MatchRow" m="{{ m }}" phone="{{ cardRows }}" hint-size="100%,48px"></dc-import>
+                      </sc-for>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;padding-top:10px;font-size:14px">
+                        <span style="color:var(--ink2)">{{ r.note }}</span>
+                        <a href="{{ r.lab }}" style="font-weight:600">Open in Lab →</a>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </sc-for>
+            <p style="margin:14px 0 0;font-size:13px;color:var(--ink2)">Low sample = fewer than 10 matches. Walkovers are excluded; retirements count.</p>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="serve-h" style="padding:44px 0;border-top:1px solid var(--line)">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:8px">
+            <div><h2 id="serve-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Serve and return</h2><p style="margin:2px 0 0;color:var(--ink2)">How strong is the serve, and the return, compared with the rest of the tour?</p></div>
+          </div>
+          <sc-if value="{{ L.serve }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:340px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ noStats }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:24px;border:1px solid var(--line);border-radius:4px;background:var(--bg2);margin-top:12px">
+              <p style="margin:0;font-size:16px;font-weight:600">No point statistics for this player’s matches</p>
+              <p style="margin:6px 0 0;font-size:15px;color:var(--ink2);max-width:62ch">Aces, serve points and break points are recorded mainly for tour-level matches from the 1990s onwards. Scores and records above are complete.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ R.serve }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 20px;font-size:14px;color:var(--ink2)"><strong style="color:var(--ink);font-weight:600">{{ statN }}</strong> · figures: {{ fsum }} · percentiles: career vs {{ tourN }}, not filtered</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:28px 56px">
+              <sc-for list="{{ sr }}" as="blk" hint-placeholder-count="2">
+                <div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 92px minmax(56px,1fr) 44px;gap:10px;padding-bottom:6px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2);align-items:end">
+                    <span style="font-size:16px;font-weight:600;color:var(--ink)">{{ blk.title }}</span><span style="text-align:right">Value</span><span>Percentile</span><span></span>
+                  </div>
+                  <sc-for list="{{ blk.rows }}" as="r" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 92px minmax(56px,1fr) 44px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line2);font-size:15px">
+                      <span>{{ r.k }}</span>
+                      <span style="text-align:right;font-weight:600">{{ r.v }}</span>
+                      <span aria-label="{{ r.aria }}" style="position:relative;height:8px;background:var(--line2);border-radius:1px"><span style="position:absolute;left:50%;top:-3px;bottom:-3px;border-left:1px solid var(--ink2);opacity:.5"></span><span style="position:absolute;left:0;top:0;bottom:0;width:{{ r.w }};background:var(--ink)"></span></span>
+                      <span style="font-size:13px;color:var(--ink2);text-align:right">{{ r.p }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+            <p style="margin:14px 0 0;font-size:13px;color:var(--ink2)">Percentile: share of ATP players with enough matches that this figure beats. Tick marks the median. Double-fault rate has no percentile.</p>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <section aria-labelledby="miles-h" style="padding:44px 0;border-top:1px solid var(--line)">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:20px">
+          <div><h2 id="miles-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Milestones</h2><p style="margin:2px 0 0;color:var(--ink2)">When did he first reach each level?</p></div>
+          <span style="font-size:13px;color:var(--ink2)">Career · not filtered</span>
+        </div>
+        <sc-if value="{{ L.miles }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:90px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+        <sc-if value="{{ R.miles }}" hint-placeholder-val="{{ false }}">
+          <ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:18px 20px">
+            <sc-for list="{{ miles }}" as="m" hint-placeholder-count="6">
+              <li style="border-top:2px solid var(--ink);padding-top:10px">
+                <div style="font-size:13px;color:var(--ink2)">{{ m.k }}</div>
+                <div style="font-size:18px;font-weight:600">{{ m.d }}</div>
+                <div style="font-size:14px;color:var(--ink2)">{{ m.e }}</div>
+              </li>
+            </sc-for>
+          </ol>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ notEmpty }}" hint-placeholder-val="{{ true }}">
+        <section aria-labelledby="matches-h" style="padding:44px 0;border-top:1px solid var(--line)">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:14px">
+            <div><h2 id="matches-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0">Recent matches</h2><p style="margin:2px 0 0;color:var(--ink2)">The last 52 weeks, most recent first. Open a row for the match statistics.</p></div>
+            <span style="font-size:13px;color:var(--ink2)">{{ fsum }}</span>
+          </div>
+          <sc-if value="{{ L.matches }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:480px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ R.matches }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ tableRows }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:30px 100px minmax(0,1.1fr) 36px 70px minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,1.3fr) 40px 32px;gap:12px;padding:8px 4px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2)">
+                <span></span><span>Date</span><span>Tournament</span><span>Rd</span><span>Surface</span><span>Winner</span><span>Loser</span><span>Score</span><span style="text-align:right">Time</span><span></span>
+              </div>
+            </sc-if>
+            <sc-for list="{{ matches }}" as="m" hint-placeholder-count="0">
+              <dc-import name="MatchRow" m="{{ m }}" phone="{{ cardRows }}" hint-size="100%,48px"></dc-import>
+            </sc-for>
+            <div style="display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;margin-top:16px">
+              <sc-if value="{{ moreMatches }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ showAll }}" style="min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:15px">{{ moreLabel }}</button>
+              </sc-if>
+              <a href="{{ labAll }}" style="font-weight:600;font-size:15px">All matches in the Lab →</a>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+    </main>
+  </sc-if>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fd=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]} ${y}`};
+const fds=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]}`};
+const SURF={Hard:['var(--hard)','■'],Clay:['var(--clay)','●'],Grass:['var(--grass)','▲'],Carpet:['var(--carpet)','◆']};
+const RND={F:'Final',SF:'Semifinal',QF:'Quarterfinal',R16:'Round of 16',R32:'Round of 32',R64:'Round of 64',R128:'Round of 128',RR:'Round robin'};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const pl=n=>`Player.dc.html?p=${slug(n)}`;
+const pct=(w,t)=>t?`${(w/t*100).toFixed(1)}%`:'—';
+const dur=t=>t==null?'—':`${Math.floor(t/60)}:${String(Math.round(t%60)).padStart(2,'0')}`;
+const rk=r=>r==null?'(—)':`(${Math.round(r)})`;
+const ord=n=>{const r=Math.floor(n),s=(r%100>=11&&r%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[r%10]||'th');return r+s};
+const LV={'All':null,'Tour level':['Grand Slam','Tour Finals','Masters 1000','ATP 250/500','Davis Cup','Olympics'],'Grand Slam':['Grand Slam'],'Masters 1000':['Masters 1000'],'500':['ATP 250/500'],'250':['ATP 250/500'],'Tour Finals':['Tour Finals'],'Olympics':['Olympics'],'Challenger':['Challenger'],'ITF':['ITF']};
+const LVW={'All':'All levels','Tour level':'Tour level','Grand Slam':'Grand Slams','Masters 1000':'Masters 1000s','500':'ATP 500s','250':'ATP 250s','Tour Finals':'Tour Finals','Olympics':'Olympics','Challenger':'Challengers','ITF':'ITF events'};
+const LVL={'All':'All','Tour level':'Tour level (all main-tour events)','Grand Slam':'Grand Slam','Masters 1000':'Masters 1000','500':'500','250':'250','Tour Finals':'Tour Finals','Olympics':'Olympics','Challenger':'Challenger','ITF':'ITF'};
+const Y0=2018,Y1=2026,DEF={surface:'All',level:'All',from:Y0,to:Y1};
+const SPL=[['Opponent',['vs left-handers','vs right-handers','vs top 10','vs top 50','vs younger','vs older','vs compatriots']],['Situation',['after winning 1st set','after losing 1st set','in a deciding set']],['Stage',['in finals','quarterfinal or later']]];
+const fsw=r=>{const[a,b]=r.score.split(' ')[0].replace(/\(.*\)/,'').split('-').map(Number);return r.result==='W'?a>b:a<b};
+const PRED={'vs top 10':r=>r.opponent_rank<=10,'vs top 50':r=>r.opponent_rank<=50,'after winning 1st set':fsw,'after losing 1st set':r=>!fsw(r),'in a deciding set':r=>r.score.split(' ').length===(r.level==='G'?5:3),'in finals':r=>r.round==='F','quarterfinal or later':r=>['QF','SF','F'].includes(r.round)};
+const SQLC={'vs left-handers':"opp_hand = 'L'",'vs right-handers':"opp_hand = 'R'",'vs top 10':'opponent_rank <= 10','vs top 50':'opponent_rank <= 50','vs younger':'opp_age < player_age','vs older':'opp_age > player_age','vs compatriots':'opp_country = player_country','after winning 1st set':'won_first_set','after losing 1st set':'NOT won_first_set','in a deciding set':'went_to_deciding_set',"in finals":"round = 'F'",'quarterfinal or later':"round IN ('QF','SF','F')"};
+const labUrl=c=>'Lab.dc.html?sql='+encodeURIComponent(`SELECT date, tournament, round, opponent_name, result, score\nFROM player_match_view\nWHERE player_name = 'Jannik Sinner'${c?`\n  AND ${c}`:''}\nORDER BY date DESC`);
+const mrow=r=>{const W=r.result==='W',P={aces:r.aces,dfs:r.dfs,pts:r.pts,firsts:r.firsts,fwon:r.fwon,swon:r.swon,saved:r.bp_saved,faced:r.bp_chances},O={aces:r.o_aces,dfs:r.o_dfs,pts:r.o_pts,firsts:r.o_firsts,fwon:r.o_fwon,swon:r.o_swon,saved:r.o_saved,faced:r.o_chances};
+  return{date:fd(r.date),tournament:r.tournament,thref:`Tournament.dc.html?event=${slug(r.tournament)}&year=${r.year}`,round:r.round,roundFull:RND[r.round]||r.round,surface:r.surface,sc:SURF[r.surface][0],sg:SURF[r.surface][1],
+  winner:W?r.player_name:r.opponent_name,wrank:rk(W?r.player_rank:r.opponent_rank),whref:pl(W?r.player_name:r.opponent_name),
+  loser:W?r.opponent_name:r.player_name,lrank:rk(W?r.opponent_rank:r.player_rank),lhref:pl(W?r.opponent_name:r.player_name),
+  score:r.score,time:dur(r.time),result:r.result,stats:r.aces==null?null:{w:W?P:O,l:W?O:P}}};
+
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,d:null,sp:null,R:{},splitsErr:false,f:{...DEF},rankView:'log',open:null,all:false,fo:false,copied:''};
+  componentDidMount(){
+    const q=new URLSearchParams(location.search);this.mode=q.get('state');
+    const f={...DEF};
+    if(['Hard','Clay','Grass','Carpet'].includes(q.get('surface')))f.surface=q.get('surface');
+    if(LV.hasOwnProperty(q.get('level')))f.level=q.get('level');
+    const a=+q.get('from'),b=+q.get('to');if(a>=Y0&&a<=Y1)f.from=a;if(b>=Y0&&b<=Y1)f.to=b;if(f.from>f.to)[f.from,f.to]=[f.to,f.from];
+    this.setState({f});
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    if(this.mode==='loading'||this.mode==='notfound')return;
+    Promise.all([fetch('uploads/design-brief/samples/player.json').then(r=>r.json()),fetch('uploads/design-brief/samples/player-splits.json').then(r=>r.json())]).then(([d,sp])=>{
+      this.setState({d,sp});
+      const T={id:80,form:200,miles:260,topn:300,shape:380,serve:460,splits:560,matches:640};
+      Object.entries(T).forEach(([k,t])=>setTimeout(()=>{if(k==='splits'&&this.mode==='error')this.setState({splitsErr:true});else this.setState(s=>({R:{...s.R,[k]:true}}))},t));
+    });
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR)}
+  setF(p){
+    const f={...this.state.f,...p};if(f.from>f.to)[f.from,f.to]=[f.to,f.from];
+    this.setState({f,open:null});
+    const q=new URLSearchParams(location.search);
+    [['surface','All'],['level','All'],['from',Y0],['to',Y1]].forEach(([k,dv])=>{if(f[k]!==dv)q.set(k,f[k]);else q.delete(k)});
+    const s=q.toString();try{history.replaceState(null,'',location.pathname+(s?'?'+s:''))}catch(e){}
+  }
+  copy(kind){
+    const url=location.href,txt=kind==='cite'?`courtvision, data through 10 Aug 2026, ${url}`:url;
+    try{navigator.clipboard.writeText(txt).catch(()=>{})}catch(e){}
+    this.setState({copied:kind});clearTimeout(this.ct);this.ct=setTimeout(()=>this.setState({copied:''}),1800);
+  }
+  renderVals(){
+    const {d,sp,f,R,w}=this.state,phone=w<760,cardRows=w<1000,mode=this.mode;
+    const loadingAll=mode==='loading';
+    const Lk=['id','form','shape','topn','splits','serve','miles','matches'];
+    const Rv={},Lv={};Lk.forEach(k=>{Rv[k]=!!R[k]&&!!d;Lv[k]=!Rv[k]&&!(k==='splits'&&this.state.splitsErr)});
+    if(mode==='nostats'){Lv.serve=false;Rv.serve=false;}
+    const yrActive=f.from!==Y0||f.to!==Y1,active=(f.surface!=='All')+(f.level!=='All')+yrActive;
+    const yrs=yrActive?`${f.from}–${f.to}`:`Career (${Y0}–${Y1})`;
+    const fsum=[f.surface==='All'?'All surfaces':f.surface,LVW[f.level],yrs].join(' · ');
+    const scopeSL=[f.surface==='All'?'All surfaces':f.surface,LVW[f.level]].join(' · ');
+    let ft=548,fw=425;
+    if(d){
+      const heat=d.surface_heatmap.response,lv=LV[f.level];
+      const sub=heat.filter(h=>(f.surface==='All'||h.surface===f.surface)&&(!lv||lv.includes(h.level_name)));
+      if(f.surface!=='All'||f.level!=='All'){ft=sub.reduce((a,h)=>a+h.total,0);fw=sub.reduce((a,h)=>a+h.wins,0);}
+      if(f.surface==='Clay'&&f.level==='All'&&f.from===2023&&f.to===2026){ft=56;fw=48;}
+      else if(yrActive&&f.surface==='All'&&f.level==='All'){const ys=d.matches.response.by_year.filter(y=>y.year>=f.from&&y.year<=f.to);ft=ys.reduce((a,y)=>a+y.total,0);fw=ys.reduce((a,y)=>a+y.wins,0);}
+    }
+    const empty=!!d&&ft===0;
+    const base={
+      phone,desk:!phone,cardRows,tableRows:!cardRows,notFound:mode==='notfound',found:mode!=='notfound',badSlug:new URLSearchParams(location.search).get('p')||'jannik-sinnr',
+      suggestions:[{n:'Jannik Sinner',sub:'ATP · ITA · 2018–2026 · career high #1'}],
+      L:Lv,R:Rv,f,fsum,scopeSL,active:!!active,filterBtn:active?`Filters (${active})`:'Filters',
+      frec:d?(empty?'No matches':`${fw}–${ft-fw} · ${pct(fw,ft)} · ${ft} matches`):'',
+      filtersOpen:this.state.fo,showControls:!phone||this.state.fo,ctrlGap:phone?'12px':'0px',
+      empty,notEmpty:!empty,emptyWhy:f.surface==='Carpet'?'Sinner has never played a match on carpet.':'Sinner has no matches for this combination.',
+      splitsErr:this.state.splitsErr,noStats:mode==='nostats',splitTop:phone?'70px':'80px',
+      surfOpts:['All','Hard','Clay','Grass','Carpet'].map(s=>{const on=f.surface===s;return{label:s,g:s==='All'?'':SURF[s][1],on,bg:on?'var(--ink)':'transparent',fg:on?'var(--bg)':'var(--ink)',gc:on?'var(--bg)':(SURF[s]||[''])[0],pick:()=>this.setF({surface:s})}}),
+      levelOpts:['All','Tour level','Grand Slam','Masters 1000','500','250','Tour Finals','Olympics','Challenger','ITF'].map(v=>({v,label:LVL[v]})),
+      yearOpts:Array.from({length:Y1-Y0+1},(_,i)=>Y0+i),
+      setLevel:e=>this.setF({level:e.target.value}),setFrom:e=>this.setF({from:+e.target.value}),setTo:e=>this.setF({to:+e.target.value}),
+      reset:()=>this.setF({...DEF}),toggleFilters:()=>this.setState(s=>({fo:!s.fo})),
+      compare:()=>window.dispatchEvent(new CustomEvent('cv-search',{detail:{channel:'header',q:'Jannik Sinner vs '}})),
+      copyLink:()=>this.copy('link'),copyCite:()=>this.copy('cite'),
+      copyLinkLabel:this.state.copied==='link'?'Link copied':'Copy link',copyCiteLabel:this.state.copied==='cite'?'Citation copied':'Copy citation',
+      retrySplits:()=>{this.setState({splitsErr:false});setTimeout(()=>this.setState(s=>({R:{...s.R,splits:true}})),700)},
+      id:{},windows:[],strip:[],topWins:[],upLosses:[],years:[],rankViews:[],rank:{ylabels:[],xlabels:[]},yearEnd:[],grid:{head:[],rows:[]},topn:[],splitGroups:[],sr:[],miles:[],matches:[]
+    };
+    if(!d)return base;
+    const S=d.summary.response,F=d.form.response,M=d.matches.response,RH=d.rank_history.response,MS=d.milestones.response;
+    const cur=RH[RH.length-1],firstNo1=RH.find(r=>r.rank===1);
+    base.id={name:'Jannik Sinner',country:'Italy',age:S.age,born:fd(S.birthdate),hand:S.hand==='R'?'right-handed':'left-handed',height:`${S.height} cm`,
+      pct:pct(S.wins,S.total),wl:`${S.wins}–${S.losses}`,total:S.total,cur:`#${cur.rank}`,curDate:fd(cur.date),high:`#${S.career_high_rank}`,highDate:fd(firstNo1.date),
+      titles:`${S.gs_titles} · ${S.tour_titles} · ${S.challenger_titles} · ${S.itf_titles}`};
+    base.windows=[['Last 10',F.last10],['Last 20',F.last20],['Last 52 weeks',F.last52w]].map(([l,x])=>({label:l,wl:`${x.wins}–${x.losses}`,pct:`${x.win_pct.toFixed(1)}%`}));
+    base.strip=[...M.last20].reverse().map(r=>{const W=r.result==='W';return{r:r.result,title:`${W?'Won':'Lost'} v ${r.opponent_name}, ${r.tournament} ${r.round}, ${fd(r.date)}`,bg:W?'var(--acc)':'transparent',fg:W?'var(--onacc)':'var(--loss)',bd:W?'var(--acc)':'var(--loss)'}});
+    const fr=r=>({date:fds(r.date),opp:r.opponent_name,rank:rk(r.opponent_rank),href:pl(r.opponent_name),event:r.tournament,round:r.round});
+    base.topWins=F.top_wins_recent.map(fr);base.upLosses=F.upset_losses_recent.map(fr);
+    base.years=M.by_year.map(y=>{const inR=y.year>=f.from&&y.year<=f.to;return{yr:phone?`’${String(y.year).slice(2)}`:y.year,pct:`${Math.round(y.win_pct)}%`,h:`${y.win_pct}%`,wl:`${y.wins}–${y.total-y.wins}`,op:inR?1:0.3,aria:`${y.year}: ${y.win_pct}% (${y.wins}–${y.total-y.wins}, ${y.total} matches)`}});
+    const rv=this.state.rankView,t0=Date.parse('2018-01-01'),t1=Date.parse('2026-08-10'),H=200,X=t=>((Date.parse(t)-t0)/(t1-t0)*1000);
+    const Yl=r=>Math.log10(r)/Math.log10(2000)*H,Yt=r=>(r-1)/99*H;
+    let path='',pen=false;
+    RH.forEach(p=>{if(rv==='top'&&p.rank>100){pen=false;return}const y=rv==='top'?Yt(p.rank):Yl(p.rank);path+=`${pen?'L':'M'}${X(p.date).toFixed(1)} ${y.toFixed(1)} `;pen=true;});
+    const yl=rv==='top'?[1,25,50,75,100].map(v=>({label:v===1?'#1':v,top:`${Yt(v)/H*100}%`})):[1,10,100,1000].map(v=>({label:v===1?'#1':v.toLocaleString('en-US'),top:`${Yl(v)/H*100}%`}));
+    const ft100=RH.find(r=>r.rank<=100);
+    base.rank={path,ylabels:yl,dotX:`${X(cur.date)/10}%`,dotY:`${(rv==='top'?Yt(cur.rank):Yl(cur.rank))/H*100}%`,
+      xlabels:Array.from({length:9},(_,i)=>({label:phone?`’${18+i}`:2018+i,left:`${X(`${2018+i}-07-01`)/10}%`})),
+      caption:`First ranking #${RH[0].rank.toLocaleString('en-US')} (${fd(RH[0].date)}) · top 100 on ${fd(ft100.date)} · No. 1 on ${fd(firstNo1.date)} · now #${cur.rank}.${rv==='log'?' Log scale.':' Weeks outside the top 100 are not drawn.'}`};
+    base.rankViews=[['log','All ranks'],['top','Top 100']].map(([k,l])=>({label:l,on:rv===k,bg:rv===k?'var(--ink)':'transparent',fg:rv===k?'var(--bg)':'var(--ink2)',pick:()=>this.setState({rankView:k})}));
+    const ye={};RH.forEach(r=>{const y=r.date.slice(0,4);ye[y]=ye[y]||{best:1e9,end:0};ye[y].best=Math.min(ye[y].best,r.rank);ye[y].end=r.rank});
+    base.yearEnd=Object.entries(ye).map(([y,v])=>({y,best:`#${v.best.toLocaleString('en-US')}`,end:`#${v.end.toLocaleString('en-US')}`}));
+    const heat=d.surface_heatmap.response,SC=['Hard','Clay','Grass'],lvF=LV[f.level];
+    const cell=(wn,t,dim)=>{if(!t)return{pct:'',wl:'',bg:'transparent',op:1,title:'No matches'};const p=wn/t*100;return{pct:`${p.toFixed(1)}%`,wl:`${wn}–${t-wn}`,bg:`color-mix(in oklch, var(--acc) ${Math.max(4,Math.min(42,(p-40)*0.8)).toFixed(0)}%, transparent)`,op:dim?0.3:1,title:`${wn}–${t-wn} · ${p.toFixed(1)}% · ${t} matches${t<10?' (low sample)':''}`}};
+    const LVO=['Grand Slam','Tour Finals','Masters 1000','ATP 250/500','Davis Cup','Challenger','ITF'];
+    base.grid={head:[...SC.map(s=>({label:s,c:SURF[s][0],g:SURF[s][1]})),{label:'All',c:'',g:''}],
+      rows:[...LVO.map(l=>{const bl=M.by_level.find(x=>x.level_name===l);const ldim=lvF&&!lvF.includes(l);return{label:l,fw:400,bt:'0',cells:[...SC.map(s=>{const h=heat.find(x=>x.surface===s&&x.level_name===l);return cell(h?h.wins:0,h?h.total:0,ldim||(f.surface!=='All'&&f.surface!==s))}),cell(bl.wins,bl.total,ldim)]}}),
+        {label:'All levels',fw:600,bt:'1px solid var(--ink)',cells:[...SC.map(s=>{const b=M.by_surface.find(x=>x.surface===s);return cell(b.wins,b.total,f.surface!=='All'&&f.surface!==s)}),cell(S.wins,S.total,false)]}]};
+    const TN=d.top_n_records.response;
+    base.topn=[5,10,20,50,100].map(n=>{const x=TN['top'+n];return{label:`vs top ${n}`,pct:`${x['win%'].toFixed(1)}%`,w:`${x['win%']}%`,wl:x['W-L'].replace('-','–')}});
+    const rec=d.matches.response.recent52w;
+    base.splitGroups=SPL.map(([title,keys])=>({title,rows:keys.map(k=>{const x=sp.splits[k].summary,open=this.state.open===k;
+      const c=(wn,ls,p)=>{const t=wn+ls,low=t<10;return{pct:`${p.toFixed(1)}%`,wl:`${wn}–${ls}`,low,col:low?'var(--ink2)':'var(--ink)',title:`${wn}–${ls} · ${t} matches${low?' · fewer than 10 matches':''}`}};
+      const pr=PRED[k],ms=pr?rec.filter(pr).slice(0,5).map(mrow):[];
+      const tg=()=>this.setState({open:open?null:k});
+      return{label:k[0].toUpperCase()+k.slice(1),open,chev:open?'▲':'▼',aria:`${open?'Hide':'Show'} matches ${k}`,toggle:tg,toggleBtn:e=>{e.stopPropagation();tg()},
+        cells:[c(x.wins,x.losses,x.win_pct),c(x.y5_wins,x.y5_losses,x.y5_win_pct),c(x.w52_wins,x.w52_losses,x.w52_win_pct)],
+        matches:ms,note:pr?(ms.length?`Latest ${ms.length} from the last 52 weeks · ${x.total} career matches in this split`:`None in the last 52 weeks · ${x.total} career matches in this split`):`${x.total} career matches in this split. The full list is in the Lab.`,lab:labUrl(SQLC[k])}})}));
+    const SV=d.serve_stats.response,RT=d.return_stats.response,SP=d.serve_percentiles.response,RP=d.return_percentiles.response;
+    const row=(k,v,p)=>({k,v,w:p==null?'0%':`${p}%`,p:p==null?'—':ord(p),aria:p==null?'No percentile':`${ord(p)} percentile`});
+    base.statN=`${SV.matches_with_stats} of ${S.total} matches have point statistics`;base.tourN=`${SP.tour_size.toLocaleString('en-US')} ATP players`;
+    base.sr=[{title:'Serve',rows:[row('Ace %',`${SV['ace%'].toFixed(1)}%`,SP['ace%']),row('Double-fault %',`${SV['df%'].toFixed(1)}%`,null),row('1st serve in',`${SV['1st_in%'].toFixed(1)}%`,SP['1st_in%']),row('1st serve won',`${SV['1st_win%'].toFixed(1)}%`,SP['1st_win%']),row('2nd serve won',`${SV['2nd_win%'].toFixed(1)}%`,SP['2nd_win%']),row('Break points saved',`${SV['bp_saved%'].toFixed(1)}%`,SP['bp_saved%']),row(`Tiebreaks · ${SV.tb_won}–${SV.tb_lost}`,`${SV['tb_win%'].toFixed(1)}%`,SP['tb_win%'])]},
+      {title:'Return',rows:[row('1st-serve return won',`${RT['1st_return_win%'].toFixed(1)}%`,RP['1st_return_win%']),row('2nd-serve return won',`${RT['2nd_return_win%'].toFixed(1)}%`,RP['2nd_return_win%']),row('Break points converted',`${RT['bp_converted%'].toFixed(1)}%`,RP['bp_converted%'])]}];
+    base.miles=[['First top 100',MS.first_top100,''],['First top 50',MS.first_top50,''],['First top 20',MS.first_top20,''],['First top 10',MS.first_top10,''],['First title',MS.first_title_date,MS.first_title_tournament.replace(/ CH$/,' Challenger')],['First tour-level title',MS.first_tour_title_date,MS.first_tour_title_tournament]].map(([k,dt,e])=>({k,d:fd(dt),e}));
+    const all=rec.map(mrow);
+    base.matches=this.state.all?all:all.slice(0,10);base.moreMatches=!this.state.all&&all.length>10;base.moreLabel=`Show all ${all.length}`;base.showAll=()=>this.setState({all:true});
+    base.labAll=labUrl('');
+    return base;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Records — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Records" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" current="records" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+    <section style="padding:clamp(28px,5vw,48px) 0 20px">
+      <sc-if value="{{ inTable }}" hint-placeholder-val="{{ false }}"><button onClick="{{ back }}" style="border:0;background:transparent;padding:0;min-height:36px;color:var(--acc);cursor:pointer;font-size:14px">← All records</button></sc-if>
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(34px,5vw,52px);letter-spacing:-0.025em;margin:0">{{ h1 }}</h1>
+      <p style="margin:6px 0 0;color:var(--ink2);font-size:17px">{{ sub }}</p>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button onClick="{{ copyLink }}" style="min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:14px">{{ copyLabel }}</button>
+      </div>
+    </section>
+    <div style="margin:0 calc(-1 * clamp(16px,4vw,40px));padding:0 clamp(16px,4vw,40px);position:sticky;top:0;z-index:30">
+      <dc-import name="FilterBar" value="{{ f }}" show-tour="{{ true }}" on-change="{{ setF }}" on-reset="{{ reset }}" summary="{{ fsum }}" detail="{{ fdet }}" active="{{ nActive }}" year-min="{{ 1968 }}" year-max="{{ 2026 }}" hint-size="100%,68px"></dc-import>
+    </div>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:56px 0;text-align:center">
+        <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:26px;margin:0">No leaderboards for {{ fsum }}</h2>
+        <p style="margin:10px auto 20px;max-width:48ch;color:var(--ink2)">The sample data covers ATP · Tour level · 2026. Reset to see those boards.</p>
+        <button onClick="{{ reset }}" style="min-height:44px;padding:0 18px;border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:600">Reset filters</button>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+        <section style="padding:36px 0 8px">
+          <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:26px;margin:0 0 16px">{{ g.title }}</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:20px">
+            <sc-for list="{{ g.boards }}" as="b" hint-placeholder-count="8">
+              <article style="display:flex;flex-direction:column;border:1px solid var(--line);border-radius:4px;background:var(--card);padding:14px 16px 12px">
+                <button onClick="{{ b.open }}" style="all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ink)" aria-label="{{ b.aria }}">
+                  <h3 style="margin:0;font-size:16px;font-weight:700">{{ b.title }}</h3><span style="font-size:13px;color:var(--acc);white-space:nowrap">Full table →</span>
+                </button>
+                <ol style="list-style:none;margin:0;padding:0;min-height:380px">
+                  <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="10">
+                    <li style="display:flex;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line2);font-size:14px;min-height:37px">
+                      <span style="width:18px;flex:none;font-size:12px;color:var(--ink2)">{{ r.i }}</span>
+                      <span style="flex:1;min-width:0"><a href="{{ r.h }}" style="color:var(--ink);font-weight:{{ r.fw }}">{{ r.n }}</a><sc-if value="{{ r.d }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:12px;color:var(--ink2)">{{ r.d }}</span></sc-if></span>
+                      <span style="font-weight:700;white-space:nowrap">{{ r.v }}</span>
+                    </li>
+                  </sc-for>
+                </ol>
+                <p style="margin:8px 0 0;font-size:12px;color:var(--ink2)">{{ b.foot }}</p>
+              </article>
+            </sc-for>
+          </div>
+        </section>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ showTable }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:28px 0">
+        <p style="margin:0 0 12px;font-size:14px;color:var(--ink2)">{{ tableNote }}</p>
+        <sc-if value="{{ tableDesk }}" hint-placeholder-val="{{ true }}">
+          <div style="overflow-x:auto;border:1px solid var(--line);border-radius:4px">
+            <table style="border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums">
+              <thead>
+                <tr>
+                  <th scope="col" style="position:sticky;left:0;background:var(--bg2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2);font-weight:600;min-width:44px">#</th>
+                  <sc-for list="{{ cols }}" as="c" hint-placeholder-count="8">
+                    <th scope="col" aria-sort="{{ c.sort }}" style="text-align:{{ c.align }};padding:0;border-bottom:1px solid var(--ink);background:var(--bg2);position:{{ c.pos }};left:{{ c.left }};z-index:{{ c.z }}">
+                      <button onClick="{{ c.pick }}" style="all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:10px 12px;font-size:12px;font-weight:{{ c.fw }};color:{{ c.col }};white-space:nowrap;text-align:{{ c.align }}">{{ c.label }}{{ c.arrow }}</button>
+                    </th>
+                  </sc-for>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ trows }}" as="r" hint-placeholder-count="10">
+                  <tr>
+                    <td style="position:sticky;left:0;background:var(--card);padding:10px 12px;border-bottom:1px solid var(--line2);color:var(--ink2)">{{ r.i }}</td>
+                    <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="8">
+                      <td style="padding:10px 12px;border-bottom:1px solid var(--line2);text-align:{{ c.align }};font-weight:{{ c.fw }};white-space:nowrap;background:{{ c.bg }};position:{{ c.pos }};left:{{ c.left }}"><sc-if value="{{ c.link }}" hint-placeholder-val="{{ false }}"><a href="{{ c.h }}" style="color:var(--ink);font-weight:600">{{ c.v }}</a></sc-if><sc-if value="{{ c.plain }}" hint-placeholder-val="{{ true }}">{{ c.v }}</sc-if></td>
+                    </sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
+        <sc-if value="{{ tablePhone }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:10px">Sort by
+            <select value="{{ sortKey }}" onChange="{{ pickSort }}" style="flex:1;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)">
+              <sc-for list="{{ sortOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.k }}">{{ o.label }}</option></sc-for>
+            </select>
+          </label>
+          <sc-for list="{{ cards }}" as="r" hint-placeholder-count="10">
+            <div style="padding:12px 0;border-bottom:1px solid var(--line2)">
+              <div style="display:flex;gap:10px;align-items:baseline">
+                <span style="width:22px;font-size:13px;color:var(--ink2)">{{ r.i }}</span>
+                <a href="{{ r.h }}" style="flex:1;color:var(--ink);font-weight:650;font-size:16px">{{ r.n }}</a>
+                <span style="font-size:20px;font-weight:700">{{ r.main }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;margin:8px 0 0 32px;font-size:13px">
+                <sc-for list="{{ r.rest }}" as="x" hint-placeholder-count="6"><div><div style="color:var(--ink2);font-size:11px">{{ x.k }}</div><div style="font-weight:600">{{ x.v }}</div></div></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </sc-if>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;font-size:14px;color:var(--ink2)">
+          <span>{{ pageInfo }}</span>
+          <span style="display:flex;gap:6px"><button disabled="{{ true }}" style="min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:6px;background:transparent;opacity:.4">‹ Previous</button><button disabled="{{ true }}" style="min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:6px;background:transparent;opacity:.4">Next ›</button></span>
+        </div>
+      </section>
+    </sc-if>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fds=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]}`};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const pl=n=>`Player.dc.html?p=${slug(n)}`;
+const P1=v=>`${v.toFixed(1)}%`,N=v=>v.toLocaleString('en-US');
+const CNT='Min. 10 matches',RATE='Min. 20 matches with point data';
+const B=[
+['Winning',[['matches','Most matches','activity','matches',N,CNT],['wins','Most wins','activity','wins',N,CNT],['win_pct','Best win %','activity','win_pct',P1,CNT],['titles','Most titles','activity','titles',N,CNT],['finals','Most finals','activity','finals',N,CNT],['upset_wins','Upset wins','activity','upset_wins',N,'Beat a higher-ranked player · '+CNT],['comebacks','Comebacks from a set down','activity','comebacks',N,CNT],['streak','Longest win streak','streaks','streak_length',N,'Walkovers neither break nor extend a streak']]],
+['On serve',[['aces','Most aces','serve','total_aces',N,RATE],['ace_pct','Ace %','serve','ace_pct',P1,RATE],['first_in_pct','1st serve in %','serve','first_in_pct',P1,RATE],['first_win_pct','1st serve won %','serve','first_win_pct',P1,RATE],['second_win_pct','2nd serve won %','serve','second_win_pct',P1,RATE],['bp_saved_pct','Break points saved %','serve','bp_saved_pct',P1,RATE],['tb_won','Tiebreaks won','activity','tb_won',N,CNT],['tb_played','Tiebreaks played','activity','tb_played',N,CNT]]],
+['On return and margins',[['first_return_win_pct','1st return won %','return','first_return_win_pct',P1,RATE],['second_return_win_pct','2nd return won %','return','second_return_win_pct',P1,RATE],['bp_converted_pct','Break points converted %','return','bp_converted_pct',P1,RATE],['draw','Toughest draw won','draw_strength','avg_opp_rank',v=>v.toFixed(1),'Average rank of opponents beaten on the way to a title · lower is tougher'],['bagels_given','Bagels given','activity','bagels_given',N,'Sets won 6–0 · '+CNT],['bagels_received','Bagels received','activity','bagels_received',N,'Sets lost 0–6 · '+CNT],['breadsticks_given','Breadsticks given','activity','breadsticks_given',N,'Sets won 6–1 · '+CNT],['breadsticks_received','Breadsticks received','activity','breadsticks_received',N,'Sets lost 1–6 · '+CNT]]]];
+const COLS={activity:[['player_name','Player'],['matches','Matches'],['wins','Wins'],['win_pct','Win %'],['finals','Finals'],['titles','Titles'],['tb_played','TB played'],['tb_won','TB won'],['upset_wins','Upset wins'],['comebacks','Comebacks'],['bagels_given','6–0 given'],['bagels_received','0–6 received'],['breadsticks_given','6–1 given'],['breadsticks_received','1–6 received']],
+serve:[['player_name','Player'],['n_matches','Matches'],['total_aces','Aces'],['ace_pct','Ace %'],['first_in_pct','1st in %'],['first_win_pct','1st won %'],['second_win_pct','2nd won %'],['bp_saved_pct','BP saved %']],
+return:[['player_name','Player'],['n_matches','Matches'],['first_return_win_pct','1st return won %'],['second_return_win_pct','2nd return won %'],['bp_converted_pct','BP converted %']],
+streaks:[['player_name','Player'],['streak_length','Streak'],['surface','Surface'],['start_date','From'],['end_date','To']],
+draw_strength:[['player_name','Player'],['tournament','Title'],['year','Year'],['surface','Surface'],['avg_opp_rank','Avg opp. rank'],['matches_won','Wins'],['best_opp_beaten','Best beaten']]};
+const ASC={avg_opp_rank:true};
+const fmtCell=(k,v)=>v==null?'—':/pct/.test(k)?P1(v):/date/.test(k)?fds(v):k==='avg_opp_rank'?v.toFixed(1):typeof v==='number'&&k!=='year'?N(v):v;
+const DEF={tour:'M',surface:'All',level:'Tour level',from:2026,to:2026};
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,d:null,f:{...DEF},board:null,sort:null,dir:-1,copied:false};
+  componentDidMount(){
+    const q=new URLSearchParams(location.search);const f={...DEF};
+    if(q.get('tour')==='F')f.tour='F';const y0=+(q.get('from')||q.get('y0')),y1=+(q.get('to')||q.get('y1'));if(y0>=1968&&y0<=2026)f.from=y0;if(y1>=1968&&y1<=2026)f.to=y1;
+    if(['Hard','Clay','Grass','Carpet'].includes(q.get('surface')))f.surface=q.get('surface');
+    this.setState({f,board:q.get('board'),sort:q.get('sort')});
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    fetch('uploads/design-brief/samples/records.json').then(r=>r.json()).then(d=>this.setState({d}));
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR)}
+  url(){const {f,board,sort}=this.state,q=new URLSearchParams();if(board)q.set('board',board);if(sort)q.set('sort',sort);Object.entries(f).forEach(([k,v])=>{if(v!==DEF[k])q.set(k,v)});const s=q.toString();try{history.replaceState(null,'',location.pathname+(s?'?'+s:''))}catch(e){}}
+  set(p){this.setState(p,()=>this.url())}
+  renderVals(){
+    const {d,f,w,board,copied}=this.state,phone=w<760;
+    const nA=Object.keys(DEF).filter(k=>k!=='tour'&&f[k]!==DEF[k]).length;
+    const fsum=[f.tour==='M'?'ATP':'WTA',f.surface==='All'?'All surfaces':f.surface,f.level,f.from===f.to?`${f.from} season`:`${f.from}–${f.to}`].join(' · ');
+    const empty=f.tour!=='M'||nA>0;
+    const def=B.flatMap(g=>g[1]).find(b=>b[0]===board);
+    const base={f,fsum,fdet:'',nActive:nA,empty,inTable:!!def&&!empty,showGrid:!def&&!empty,showTable:!!def&&!empty,tableDesk:!phone,tablePhone:phone,
+      h1:def?def[1]:'Records',sub:def?`Everyone on the table behind this board, sorted by ${def[1].toLowerCase()}. Click any column to re-sort.`:'Who leads the tour at everything. Each board is a top ten; open one for the full table.',
+      setF:p=>this.set({f:{...f,...p}}),reset:()=>this.set({f:{...DEF}}),back:()=>this.set({board:null,sort:null}),
+      copyLink:()=>{try{navigator.clipboard.writeText(location.href).catch(()=>{})}catch(e){}this.setState({copied:true});setTimeout(()=>this.setState({copied:false}),1600)},copyLabel:copied?'Link copied':'Copy link',
+      groups:[],cols:[],trows:[],cards:[],sortOpts:[],pageInfo:''};
+    if(!d)return base;
+    base.groups=B.map(([title,boards])=>({title,boards:boards.map(([id,t,src,key,fmt,foot])=>{const rows=[...d[src].response].sort((a,b)=>ASC[key]?a[key]-b[key]:b[key]-a[key]).slice(0,10);
+      return{title:t,foot,aria:`${t}: open full table`,open:()=>this.set({board:id,sort:key,dir:ASC[key]?1:-1}),
+        rows:rows.map((r,i)=>({i:i+1,n:r.player_name,h:pl(r.player_name),fw:i===0?700:500,v:fmt(r[key]),d:src==='streaks'?`${r.surface==='All'?'All surfaces':r.surface} · ${fds(r.start_date)}–${fds(r.end_date)}`:src==='draw_strength'?`${r.tournament} ${r.year}`:''}))}})}));
+    if(def){
+      const [id,t,src,key]=def,sk=this.state.sort||key,dir=this.state.dir;
+      const cols=COLS[src];
+      const rows=[...d[src].response].sort((a,b)=>{const x=a[sk],y=b[sk];return (typeof x==='string'?x.localeCompare(y):x-y)*dir});
+      base.cols=cols.map(([k,l],ci)=>({label:l,arrow:k===sk?(dir<0?' ↓':' ↑'):'',sort:k===sk?(dir<0?'descending':'ascending'):'none',align:ci===0?'left':'right',fw:k===sk?700:600,col:k===sk?'var(--ink)':'var(--ink2)',pos:ci===0?'sticky':'static',left:ci===0?'44px':'auto',z:ci===0?2:1,
+        pick:()=>this.set({sort:k,dir:k===sk?-dir:(ASC[k]||typeof rows[0][k]==='string'?1:-1)})}));
+      base.trows=rows.map((r,i)=>({i:i+1,cells:cols.map(([k],ci)=>({v:fmtCell(k,r[k]),align:ci===0?'left':'right',fw:k===sk?700:400,link:ci===0,plain:ci!==0,h:pl(r.player_name),bg:ci===0?'var(--card)':'transparent',pos:ci===0?'sticky':'static',left:ci===0?'44px':'auto'}))}));
+      base.sortKey=sk;base.sortOpts=cols.slice(1).map(([k,l])=>({k,label:l}));base.pickSort=e=>this.set({sort:e.target.value,dir:ASC[e.target.value]?1:-1});
+      base.cards=rows.map((r,i)=>({i:i+1,n:r.player_name,h:pl(r.player_name),main:fmtCell(sk,r[sk]),rest:cols.slice(1).filter(([k])=>k!==sk).slice(0,6).map(([k,l])=>({k:l,v:fmtCell(k,r[k])}))}));
+      base.tableNote=`${fsum} · ${def[5]||''}`;base.pageInfo=`${rows.length} players · page 1 of 1`;
+    }
+    return base;
+  }
+}
+</script>
+</body>
+</html>

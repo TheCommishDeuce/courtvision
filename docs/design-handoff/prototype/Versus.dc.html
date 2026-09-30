@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Sinner vs Alcaraz — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Matchup" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+    <section aria-label="Choose two players" style="padding:clamp(24px,4vw,40px) 0 24px">
+      <p style="margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:600">Matchup</p>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:end">
+        <sc-for list="{{ slots }}" as="s" hint-placeholder-count="2">
+          <div style="grid-column:{{ s.col }};min-width:0">
+            <div style="font-size:12px;color:var(--ink2);margin-bottom:4px">{{ s.label }}</div>
+            <sc-if value="{{ s.editing }}" hint-placeholder-val="{{ false }}">
+              <div style="height:48px;font-size:16px"><dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="{{ s.channel }}" players-only="{{ true }}" tour="M" exclude="{{ s.exclude }}" on-pick="{{ s.onPick }}" auto-focus="{{ true }}" placeholder="Search ATP players" hint-size="100%,48px"></dc-import></div>
+            </sc-if>
+            <sc-if value="{{ s.show }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ s.edit }}" style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:var(--card);cursor:pointer;text-align:left">
+                <span style="font-size:clamp(17px,2.4vw,22px);font-weight:700;letter-spacing:-0.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.name }}</span><span style="font-size:13px;color:var(--acc);flex:none">Change</span>
+              </button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <button onClick="{{ swap }}" aria-label="Swap players" style="grid-column:2;grid-row:1;width:44px;height:48px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer;font-size:18px;color:var(--ink)">⇄</button>
+      </div>
+    </section>
+
+    <sc-if value="{{ noPair }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:12px 0 40px">
+        <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:26px;margin:0 0 12px">Popular rivalries</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">
+          <sc-for list="{{ rivalries }}" as="r" hint-placeholder-count="6">
+            <a href="{{ r.href }}" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink);text-decoration:none" style-hover="border-color:var(--ink2)">
+              <span style="font-size:17px;font-weight:600">{{ r.label }}</span>
+              <span style="font-size:10px;font-weight:600;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);border-radius:3px;color:var(--ink2)">{{ r.tour }}</span>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ hasPair }}" hint-placeholder-val="{{ true }}">
+      <div style="margin:0 calc(-1 * clamp(16px,4vw,40px));padding:0 clamp(16px,4vw,40px);position:sticky;top:0;z-index:30">
+        <dc-import name="FilterBar" value="{{ f }}" on-change="{{ setF }}" on-reset="{{ reset }}" summary="{{ fsum }}" detail="{{ fdet }}" active="{{ nActive }}" year-min="{{ 2018 }}" year-max="{{ 2026 }}" hint-size="100%,68px"></dc-import>
+      </div>
+
+      <sc-if value="{{ never }}" hint-placeholder-val="{{ false }}">
+        <section style="padding:56px 0;text-align:center;border-bottom:1px solid var(--line)">
+          <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0;text-wrap:balance">{{ neverText }}</h2>
+          <p style="margin:10px auto 20px;max-width:46ch;color:var(--ink2)">{{ neverSub }}</p>
+          <sc-if value="{{ nActiveB }}" hint-placeholder-val="{{ false }}"><button onClick="{{ reset }}" style="min-height:44px;padding:0 18px;border:1px solid var(--ink);border-radius:6px;background:var(--ink);color:var(--bg);cursor:pointer;font-weight:600">Clear filters</button></sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ met }}" hint-placeholder-val="{{ true }}">
+        <section aria-label="Head-to-head record" style="padding:40px 0 36px">
+          <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="height:150px;background:var(--skel);border-radius:4px;animation:cvpulse 1.4s ease-in-out infinite"></div></sc-if>
+          <sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(10px,3vw,32px);align-items:end">
+              <div style="text-align:right;min-width:0">
+                <a href="{{ A.href }}" style="display:block;font-size:clamp(18px,3vw,28px);font-weight:{{ A.fw }};color:var(--ink)">{{ A.name }}</a>
+                <sc-if value="{{ A.leads }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--acc)">LEADS</span></sc-if>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:clamp(8px,2vw,20px);font-size:clamp(56px,11vw,120px);font-weight:800;letter-spacing:-0.04em;line-height:.9">
+                <span style="color:{{ A.col }}">{{ A.w }}</span><span style="font-size:.4em;color:var(--ink2);font-weight:400">–</span><span style="color:{{ B.col }}">{{ B.w }}</span>
+              </div>
+              <div style="min-width:0">
+                <a href="{{ B.href }}" style="display:block;font-size:clamp(18px,3vw,28px);font-weight:{{ B.fw }};color:var(--ink)">{{ B.name }}</a>
+                <sc-if value="{{ B.leads }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--acc)">LEADS</span></sc-if>
+              </div>
+            </div>
+            <p style="text-align:center;margin:14px 0 0;font-size:14px;color:var(--ink2)">{{ fsum }} · walkovers excluded</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px 28px;margin-top:28px;padding-top:20px;border-top:1px solid var(--line2)">
+              <sc-for list="{{ facts }}" as="x" hint-placeholder-count="3">
+                <div><div style="font-size:12px;color:var(--ink2)">{{ x.k }}</div><div style="font-size:17px;font-weight:600">{{ x.v }}</div><div style="font-size:14px;color:var(--ink2)">{{ x.d }}</div></div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </section>
+
+        <section aria-labelledby="split-h" style="padding:40px 0;border-top:1px solid var(--line)">
+          <h2 id="split-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">Where they’ve met</h2>
+          <p style="margin:2px 0 20px;color:var(--ink2)">Who wins on each surface and at each level? Combinations where they’ve never met are left out.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:28px 56px">
+            <sc-for list="{{ splits }}" as="g" hint-placeholder-count="2">
+              <div>
+                <div style="display:grid;grid-template-columns:minmax(90px,1fr) 34px minmax(0,2fr) 34px;gap:10px;padding-bottom:6px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2)"><span style="font-size:15px;font-weight:600;color:var(--ink)">{{ g.title }}</span><span style="text-align:right">{{ A.short }}</span><span></span><span>{{ B.short }}</span></div>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:minmax(90px,1fr) 34px minmax(0,2fr) 34px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line2);font-size:15px">
+                    <span style="display:inline-flex;gap:6px;align-items:center"><span aria-hidden="true" style="font-size:10px;color:{{ r.c }}">{{ r.g }}</span>{{ r.label }}</span>
+                    <span style="text-align:right;font-weight:{{ r.afw }}">{{ r.a }}</span>
+                    <span aria-hidden="true" style="display:flex;height:10px;gap:2px"><span style="flex:{{ r.a }};background:var(--ink);border-radius:1px"></span><span style="flex:{{ r.b }};background:var(--acc);border-radius:1px"></span></span>
+                    <span style="font-weight:{{ r.bfw }}">{{ r.b }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section aria-labelledby="mom-h" style="padding:40px 0;border-top:1px solid var(--line)">
+          <h2 id="mom-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">Momentum</h2>
+          <p style="margin:2px 0 20px;color:var(--ink2)">Every meeting in date order: {{ A.short }} wins above the line, {{ B.short }} wins below. Select one to open it.</p>
+          <div style="display:flex;gap:10px">
+            <div aria-hidden="true" style="flex:none;display:flex;flex-direction:column;justify-content:space-between;height:88px;font-size:12px;font-weight:600;text-align:right;width:62px"><span>{{ A.short }}</span><span style="color:var(--acc)">{{ B.short }}</span></div>
+            <ol style="list-style:none;margin:0;padding:0;flex:1;min-width:0;display:grid;grid-template-columns:repeat({{ momN }},minmax(0,1fr));gap:4px">
+              <sc-for list="{{ momentum }}" as="m" hint-placeholder-count="10">
+                <li style="display:flex;flex-direction:column;align-items:stretch">
+                  <a href="{{ m.anchor }}" aria-label="{{ m.aria }}" title="{{ m.aria }}" style="display:grid;grid-template-rows:42px 4px 42px;text-decoration:none">
+                    <span style="border-radius:2px;background:{{ m.topBg }};color:var(--bg);font-size:11px;font-weight:700;display:grid;place-items:center">{{ m.topL }}</span>
+                    <span style="border-top:1px solid var(--ink);margin-top:2px"></span>
+                    <span style="border-radius:2px;background:{{ m.botBg }};color:var(--onacc);font-size:11px;font-weight:700;display:grid;place-items:center">{{ m.botL }}</span>
+                  </a>
+                  <span style="font-size:11px;color:var(--ink2);text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden">{{ m.yr }}</span>
+                </li>
+              </sc-for>
+            </ol>
+          </div>
+        </section>
+
+        <section aria-labelledby="meet-h" style="padding:40px 0;border-top:1px solid var(--line)">
+          <h2 id="meet-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">Every meeting</h2>
+          <p style="margin:2px 0 14px;color:var(--ink2)">Newest first. W / L is from {{ A.short }}’s side. Open a row for both players’ statistics.</p>
+          <sc-if value="{{ tableRows }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:30px 100px minmax(0,1.1fr) 36px 70px minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,1.3fr) 40px 32px;gap:12px;padding:8px 4px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2)">
+              <span></span><span>Date</span><span>Event</span><span>Rd</span><span>Surface</span><span>Winner</span><span>Loser</span><span>Score</span><span style="text-align:right">Time</span><span></span>
+            </div>
+          </sc-if>
+          <sc-for list="{{ matches }}" as="m" hint-placeholder-count="0">
+            <div id="{{ m.id }}"><dc-import name="MatchRow" m="{{ m }}" phone="{{ cardRows }}" hint-size="100%,48px"></dc-import></div>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <section aria-labelledby="car-h" style="padding:40px 0;border-top:1px solid var(--line)">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 20px;margin-bottom:16px">
+          <div><h2 id="car-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">The two careers</h2><p style="margin:2px 0 0;color:var(--ink2)">How do they compare overall? ● marks the better figure.</p></div>
+          <span style="font-size:13px;color:var(--ink2)">Whole career · not filtered</span>
+        </div>
+        <div role="table" aria-label="Career comparison">
+          <div role="row" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,1.2fr) minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--ink);font-weight:700;font-size:15px">
+            <span role="columnheader" style="text-align:right">{{ A.name }}</span><span role="columnheader"></span><span role="columnheader">{{ B.name }}</span>
+          </div>
+          <sc-for list="{{ careers }}" as="r" hint-placeholder-count="10">
+            <div role="row" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,1.2fr) minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:15px;align-items:center">
+              <span role="cell" style="text-align:right;font-weight:{{ r.afw }}">{{ r.am }}{{ r.a }}</span>
+              <span role="rowheader" style="text-align:center;font-size:13px;color:var(--ink2)">{{ r.k }}</span>
+              <span role="cell" style="font-weight:{{ r.bfw }}">{{ r.b }}{{ r.bm }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fd=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]} ${y}`};
+const SURF={Hard:['var(--hard)','■'],Clay:['var(--clay)','●'],Grass:['var(--grass)','▲'],Carpet:['var(--carpet)','◆']};
+const RND={F:'Final',SF:'Semifinal',QF:'Quarterfinal',R16:'Round of 16',R32:'Round of 32'};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const pl=n=>`Player.dc.html?p=${slug(n)}`;
+const title=s=>s.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+const last=n=>n.split(' ').slice(-1)[0];
+const LV={'All':null,'Tour level':['Grand Slam','Tour Finals','Masters 1000','ATP 250/500','Davis Cup','Olympics'],'Grand Slam':['Grand Slam'],'Masters 1000':['Masters 1000'],'500':['ATP 250/500'],'250':['ATP 250/500'],'Tour Finals':['Tour Finals'],'Olympics':['Olympics'],'Challenger':['Challenger'],'ITF':['ITF']};
+const LVW={'All':'All levels','Tour level':'Tour level','Grand Slam':'Grand Slams','Masters 1000':'Masters 1000s','500':'500s','250':'250s','Tour Finals':'Tour Finals','Olympics':'Olympics','Challenger':'Challengers','ITF':'ITF events'};
+const DEF={surface:'All',level:'All',from:2018,to:2026};
+const CAREER={'Jannik Sinner':{top10:[67,37],ace:8.0,f1:75.5,s2:55.1,bps:66.3,r1:32.7,r2:54.1,bpc:42.6},'Carlos Alcaraz':{},'Rafael Nadal':{}};
+const EXTRA={'Rafael Nadal':{total:null,wins:null,losses:null,career_high_rank:1,gs_titles:22}};
+const dur=t=>t==null?'—':`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,d:null,ready:false,f:{...DEF},a:'jannik-sinner',b:'carlos-alcaraz',edit:null};
+  componentDidMount(){
+    const q=new URLSearchParams(location.search);this.mode=q.get('state');
+    const f={...DEF};if(['Hard','Clay','Grass','Carpet'].includes(q.get('surface')))f.surface=q.get('surface');if(LV.hasOwnProperty(q.get('level')))f.level=q.get('level');
+    const y0=+q.get('from'),y1=+q.get('to');if(y0>=2018&&y0<=2026)f.from=y0;if(y1>=2018&&y1<=2026)f.to=y1;
+    this.setState({f,a:q.has('a')?q.get('a'):'jannik-sinner',b:q.has('b')?q.get('b'):'carlos-alcaraz'});
+    if(this.mode==='nopair')this.setState({a:'',b:''});
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    if(this.mode==='loading')return;
+    fetch('uploads/design-brief/samples/versus.json').then(r=>r.json()).then(d=>{this.setState({d});setTimeout(()=>this.setState({ready:true}),250)});
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR)}
+  url(p){const q=new URLSearchParams(location.search);Object.entries(p).forEach(([k,v])=>{if(v===''||v==null||v===DEF[k])q.delete(k);else q.set(k,v)});try{history.replaceState(null,'',location.pathname+'?'+q.toString())}catch(e){}}
+  setF(p){const f={...this.state.f,...p};if(f.from>f.to)[f.from,f.to]=[f.to,f.from];this.setState({f});this.url(f)}
+  renderVals(){
+    const {d,f,w,a,b}=this.state,phone=w<760,cardRows=w<1000;
+    const An=a?title(a):'',Bn=b?title(b):'';
+    const nA=(f.surface!=='All')+(f.level!=='All')+(f.from!==2018||f.to!==2026);
+    const yrs=(f.from!==2018||f.to!==2026)?`${f.from}–${f.to}`:'All years';
+    const fsum=[f.surface==='All'?'All surfaces':f.surface,LVW[f.level],yrs].join(' · ');
+    const mk=(slot,label)=>{const name=slot==='a'?An:Bn,ed=this.state.edit===slot||!name;return{label,name,col:slot==='a'?1:3,editing:ed,show:!ed,channel:'pick'+slot,exclude:slot==='a'?Bn:An,edit:()=>this.setState({edit:slot}),
+      onPick:it=>{this.setState({[slot]:it.slug,edit:null});this.url({[slot]:it.slug})}}};
+    const base={phone,cardRows,tableRows:!cardRows,f,fsum,nActive:nA,nActiveB:nA>0,
+      slots:[mk('a','Player A'),mk('b','Player B · same tour')],
+      swap:()=>{this.setState({a:b,b:a});this.url({a:b,b:a})},
+      setF:p=>this.setF(p),reset:()=>this.setF({...DEF}),
+      noPair:!a||!b,hasPair:!!a&&!!b,loading:!this.state.ready,ready:this.state.ready,
+      rivalries:[['Sinner vs Alcaraz','ATP','jannik-sinner','carlos-alcaraz'],['Sabalenka vs Swiatek','WTA','aryna-sabalenka','iga-swiatek'],['Djokovic vs Nadal','ATP','novak-djokovic','rafael-nadal'],['Federer vs Nadal','ATP','roger-federer','rafael-nadal'],['Evert vs Navratilova','WTA','chris-evert','martina-navratilova'],['Djokovic vs Federer','ATP','novak-djokovic','roger-federer']].map(([label,tour,x,y])=>({label,tour,href:`Versus.dc.html?a=${x}&b=${y}`})),
+      A:{name:An,short:last(An||' '),href:pl(An||'x')},B:{name:Bn,short:last(Bn||' '),href:pl(Bn||'x')},
+      facts:[],splits:[],momentum:[],momN:1,matches:[],careers:[],met:true,never:false};
+    if(!a||!b)return base;
+    const known=d&&An==='Jannik Sinner'&&Bn==='Carlos Alcaraz'||d&&An==='Carlos Alcaraz'&&Bn==='Jannik Sinner';
+    const H=d?d.h2h.response:null;
+    let ms=known?H.matches.filter(m=>(f.surface==='All'||m.surface===f.surface)&&(!LV[f.level]||LV[f.level].includes(m.level_name))&&m.year>=f.from&&m.year<=f.to):[];
+    let wa=0,wb=0;
+    if(known){if(!nA){wa=H.summary.player_a===An?H.summary.wins_a:H.summary.wins_b;wb=H.summary.wins_a+H.summary.wins_b-wa;}
+      else if(f.surface!=='All'&&f.level==='All'&&f.from===2018&&f.to===2026){H.by_surface.filter(x=>x.surface===f.surface).forEach(x=>x.winner_name===An?wa+=x.wins:wb+=x.wins)}
+      else if(f.level!=='All'&&f.surface==='All'&&f.from===2018&&f.to===2026){H.by_level.filter(x=>LV[f.level].includes(x.level_name)).forEach(x=>x.winner_name===An?wa+=x.wins:wb+=x.wins)}
+      else{ms.forEach(m=>m.winner_name===An?wa++:wb++)}}
+    const never=!!d&&wa+wb===0;
+    base.never=never;base.met=!never;
+    base.neverText=nA?`${last(An)} and ${last(Bn)} never met ${f.surface!=='All'?'on '+f.surface.toLowerCase():'under these filters'}.`:`${An} and ${Bn} have never met.`;
+    base.neverSub=nA?'Clear the filters to see every meeting. Their careers are compared below.':'Their careers are compared below.';
+    const Aw=wa>wb,Bw=wb>wa;
+    base.A={...base.A,w:wa,fw:Aw?800:500,leads:Aw,col:Aw?'var(--ink)':'var(--ink2)'};base.B={...base.B,w:wb,fw:Bw?800:500,leads:Bw,col:Bw?'var(--acc)':'var(--ink2)'};
+    if(known&&!never){
+      const all=[...ms].sort((x,y)=>x.date<y.date?1:-1);
+      const first=all[all.length-1],lastM=all[0];let run=0;for(const m of all){if(m.winner_name===lastM.winner_name)run++;else break}
+      base.facts=[{k:'First meeting',v:fd(first.date),d:`${first.tournament} ${first.round} · ${last(first.winner_name)} won`},{k:'Last meeting',v:fd(lastM.date),d:`${lastM.tournament} ${lastM.round} · ${last(lastM.winner_name)} won ${lastM.score}`},{k:'Current run',v:`${last(lastM.winner_name)} has won the last ${run}`,d:run===1?'':`since ${fd(all[run-1].date)}`}];
+      const agg=(key,arr,order,glyph)=>order.filter(k=>arr.some(x=>x[key]===k)).map(k=>{const ra=arr.filter(x=>x[key]===k&&x.winner_name===An).reduce((s,x)=>s+x.wins,0),rb=arr.filter(x=>x[key]===k&&x.winner_name===Bn).reduce((s,x)=>s+x.wins,0);return{label:k,a:ra,b:rb,afw:ra>rb?700:400,bfw:rb>ra?700:400,c:glyph?SURF[k][0]:'',g:glyph?SURF[k][1]:''}});
+      base.splits=[{title:'Surface',rows:agg('surface',H.by_surface,['Hard','Clay','Grass','Carpet'],true)},{title:'Level',rows:agg('level_name',H.by_level,['Grand Slam','Tour Finals','Masters 1000','ATP 250/500','Challenger'],false)}];
+      const chron=[...all].reverse();
+      base.momN=chron.length;
+      base.momentum=chron.map((m,i)=>{const aW=m.winner_name===An;return{anchor:`#m${all.length-1-i}`,aria:`${fd(m.date)}, ${m.tournament} ${m.round}: ${m.winner_name} won ${m.score}`,topBg:aW?'var(--ink)':'transparent',botBg:aW?'transparent':'var(--acc)',topL:aW?(phone?'':m.round):'',botL:aW?'':(phone?'':m.round),yr:phone?`’${String(m.year).slice(2)}`:m.year}});
+      base.matches=all.map((m,i)=>({id:`m${i}`,date:fd(m.date),tournament:m.tournament,thref:`Tournament.dc.html?event=${slug(m.tournament)}&year=${m.year}`,round:m.round,roundFull:RND[m.round]||m.round,surface:m.surface,sc:SURF[m.surface][0],sg:SURF[m.surface][1],
+        winner:m.winner_name,wrank:`(${m.winner_rank})`,whref:pl(m.winner_name),loser:m.loser_name,lrank:`(${m.loser_rank})`,lhref:pl(m.loser_name),score:m.score+(m.is_retirement&&!/RET|W\/O/.test(m.score)?' RET':''),time:dur(m.time),result:m.winner_name===An?'W':'L',
+        stats:m.winner_aces==null?null:{w:{aces:m.winner_aces,dfs:m.winner_dfs,pts:m.winner_pts,firsts:m.winner_firsts,fwon:m.winner_fwon,swon:m.winner_swon,saved:m.winner_saved,faced:m.winner_chances},l:{aces:m.loser_aces,dfs:m.loser_dfs,pts:m.loser_pts,firsts:m.loser_firsts,fwon:m.loser_fwon,swon:m.loser_swon,saved:m.loser_saved,faced:m.loser_chances}}}));
+    }
+    if(d){
+      const sum=n=>n==='Jannik Sinner'?d.player_a_summary.response:n==='Carlos Alcaraz'?d.player_b_summary.response:(EXTRA[n]||{});
+      const SA=sum(An),SB=sum(Bn),CA=CAREER[An]||{},CB=CAREER[Bn]||{};
+      const row=(k,va,vb,fmt,lowBetter)=>{const has=va!=null&&vb!=null,aB=has&&(lowBetter?va<vb:va>vb),bB=has&&(lowBetter?vb<va:vb>va);return{k,a:va==null?'—':fmt(va),b:vb==null?'—':fmt(vb),afw:aB?700:400,bfw:bB?700:400,am:aB?'● ':'',bm:bB?' ●':''}};
+      const p1=v=>`${v.toFixed(1)}%`;
+      const wp=S=>S.total?S.wins/S.total*100:null;
+      base.careers=[
+        {...row('Career record',wp(SA),wp(SB),v=>v.toFixed(1)+'%'),a:SA.total?`${SA.wins}–${SA.losses} · ${wp(SA).toFixed(1)}%`:'—',b:SB.total?`${SB.wins}–${SB.losses} · ${wp(SB).toFixed(1)}%`:'—'},
+        row('Career-high rank',SA.career_high_rank,SB.career_high_rank,v=>`#${v}`,true),
+        row('Grand Slam titles',SA.gs_titles,SB.gs_titles,v=>v),
+        row('Tour titles',SA.tour_titles,SB.tour_titles,v=>v),
+        {...row('vs top 10',CA.top10?CA.top10[0]/(CA.top10[0]+CA.top10[1]):null,CB.top10?CB.top10[0]/(CB.top10[0]+CB.top10[1]):null,v=>v),a:CA.top10?`${CA.top10[0]}–${CA.top10[1]} · ${(CA.top10[0]/(CA.top10[0]+CA.top10[1])*100).toFixed(1)}%`:'—',b:CB.top10?`${CB.top10[0]}–${CB.top10[1]}`:'—'},
+        row('Ace %',CA.ace,CB.ace,p1),row('1st serve won',CA.f1,CB.f1,p1),row('2nd serve won',CA.s2,CB.s2,p1),row('Break points saved',CA.bps,CB.bps,p1),
+        row('1st-serve return won',CA.r1,CB.r1,p1),row('2nd-serve return won',CA.r2,CB.r2,p1),row('Break points converted',CA.bpc,CB.bpc,p1)];
+    }
+    base.fdet=known?`${wa+wb} meeting${wa+wb===1?'':'s'}`:'';
+    return base;
+  }
+}
+</script>
+</body>
+</html>

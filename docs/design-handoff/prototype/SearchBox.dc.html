@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:100%;height:100%">
+  <label style="display:flex;align-items:center;gap:10px;height:100%;padding:0 12px 0 14px;background:var(--card);border:1px solid var(--line);border-radius:6px;cursor:text">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="flex:none;color:var(--ink2)"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><line x1="10.8" y1="10.8" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></line></svg>
+    <input ref="{{ inputRef }}" value="{{ q }}" onChange="{{ onChange }}" onKeyDown="{{ onKeyDown }}" onFocus="{{ onFocus }}" onBlur="{{ onBlur }}" placeholder="{{ placeholder }}" aria-label="Search players and tournaments" role="combobox" aria-expanded="{{ open }}" aria-autocomplete="list" style="flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:var(--ink);font:inherit">
+    <sc-if value="{{ showSlash }}" hint-placeholder-val="{{ true }}">
+      <kbd style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1;padding:4px 7px;border:1px solid var(--line);border-radius:4px;color:var(--ink2)">/</kbd>
+    </sc-if>
+  </label>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div role="listbox" style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:60;background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);max-height:min(70vh,520px);overflow:auto;padding:6px 0;font-size:15px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="0">
+        <div style="padding:10px 14px 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:600">{{ g.title }}</div>
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="0">
+          <a href="{{ it.href }}" role="option" aria-selected="{{ it.active }}" onMouseDown="{{ it.go }}" onMouseEnter="{{ it.hover }}" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:10px 14px;min-height:44px;color:var(--ink);text-decoration:none;background:{{ it.bg }}">
+            <span style="font-weight:{{ it.fw }}">{{ it.label }}</span>
+            <sc-if value="{{ it.tag }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;font-weight:600;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);border-radius:3px;color:var(--ink2)">{{ it.tag }}</span></sc-if>
+            <span style="font-size:13px;color:var(--ink2)">{{ it.sub }}</span>
+          </a>
+        </sc-for>
+      </sc-for>
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px">No player or tournament matches “{{ q }}” — <a href="Lab.dc.html">try asking the Lab</a></div>
+      </sc-if>
+      <sc-if value="{{ emptyHint }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px;color:var(--ink2);font-size:14px">Type a player, a tournament, or two names for a matchup.</div>
+      </sc-if>
+      <div style="display:flex;gap:14px;padding:8px 14px 4px;border-top:1px solid var(--line2);margin-top:6px;font-size:12px;color:var(--ink2)">
+        <span>↑ ↓ move</span><span>Enter open</span><span>Esc close</span>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PLAYERS=[
+{n:'Jannik Sinner',t:'M',c:'ITA',s:'2018–2026',hi:1,m:548},
+{n:'Carlos Alcaraz',t:'M',c:'ESP',s:'2018–2026',hi:1,m:420},
+{n:'Rafael Nadal',t:'M',c:'ESP',s:'2001–2024',hi:1,m:1310},
+{n:'Novak Djokovic',t:'M',c:'SRB',s:'2003–2026',hi:1,m:1390},
+{n:'Alexander Zverev',t:'M',c:'GER',s:'2013–2026',hi:2,m:820},
+{n:'Daniil Medvedev',t:'M',c:'RUS',s:'2015–2026',hi:1,m:640},
+{n:'Casper Ruud',t:'M',c:'NOR',s:'2015–2026',hi:2,m:560},
+{n:'Reilly Opelka',t:'M',c:'USA',s:'2015–2026',hi:17,m:330},
+{n:'Sebastian Korda',t:'M',c:'USA',s:'2018–2026',hi:15,m:350},
+{n:'Juan Manuel Cerundolo',t:'M',c:'ARG',s:'2019–2026',hi:56,m:380},
+{n:'Giovanni Mpetshi Perricard',t:'M',c:'FRA',s:'2019–2026',hi:29,m:240},
+{n:'Iga Swiatek',t:'F',c:'POL',s:'2016–2026',hi:1,m:520},
+{n:'Aryna Sabalenka',t:'F',c:'BLR',s:'2015–2026',hi:1,m:640},
+{n:'Mirra Andreeva',t:'F',c:'RUS',s:'2022–2026',hi:5,m:260},
+{n:'Karolina Pliskova',t:'F',c:'CZE',s:'2008–2026',hi:1,m:900},
+{n:'Elena Rybakina',t:'F',c:'KAZ',s:'2016–2026',hi:2,m:480},
+{n:'Amanda Anisimova',t:'F',c:'USA',s:'2016–2026',hi:9,m:330}];
+const TOURN=[
+{n:'Wimbledon',k:'ATP · WTA · Grand Slam',s:'wimbledon'},
+{n:'Roland Garros',k:'ATP · WTA · Grand Slam',s:'roland-garros'},
+{n:'Australian Open',k:'ATP · WTA · Grand Slam',s:'australian-open'},
+{n:'US Open',k:'ATP · WTA · Grand Slam',s:'us-open'},
+{n:'Rome Masters',k:'ATP · Masters 1000',s:'rome-masters'},
+{n:'Madrid Masters',k:'ATP · Masters 1000',s:'madrid-masters'},
+{n:'Monte Carlo Masters',k:'ATP · Masters 1000',s:'monte-carlo-masters'},
+{n:'Indian Wells',k:'ATP · WTA · Masters 1000',s:'indian-wells'}];
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const slug=s=>norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const last=n=>n.split(' ').slice(-1)[0];
+const words=s=>norm(s).split(/\s+/).filter(Boolean);
+const hit=(name,frag)=>{const w=words(frag);if(!w.length)return false;const toks=norm(name).split(/[\s-]+/);return w.every(x=>toks.some(t=>t.startsWith(x)))};
+const pm=f=>PLAYERS.filter(p=>hit(p.n,f)).sort((a,b)=>(a.hi||9999)-(b.hi||9999)||b.m-a.m);
+const tm=f=>TOURN.filter(t=>hit(t.n,f));
+const pItem=p=>({name:p.n,slug:slug(p.n),tour:p.t,label:p.n,tag:p.t==='M'?'ATP':'WTA',sub:`${p.c} · ${p.s} · career high #${p.hi}`,href:`Player.dc.html?p=${slug(p.n)}`});
+
+class Component extends DCLogic {
+  state={q:'',open:false,active:0};
+  inputRef=React.createRef();
+  componentDidMount(){
+    this.onKey=e=>{if(this.props.slashFocus&&e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){e.preventDefault();this.inputRef.current&&this.inputRef.current.focus();}};
+    this.onEvt=e=>{const d=e.detail||{};if(d.channel===(this.props.channel||'header'))this.fill(d.q);};
+    window.addEventListener('keydown',this.onKey);
+    window.addEventListener('cv-search',this.onEvt);
+    if(this.props.initialQuery)this.fill(this.props.initialQuery);
+    else if(this.props.autoFocus)setTimeout(()=>this.inputRef.current&&this.inputRef.current.focus(),60);
+  }
+  componentWillUnmount(){window.removeEventListener('keydown',this.onKey);window.removeEventListener('cv-search',this.onEvt);}
+  fill(q){this.setState({q,open:true,active:0});setTimeout(()=>{const i=this.inputRef.current;if(i){i.focus();i.setSelectionRange(q.length,q.length);}},40);}
+  recent(){try{return JSON.parse(localStorage.getItem('cv-recent')||'[]')}catch(e){return[]}}
+  compute(){
+    const s=norm(this.state.q).trim();
+    if(!s){const r=this.recent();return r.length?[{title:'Recent searches',items:r}]:[];}
+    const groups=[];
+    if(this.props.playersOnly){const ps=pm(s).filter(p=>(!this.props.tour||p.t===this.props.tour)&&p.n!==this.props.exclude).slice(0,6);return ps.length?[{title:this.props.tour==='F'?'WTA players':'ATP players',items:ps.map(pItem)}]:[];}
+    if(this.props.eventsOnly){const ts=tm(s).slice(0,6);return ts.length?[{title:'Tournaments',items:ts.map(t=>({label:t.n,sub:t.k,href:`Tournament.dc.html?event=${t.s}&year=2025`}))}]:[];}
+    const ym=s.match(/^(.+?)\s+((?:19|20)\d\d)$/);
+    if(ym){const ts=tm(ym[1]);if(ts.length)groups.push({title:'Tournament',items:ts.slice(0,2).map(t=>({label:`${t.n} ${ym[2]}`,sub:t.k,href:`Tournament.dc.html?event=${t.s}&year=${ym[2]}`}))});}
+    let pair=null;
+    const tryPair=(a,b)=>{const A=pm(a),B=pm(b);for(const x of A)for(const y of B)if(x!==y&&x.t===y.t)return[x,y];return null};
+    const vs=s.split(/\s+(?:vs\.?|v\.?|versus)\s+/);
+    if(vs.length===2)pair=tryPair(vs[0],vs[1]);
+    else if(!pm(s).length){const w=s.split(/\s+/);for(let i=1;i<w.length&&!pair;i++)pair=tryPair(w.slice(0,i).join(' '),w.slice(i).join(' '));}
+    if(pair)groups.push({title:'Matchup',items:[{label:`${last(pair[0].n)} vs ${last(pair[1].n)}`,tag:pair[0].t==='M'?'ATP':'WTA',sub:'Head-to-head',href:`Versus.dc.html?a=${slug(pair[0].n)}&b=${slug(pair[1].n)}`}]});
+    const ps=pair||(ym?[]:pm(s.replace(/\s+(vs\.?|v\.?)$/,'')));
+    const atp=ps.filter(p=>p.t==='M').slice(0,5),wta=ps.filter(p=>p.t==='F').slice(0,5);
+    if(atp.length)groups.push({title:'ATP players',items:atp.map(pItem)});
+    if(wta.length)groups.push({title:'WTA players',items:wta.map(pItem)});
+    if(!ym&&!pair){const ts=tm(s).slice(0,4);if(ts.length)groups.push({title:'Tournaments',items:ts.map(t=>({label:t.n,sub:t.k,href:`Tournament.dc.html?event=${t.s}`}))});}
+    return groups;
+  }
+  go(it){
+    const r=this.recent().filter(x=>x.label!==it.label);r.unshift({label:it.label,sub:it.sub,href:it.href,tag:it.tag});
+    try{localStorage.setItem('cv-recent',JSON.stringify(r.slice(0,5)))}catch(e){}
+    this.setState({open:false});
+    if(this.props.onPick){this.setState({q:''});this.props.onPick(it);return;}
+    if(it.href&&it.href!=='#')window.location.href=it.href;
+  }
+  renderVals(){
+    const groups=this.compute();let i=0;const flat=[];
+    const gs=groups.map(g=>({title:g.title,items:g.items.map(it=>{const idx=i++;flat.push(it);const active=idx===this.state.active;return{...it,tag:it.tag||'',active,bg:active?'var(--bg2)':'transparent',fw:g.title==='Matchup'||(g.title==='Tournament')?600:500,
+      go:e=>{e.preventDefault();this.go(it)},hover:()=>this.setState({active:idx})}})}));
+    const q=this.state.q;
+    return {
+      q,inputRef:this.inputRef,open:this.state.open,groups:gs,
+      noResults:!!q.trim()&&!flat.length,emptyHint:!q.trim()&&!flat.length,
+      showSlash:!!this.props.slashFocus&&!q,
+      placeholder:this.props.placeholder||'Search players, tournaments, matchups',
+      onChange:e=>this.setState({q:e.target.value,open:true,active:0}),
+      onFocus:()=>this.setState({open:true}),
+      onBlur:()=>setTimeout(()=>this.setState({open:false}),120),
+      onKeyDown:e=>{
+        if(e.key==='ArrowDown'){e.preventDefault();this.setState({open:true,active:Math.min(this.state.active+1,flat.length-1)});}
+        else if(e.key==='ArrowUp'){e.preventDefault();this.setState({active:Math.max(this.state.active-1,0)});}
+        else if(e.key==='Enter'){if(flat[this.state.active]){e.preventDefault();this.go(flat[this.state.active]);}}
+        else if(e.key==='Escape'){this.setState({open:false});e.target.blur();this.props.onEscape&&this.props.onEscape();}
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

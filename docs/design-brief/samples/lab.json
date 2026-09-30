@@ -1,0 +1,1074 @@
+{
+  "schema": {
+    "request": "GET /api/query/schema",
+    "params": {},
+    "response": {
+      "relations": [
+        {
+          "name": "matches_main",
+          "rows": 1069410,
+          "columns": [
+            {
+              "name": "unique_match_key",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "date",
+              "type": "DATE"
+            },
+            {
+              "name": "tournament",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "surface",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "round",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "score",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "time",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "loser_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "winner_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_aces",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_aces",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_dfs",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_dfs",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_pts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_pts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_firsts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_firsts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_fwon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_fwon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_swon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_swon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_games",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_games",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_saved",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_saved",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_chances",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_chances",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "winner_tb_won",
+              "type": "INTEGER"
+            },
+            {
+              "name": "winner_tb_lost",
+              "type": "INTEGER"
+            },
+            {
+              "name": "loser_tb_won",
+              "type": "INTEGER"
+            },
+            {
+              "name": "loser_tb_lost",
+              "type": "INTEGER"
+            },
+            {
+              "name": "tour",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "year",
+              "type": "INTEGER"
+            },
+            {
+              "name": "num_sets",
+              "type": "INTEGER"
+            },
+            {
+              "name": "is_retirement",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "is_walkover",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "is_complete",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "had_tiebreak",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "is_upset",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "rank_diff",
+              "type": "DOUBLE"
+            }
+          ]
+        },
+        {
+          "name": "player_match_view",
+          "rows": 2127612,
+          "columns": [
+            {
+              "name": "player_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "opponent_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "result",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "player_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "opponent_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "aces",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "dfs",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "fwon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "swon",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "firsts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "pts",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "bp_saved",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "bp_chances",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "tb_won",
+              "type": "INTEGER"
+            },
+            {
+              "name": "tb_lost",
+              "type": "INTEGER"
+            },
+            {
+              "name": "date",
+              "type": "DATE"
+            },
+            {
+              "name": "tournament",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "surface",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "round",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "score",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "time",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "tour",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "year",
+              "type": "INTEGER"
+            },
+            {
+              "name": "is_upset",
+              "type": "BOOLEAN"
+            }
+          ]
+        },
+        {
+          "name": "h2h_view",
+          "rows": 1034674,
+          "columns": [
+            {
+              "name": "player_a",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "player_b",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "winner_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "loser_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "date",
+              "type": "DATE"
+            },
+            {
+              "name": "tournament",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "surface",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "level_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "round",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "score",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "time",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "tour",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "year",
+              "type": "INTEGER"
+            },
+            {
+              "name": "winner_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "loser_rank",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "is_upset",
+              "type": "BOOLEAN"
+            }
+          ]
+        },
+        {
+          "name": "players",
+          "rows": 26585,
+          "columns": [
+            {
+              "name": "player_id",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "tour",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "url_name",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "country",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "birthdate",
+              "type": "DATE"
+            },
+            {
+              "name": "current_rank",
+              "type": "INTEGER"
+            },
+            {
+              "name": "hand",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "height",
+              "type": "DOUBLE"
+            },
+            {
+              "name": "historically_ranked",
+              "type": "BOOLEAN"
+            }
+          ]
+        }
+      ],
+      "limits": {
+        "display_rows": 1000,
+        "csv_rows": 50000,
+        "timeout_seconds": 20
+      }
+    }
+  },
+  "examples": [
+    {
+      "id": "slam-final-comebacks",
+      "question": "Who came back from two sets down to win a Grand Slam final?",
+      "sql": "WITH sets AS (\n  SELECT *, string_split(regexp_replace(score, '\\(\\d+\\)', '', 'g'), ' ') AS s\n  FROM matches_main\n  WHERE level = 'G' AND round = 'F' AND NOT is_walkover\n)\nSELECT date, tournament, winner_name, loser_name, score\nFROM sets\nWHERE len(s) = 5\n  AND TRY_CAST(split_part(s[1], '-', 1) AS INT) < TRY_CAST(split_part(s[1], '-', 2) AS INT)\n  AND TRY_CAST(split_part(s[2], '-', 1) AS INT) < TRY_CAST(split_part(s[2], '-', 2) AS INT)\nORDER BY date DESC",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "winner_name",
+          "loser_name",
+          "score"
+        ],
+        "rows": [
+          [
+            "2025-05-26",
+            "Roland Garros",
+            "Carlos Alcaraz",
+            "Jannik Sinner",
+            "4-6 6-7(4) 6-4 7-6(3) 7-6(2)"
+          ],
+          [
+            "2024-01-15",
+            "Australian Open",
+            "Jannik Sinner",
+            "Daniil Medvedev",
+            "3-6 3-6 6-4 6-4 6-3"
+          ],
+          [
+            "2022-01-17",
+            "Australian Open",
+            "Rafael Nadal",
+            "Daniil Medvedev",
+            "2-6 6-7(5) 6-4 6-4 7-5"
+          ],
+          [
+            "2021-05-31",
+            "Roland Garros",
+            "Novak Djokovic",
+            "Stefanos Tsitsipas",
+            "6-7(6) 2-6 6-3 6-2 6-4"
+          ],
+          [
+            "2020-08-31",
+            "US Open",
+            "Dominic Thiem",
+            "Alexander Zverev",
+            "2-6 4-6 6-4 6-3 7-6(6)"
+          ],
+          [
+            "2004-05-24",
+            "Roland Garros",
+            "Gaston Gaudio",
+            "Guillermo Coria",
+            "0-6 3-6 6-4 6-1 8-6"
+          ],
+          [
+            "1999-05-24",
+            "Roland Garros",
+            "Andre Agassi",
+            "Andrei Medvedev",
+            "1-6 2-6 6-4 6-3 6-4"
+          ],
+          [
+            "1984-05-28",
+            "Roland Garros",
+            "Ivan Lendl",
+            "John McEnroe",
+            "3-6 2-6 6-4 7-5 7-5"
+          ],
+          [
+            "1974-06-03",
+            "Roland Garros",
+            "Bjorn Borg",
+            "Manuel Orantes",
+            "2-6 6-7(4) 6-0 6-1 6-1"
+          ],
+          [
+            "1965-01-22",
+            "Australian Open",
+            "Roy Emerson",
+            "Fred Stolle",
+            "7-9 2-6 6-4 7-5 6-1"
+          ]
+        ],
+        "row_count": 12,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 15
+      }
+    },
+    {
+      "id": "most-tiebreaks",
+      "question": "Which matches had the most tiebreaks?",
+      "sql": "SELECT date, tournament, round, winner_name, loser_name, score,\n       winner_tb_won + winner_tb_lost AS tiebreaks\nFROM matches_main\nWHERE winner_tb_won IS NOT NULL\nORDER BY tiebreaks DESC, date DESC\nLIMIT 50",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "round",
+          "winner_name",
+          "loser_name",
+          "score",
+          "tiebreaks"
+        ],
+        "rows": [
+          [
+            "2026-05-25",
+            "Roland Garros",
+            "R32",
+            "Juan Manuel Cerundolo",
+            "Martin Landaluce",
+            "6-4 6-7(7) 7-6(4) 6-7(4) 7-6(8)",
+            4
+          ],
+          [
+            "2025-06-30",
+            "Wimbledon",
+            "R64",
+            "August Holmgren",
+            "Tomas Machac",
+            "7-6(5) 6-7(8) 6-7(5) 7-5 7-6(5)",
+            4
+          ],
+          [
+            "2025-06-30",
+            "Wimbledon",
+            "R32",
+            "Lorenzo Sonego",
+            "Brandon Nakashima",
+            "6-7(5) 7-6(8) 7-6(2) 3-6 7-6(3)",
+            4
+          ],
+          [
+            "2024-07-01",
+            "Wimbledon",
+            "R128",
+            "Giovanni Mpetshi Perricard",
+            "Sebastian Korda",
+            "7-6(5) 6-7(4) 7-6(6) 6-7(4) 6-3",
+            4
+          ],
+          [
+            "2023-07-03",
+            "Wimbledon",
+            "R128",
+            "Laslo Djere",
+            "Maxime Cressy",
+            "6-7(5) 7-6(3) 7-6(8) 7-6(7)",
+            4
+          ],
+          [
+            "2022-01-17",
+            "Australian Open",
+            "R64",
+            "Felix Auger Aliassime",
+            "Alejandro Davidovich Fokina",
+            "7-6(4) 6-7(4) 7-6(5) 7-6(4)",
+            4
+          ],
+          [
+            "2020-01-20",
+            "Australian Open",
+            "R32",
+            "Nick Kyrgios",
+            "Karen Khachanov",
+            "6-2 7-6(5) 6-7(6) 6-7(7) 7-6(8)",
+            4
+          ],
+          [
+            "2020-01-20",
+            "Australian Open",
+            "R128",
+            "John Isner",
+            "Thiago Monteiro",
+            "6-7(5) 7-6(4) 7-6(7) 7-6(5)",
+            4
+          ],
+          [
+            "2019-01-14",
+            "Australian Open",
+            "R64",
+            "Milos Raonic",
+            "Stan Wawrinka",
+            "6-7(4) 7-6(6) 7-6(11) 7-6(5)",
+            4
+          ],
+          [
+            "2019-01-14",
+            "Australian Open",
+            "R128",
+            "Ivo Karlovic",
+            "Hubert Hurkacz",
+            "6-7(5) 7-6(5) 7-6(3) 7-6(5)",
+            4
+          ]
+        ],
+        "row_count": 50,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 12
+      }
+    },
+    {
+      "id": "teens-beat-no1",
+      "question": "Which teenagers have beaten a world No. 1?",
+      "sql": "SELECT m.date, m.tournament, m.round, m.winner_name,\n       CAST(floor(date_diff('day', p.birthdate, m.date) / 365.25) AS INT) AS age,\n       m.loser_name, m.score\nFROM matches_main m\nJOIN players p ON p.name = m.winner_name AND p.tour = m.tour\nWHERE m.loser_rank = 1 AND NOT m.is_walkover\n  AND date_diff('day', p.birthdate, m.date) < 20 * 365.25\nORDER BY m.date DESC",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "round",
+          "winner_name",
+          "age",
+          "loser_name",
+          "score"
+        ],
+        "rows": [
+          [
+            "2025-03-05",
+            "Indian Wells",
+            "F",
+            "Mirra Andreeva",
+            17,
+            "Aryna Sabalenka",
+            "2-6 6-4 6-3"
+          ],
+          [
+            "2024-01-15",
+            "Australian Open",
+            "R32",
+            "Linda Noskova",
+            19,
+            "Iga Swiatek",
+            "3-6 6-3 6-4"
+          ],
+          [
+            "2023-08-14",
+            "Cincinnati",
+            "SF",
+            "Coco Gauff",
+            19,
+            "Iga Swiatek",
+            "7-6(2) 3-6 6-4"
+          ],
+          [
+            "2022-10-31",
+            "Paris Masters",
+            "QF",
+            "Holger Rune",
+            19,
+            "Carlos Alcaraz",
+            "6-3 6-6 RET"
+          ],
+          [
+            "2022-05-02",
+            "Madrid Masters",
+            "SF",
+            "Carlos Alcaraz",
+            18,
+            "Novak Djokovic",
+            "6-7(5) 7-5 7-6(5)"
+          ],
+          [
+            "2021-05-10",
+            "Rome",
+            "QF",
+            "Coco Gauff",
+            17,
+            "Ashleigh Barty",
+            "4-6 1-2 RET"
+          ],
+          [
+            "2017-01-09",
+            "Sydney",
+            "R16",
+            "Daria Kasatkina",
+            19,
+            "Angelique Kerber",
+            "7-6(5) 6-2"
+          ],
+          [
+            "2015-08-10",
+            "Toronto",
+            "SF",
+            "Belinda Bencic",
+            18,
+            "Serena Williams",
+            "3-6 7-5 6-4"
+          ],
+          [
+            "2014-06-23",
+            "Wimbledon",
+            "R16",
+            "Nick Kyrgios",
+            19,
+            "Rafael Nadal",
+            "7-6(5) 5-7 7-6(5) 6-3"
+          ],
+          [
+            "2011-08-15",
+            "Cincinnati",
+            "R32",
+            "Christina Mchale",
+            19,
+            "Caroline Wozniacki",
+            "6-4 7-5"
+          ]
+        ],
+        "row_count": 89,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 19
+      }
+    },
+    {
+      "id": "slam-upsets",
+      "question": "Who were the lowest-ranked players to beat a top-10 player at a Grand Slam?",
+      "sql": "SELECT date, tournament, round, winner_name, winner_rank, loser_name, loser_rank, score\nFROM matches_main\nWHERE level = 'G' AND round NOT LIKE 'Q%' AND loser_rank <= 10\n  AND is_upset AND NOT is_walkover\nORDER BY rank_diff DESC\nLIMIT 50",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "round",
+          "winner_name",
+          "winner_rank",
+          "loser_name",
+          "loser_rank",
+          "score"
+        ],
+        "rows": [
+          [
+            "2022-08-29",
+            "US Open",
+            "R64",
+            "Serena Williams",
+            605.0,
+            "Anett Kontaveit",
+            2.0,
+            "7-6(4) 2-6 6-2"
+          ],
+          [
+            "1991-06-24",
+            "Wimbledon",
+            "R64",
+            "Nick Brown",
+            591.0,
+            "Goran Ivanisevic",
+            10.0,
+            "4-6 6-3 7-6(3) 6-3"
+          ],
+          [
+            "1986-06-23",
+            "Wimbledon",
+            "R16",
+            "Pat Cash",
+            413.0,
+            "Mats Wilander",
+            2.0,
+            "4-6 7-5 6-4 6-3"
+          ],
+          [
+            "2025-05-26",
+            "Roland Garros",
+            "R16",
+            "Lois Boisson",
+            361.0,
+            "Jessica Pegula",
+            3.0,
+            "3-6 6-4 6-4"
+          ],
+          [
+            "1985-05-27",
+            "Roland Garros",
+            "R64",
+            "Andrei Chesnokov",
+            307.0,
+            "Eliot Teltscher",
+            10.0,
+            "5-7 7-5 6-3 6-4"
+          ],
+          [
+            "1993-05-24",
+            "Roland Garros",
+            "R128",
+            "Stephane Huet",
+            297.0,
+            "Ivan Lendl",
+            7.0,
+            "3-6 7-5 6-0 7-6(2)"
+          ],
+          [
+            "1996-06-24",
+            "Wimbledon",
+            "R128",
+            "Doug Flach",
+            281.0,
+            "Andre Agassi",
+            3.0,
+            "2-6 7-6(1) 6-4 7-6(6)"
+          ],
+          [
+            "1988-05-23",
+            "Roland Garros",
+            "R32",
+            "Conchita Martinez",
+            279.0,
+            "Lori Mcneil",
+            10.0,
+            "1-6 6-3 6-1"
+          ],
+          [
+            "2004-05-24",
+            "Roland Garros",
+            "R128",
+            "Jerome Haehnel",
+            271.0,
+            "Andre Agassi",
+            6.0,
+            "6-4 7-6(4) 6-3"
+          ],
+          [
+            "2011-06-20",
+            "Wimbledon",
+            "R128",
+            "Melinda Czink",
+            262.0,
+            "Samantha Stosur",
+            10.0,
+            "6-3 6-4"
+          ]
+        ],
+        "row_count": 50,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 19
+      }
+    },
+    {
+      "id": "most-aces-match",
+      "question": "Who hit the most aces in a single ATP tour-level match?",
+      "sql": "-- ATP tour level only: lower-tier and some WTA stat lines hold implausible ace counts.\nSELECT date, tournament, round, player_name AS player, aces, opponent_name AS opponent, score\nFROM player_match_view\nWHERE aces IS NOT NULL AND tour = 'M'\n  AND level IN ('G', 'M', 'A', 'F', 'O', 'PM', 'P', 'I', 'T1', 'T2', 'T3', 'T4', 'T5', 'W')\nORDER BY aces DESC\nLIMIT 50",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "round",
+          "player",
+          "aces",
+          "opponent",
+          "score"
+        ],
+        "rows": [
+          [
+            "2010-06-21",
+            "Wimbledon",
+            "R128",
+            "John Isner",
+            113.0,
+            "Nicolas Mahut",
+            "6-4 3-6 6-7(7) 7-6(3) 70-68"
+          ],
+          [
+            "2010-06-21",
+            "Wimbledon",
+            "R128",
+            "Nicolas Mahut",
+            103.0,
+            "John Isner",
+            "6-4 3-6 6-7(7) 7-6(3) 70-68"
+          ],
+          [
+            "2017-01-16",
+            "Australian Open",
+            "R128",
+            "Ivo Karlovic",
+            75.0,
+            "Horacio Zeballos",
+            "6-7(6) 3-6 7-5 6-2 22-20"
+          ],
+          [
+            "2019-01-14",
+            "Australian Open",
+            "R64",
+            "Reilly Opelka",
+            67.0,
+            "Thomas Fabbiano",
+            "6-7(15) 6-2 6-4 3-6 7-6(5)"
+          ],
+          [
+            "2018-07-02",
+            "Wimbledon",
+            "R64",
+            "John Isner",
+            64.0,
+            "Ruben Bemelmans",
+            "6-1 6-4 6-7(6) 6-7(3) 7-5"
+          ],
+          [
+            "2016-08-29",
+            "US Open",
+            "R128",
+            "Ivo Karlovic",
+            61.0,
+            "Yen Hsun Lu",
+            "4-6 7-6(4) 6-7(4) 7-6(5) 7-5"
+          ],
+          [
+            "2018-07-02",
+            "Wimbledon",
+            "R64",
+            "Ivo Karlovic",
+            61.0,
+            "Jan Lennard Struff",
+            "6-7(5) 3-6 7-6(4) 7-6(4) 13-11"
+          ],
+          [
+            "2019-01-14",
+            "Australian Open",
+            "R64",
+            "Ivo Karlovic",
+            59.0,
+            "Kei Nishikori",
+            "6-3 7-6(6) 5-7 5-7 7-6(7)"
+          ],
+          [
+            "2009-05-25",
+            "Roland Garros",
+            "R128",
+            "Ivo Karlovic",
+            55.0,
+            "Lleyton Hewitt",
+            "6-7(1) 6-7(4) 7-6(4) 6-4 6-3"
+          ],
+          [
+            "2022-06-27",
+            "Wimbledon",
+            "R128",
+            "John Isner",
+            54.0,
+            "Enzo Couacaud",
+            "6-7(6) 7-6(3) 4-6 6-3 7-5"
+          ]
+        ],
+        "row_count": 50,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 35
+      }
+    },
+    {
+      "id": "bagel-finals",
+      "question": "Which Grand Slam finals were won with a 6-0 set?",
+      "sql": "SELECT date, tournament, winner_name, loser_name, score\nFROM matches_main\nWHERE level = 'G' AND round = 'F' AND list_contains(string_split(score, ' '), '6-0')\nORDER BY date DESC",
+      "result": {
+        "columns": [
+          "date",
+          "tournament",
+          "winner_name",
+          "loser_name",
+          "score"
+        ],
+        "rows": [
+          [
+            "2025-06-30",
+            "Wimbledon",
+            "Iga Swiatek",
+            "Amanda Anisimova",
+            "6-0 6-0"
+          ],
+          [
+            "2022-05-23",
+            "Roland Garros",
+            "Rafael Nadal",
+            "Casper Ruud",
+            "6-3 6-3 6-0"
+          ],
+          [
+            "2020-09-28",
+            "Roland Garros",
+            "Rafael Nadal",
+            "Novak Djokovic",
+            "6-0 6-2 7-5"
+          ],
+          [
+            "2017-08-28",
+            "US Open",
+            "Sloane Stephens",
+            "Madison Keys",
+            "6-3 6-0"
+          ],
+          [
+            "2017-07-03",
+            "Wimbledon",
+            "Garbine Muguruza",
+            "Venus Williams",
+            "7-5 6-0"
+          ],
+          [
+            "2015-01-19",
+            "Australian Open",
+            "Novak Djokovic",
+            "Andy Murray",
+            "7-6(5) 6-7(4) 6-3 6-0"
+          ],
+          [
+            "2014-06-23",
+            "Wimbledon",
+            "Petra Kvitova",
+            "Eugenie Bouchard",
+            "6-3 6-0"
+          ],
+          [
+            "2014-01-13",
+            "Australian Open",
+            "Na Li",
+            "Dominika Cibulkova",
+            "7-6(3) 6-0"
+          ],
+          [
+            "2012-01-16",
+            "Australian Open",
+            "Victoria Azarenka",
+            "Maria Sharapova",
+            "6-3 6-0"
+          ],
+          [
+            "2009-01-19",
+            "Australian Open",
+            "Serena Williams",
+            "Dinara Safina",
+            "6-0 6-3"
+          ]
+        ],
+        "row_count": 50,
+        "truncated": false,
+        "limit": 1000,
+        "elapsed_ms": 14
+      }
+    }
+  ],
+  "error_example": {
+    "status": 400,
+    "body": {
+      "detail": "Binder Error: Referenced column \"nope\" not found in FROM clause!\nCandidate bindings: \"score\", \"is_upset\", \"num_sets\", \"loser_dfs\", \"loser_pts\"\n\nLINE 2: SELECT nope FROM matches_main\n               ^"
+    }
+  }
+}

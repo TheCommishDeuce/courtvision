@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Wimbledon 2025 — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="Tournament" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" current="tournaments" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);flex:1">
+
+    <sc-if value="{{ browse }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:clamp(32px,6vw,64px) 0 32px">
+        <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(34px,5vw,52px);letter-spacing:-0.025em;margin:0">Tournaments</h1>
+        <p style="margin:6px 0 20px;color:var(--ink2);font-size:17px">Pick an event to see who won, how, and what happened along the way.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <div style="flex:1 1 320px;max-width:640px;height:54px;font-size:17px"><dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="events" events-only="{{ true }}" placeholder="Search tournaments" hint-size="100%,54px"></dc-import></div>
+          <div role="group" aria-label="Tour" style="display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden">
+            <sc-for list="{{ tours }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:52px;padding:0 18px;border:0;cursor:pointer;font-weight:600;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for>
+          </div>
+        </div>
+      </section>
+      <section style="padding:32px 0;border-top:1px solid var(--line)">
+        <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0 0 14px">Latest {{ tourName }} champions</h2>
+        <sc-for list="{{ champs }}" as="r" hint-placeholder-count="6">
+          <a href="{{ r.href }}" style="display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line2);color:var(--ink);text-decoration:none" style-hover="background:var(--bg2)">
+            <span style="flex:1 1 220px;font-size:17px;font-weight:600">{{ r.t }}</span>
+            <span style="flex:2 1 280px;font-size:15px"><strong style="font-weight:650">{{ r.w }}</strong> <span style="color:var(--ink2)">d.</span> {{ r.l }}</span>
+            <span style="font-size:13px;color:var(--ink2);display:inline-flex;gap:10px;align-items:center"><span>{{ r.level }}</span><span style="display:inline-flex;gap:4px;align-items:center"><span aria-hidden="true" style="font-size:10px;color:{{ r.sc }}">{{ r.sg }}</span>{{ r.surface }}</span><span>{{ r.date }}</span></span>
+          </a>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ event }}" hint-placeholder-val="{{ true }}">
+      <section style="padding:clamp(24px,4vw,40px) 0 28px">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center">
+          <a href="Tournament.dc.html" style="font-size:14px">← All tournaments</a>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div role="group" aria-label="Tour" style="display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px">
+              <sc-for list="{{ tours }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="min-height:40px;padding:0 12px;border:0;cursor:pointer;font-weight:600;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for>
+            </div>
+            <div style="display:flex;align-items:center;border:1px solid var(--line);border-radius:6px">
+              <button onClick="{{ prevYear }}" aria-label="{{ prevAria }}" style="width:40px;height:40px;border:0;background:transparent;cursor:pointer;font-size:16px">‹</button>
+              <select value="{{ year }}" onChange="{{ pickYear }}" aria-label="Jump to year" style="height:40px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--card);padding:0 8px;font-weight:600">
+                <sc-for list="{{ years }}" as="y" hint-placeholder-count="0"><option value="{{ y }}">{{ y }}</option></sc-for>
+              </select>
+              <button onClick="{{ nextYear }}" aria-label="{{ nextAria }}" disabled="{{ atLatest }}" style="width:40px;height:40px;border:0;background:transparent;cursor:pointer;font-size:16px;opacity:{{ nextOp }}">›</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:24px;font-size:14px;color:var(--ink2)">
+          <span style="font-size:10px;font-weight:600;letter-spacing:.06em;padding:1px 5px;border:1px solid var(--line);border-radius:3px">{{ tourName }}</span>
+          <span>Grand Slam</span><span style="display:inline-flex;gap:4px;align-items:center"><span aria-hidden="true" style="font-size:10px;color:var(--grass)">▲</span>Grass</span>
+          <sc-if value="{{ hasEdition }}" hint-placeholder-val="{{ true }}"><span>Starts {{ meta.start }} · {{ meta.count }}</span></sc-if>
+        </div>
+        <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(38px,6.5vw,68px);letter-spacing:-0.03em;line-height:1;margin:8px 0 0">{{ tname }} {{ year }}</h1>
+        <sc-if value="{{ hasEdition }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:22px;padding:20px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ink2)">FINAL</div>
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-top:6px">
+              <span style="font-size:clamp(24px,3.6vw,38px);font-weight:800;letter-spacing:-0.02em"><a href="Player.dc.html?p=jannik-sinner" style="color:var(--ink)">{{ fin.w }}</a> <span style="font-weight:400;color:var(--ink2);font-size:.6em">{{ fin.wr }}</span> <span style="font-weight:400;color:var(--ink2)">d.</span> <a href="Player.dc.html?p=carlos-alcaraz" style="color:var(--ink);font-weight:500">{{ fin.l }}</a> <span style="font-weight:400;color:var(--ink2);font-size:.6em">{{ fin.lr }}</span></span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:clamp(16px,2vw,20px)">{{ fin.score }}</span>
+              <span style="font-size:14px;color:var(--ink2)">{{ fin.time }}</span>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ noEdition }}" hint-placeholder-val="{{ false }}">
+        <section style="padding:48px 0;text-align:center">
+          <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">{{ noEdText }}</h2>
+          <p style="margin:10px 0 20px;color:var(--ink2)">{{ noEdSub }}</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <sc-for list="{{ nearest }}" as="n" hint-placeholder-count="2"><button onClick="{{ n.go }}" style="min-height:44px;padding:0 18px;border:1px solid var(--ink);border-radius:6px;background:transparent;cursor:pointer;font-weight:600">{{ n.label }}</button></sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ hasEdition }}" hint-placeholder-val="{{ true }}">
+        <section aria-labelledby="draw-h" style="padding:36px 0">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 20px">
+            <div><h2 id="draw-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">The draw</h2><p style="margin:2px 0 0;color:var(--ink2)">Round by round. {{ champShort }}’s matches are marked ◆.</p></div>
+            <label style="display:inline-flex;align-items:center;gap:8px;font-size:14px;min-height:44px;cursor:pointer"><input type="checkbox" checked="{{ showQ }}" onChange="{{ toggleQ }}" style="width:18px;height:18px;accent-color:var(--acc)"> Show qualifying (112 matches)</label>
+          </div>
+          <div style="margin:16px 0 4px;padding:12px 14px;background:var(--bg2);border-radius:4px;font-size:14px">
+            <span style="font-weight:700">{{ champShort }}’s path</span>
+            <span style="display:inline-flex;flex-wrap:wrap;gap:4px 14px;margin-left:8px">
+              <sc-for list="{{ path }}" as="p" hint-placeholder-count="7"><button onClick="{{ p.go }}" style="border:0;background:transparent;padding:4px 0;cursor:pointer;font-size:14px;color:var(--ink)"><span style="font-family:'IBM Plex Mono',monospace;color:var(--ink2)">{{ p.round }}</span> d. {{ p.opp }}</button></sc-for>
+            </span>
+          </div>
+          <div role="tablist" aria-label="Round" style="display:flex;gap:4px;overflow-x:auto;margin:14px 0 6px;padding-bottom:4px">
+            <sc-for list="{{ rounds }}" as="r" hint-placeholder-count="7">
+              <button role="tab" aria-selected="{{ r.on }}" onClick="{{ r.pick }}" title="{{ r.full }}" style="flex:none;min-height:40px;min-width:48px;padding:0 12px;border:1px solid {{ r.bd }};border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;background:{{ r.bg }};color:{{ r.fg }}">{{ r.round }}</button>
+            </sc-for>
+          </div>
+          <p style="margin:8px 0 6px;font-size:15px;font-weight:600">{{ roundTitle }} <span style="font-weight:400;color:var(--ink2);font-size:14px">· {{ roundCount }}</span></p>
+          <sc-if value="{{ tableRows }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:30px 100px minmax(0,1.1fr) 36px 70px minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,1.3fr) 40px 32px;gap:12px;padding:8px 4px;border-bottom:1px solid var(--ink);font-size:12px;color:var(--ink2)">
+              <span></span><span>Date</span><span>Event</span><span>Rd</span><span>Surface</span><span>Winner</span><span>Loser</span><span>Score</span><span style="text-align:right">Time</span><span></span>
+            </div>
+          </sc-if>
+          <sc-for list="{{ roundMatches }}" as="m" hint-placeholder-count="0">
+            <dc-import name="MatchRow" m="{{ m }}" phone="{{ cardRows }}" hint-size="100%,48px"></dc-import>
+          </sc-for>
+        </section>
+
+        <section aria-labelledby="story-h" style="padding:36px 0;border-top:1px solid var(--line)">
+          <h2 id="story-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">Storylines</h2>
+          <p style="margin:2px 0 20px;color:var(--ink2)">{{ scope }}</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px 40px">
+            <div>
+              <h3 style="margin:0 0 4px;font-size:16px">Biggest upsets</h3>
+              <sc-for list="{{ upsets }}" as="r" hint-placeholder-count="5">
+                <div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2)">
+                  <span style="flex:none;width:52px;font-size:19px;font-weight:700">{{ r.gap }}</span>
+                  <div style="font-size:14px;min-width:0"><div><a href="{{ r.wh }}" style="color:var(--ink);font-weight:650">{{ r.w }}</a> <span style="color:var(--ink2)">({{ r.wr }}) d.</span> <a href="{{ r.lh }}" style="color:var(--ink)">{{ r.l }}</a> <span style="color:var(--ink2)">({{ r.lr }})</span></div><div style="font-size:13px;color:var(--ink2);font-family:'IBM Plex Mono',monospace">{{ r.round }} · {{ r.score }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <div>
+              <h3 style="margin:0 0 4px;font-size:16px">Longest matches <span title="Some recorded durations are implausible; check before quoting." style="font-size:11px;font-weight:600;color:var(--ink2);border-bottom:1px dotted var(--ink2);cursor:help;margin-left:6px">durations can be wrong</span></h3>
+              <sc-for list="{{ longest }}" as="r" hint-placeholder-count="5">
+                <div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2)">
+                  <span style="flex:none;width:52px;font-size:19px;font-weight:700">{{ r.t }}</span>
+                  <div style="font-size:14px;min-width:0"><div><a href="{{ r.wh }}" style="color:var(--ink);font-weight:650">{{ r.w }}</a> <span style="color:var(--ink2)">d.</span> <a href="{{ r.lh }}" style="color:var(--ink)">{{ r.l }}</a></div><div style="font-size:13px;color:var(--ink2);font-family:'IBM Plex Mono',monospace;overflow-wrap:anywhere">{{ r.round }} · {{ r.score }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <div>
+              <h3 style="margin:0 0 4px;font-size:16px">Toughest runs <span style="font-weight:400;font-size:13px;color:var(--ink2)">· avg rank of opponents beaten, lower = tougher</span></h3>
+              <sc-for list="{{ runs }}" as="r" hint-placeholder-count="5">
+                <div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2);align-items:baseline">
+                  <span style="flex:none;width:52px;font-size:19px;font-weight:700">{{ r.avg }}</span>
+                  <div style="font-size:14px;min-width:0"><a href="{{ r.h }}" style="color:var(--ink);font-weight:650">{{ r.n }}</a><div style="font-size:13px;color:var(--ink2)">{{ r.d }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="lead-h" style="padding:36px 0;border-top:1px solid var(--line)">
+          <h2 id="lead-h" style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;margin:0">Stat leaders</h2>
+          <p style="margin:2px 0 20px;color:var(--ink2)">{{ leadScope }}</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:24px 32px">
+            <sc-for list="{{ leaders }}" as="b" hint-placeholder-count="6">
+              <div>
+                <h3 style="margin:0;padding-bottom:6px;border-bottom:1px solid var(--ink);font-size:15px">{{ b.title }}</h3>
+                <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="5">
+                  <div style="display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line2);font-size:14px">
+                    <span style="width:16px;color:var(--ink2);font-size:12px">{{ r.i }}</span>
+                    <a href="{{ r.h }}" style="flex:1;min-width:0;color:var(--ink)">{{ r.n }}</a>
+                    <span style="font-weight:700">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+    </sc-if>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fd=s=>{const[y,m,d]=s.slice(0,10).split('-');return `${+d} ${MON[m-1]} ${y}`};
+const SURF={Hard:['var(--hard)','■'],Clay:['var(--clay)','●'],Grass:['var(--grass)','▲'],Carpet:['var(--carpet)','◆']};
+const RND={F:'Final',SF:'Semifinals',QF:'Quarterfinals',R16:'Round of 16',R32:'Round of 32',R64:'Round of 64',R128:'Round of 128',Q3:'Qualifying round 3',Q2:'Qualifying round 2',Q1:'Qualifying round 1'};
+const FULL={R128:64,R64:32,R32:16,R16:8,QF:4,SF:2,F:1,Q3:16,Q2:32,Q1:64};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const pl=n=>`Player.dc.html?p=${slug(n)}`;
+const dur=t=>t==null?'—':`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+const cln=t=>t.replace(/^(ATP|WTA)\s+/,'').replace(/'S-/,"'s-").replace(/ CH$/,' Challenger');
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,d:null,h:null,tour:'M',year:2025,round:'F',showQ:false,browse:false};
+  componentDidMount(){
+    const q=new URLSearchParams(location.search);
+    this.setState({t:q.get('event')||'',browse:!q.get('event'),year:+q.get('year')||2025,tour:q.get('tour')==='F'?'F':'M'});
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    fetch('uploads/design-brief/samples/tournament.json').then(r=>r.json()).then(d=>this.setState({d}));
+    fetch('uploads/design-brief/samples/home.json').then(r=>r.json()).then(h=>this.setState({h}));
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR)}
+  go(p){const q=new URLSearchParams(location.search);Object.entries(p).forEach(([k,v])=>q.set(k,v));try{history.replaceState(null,'',location.pathname+'?'+q.toString())}catch(e){}}
+  renderVals(){
+    const {d,h,w,tour,year,round,showQ}=this.state,cardRows=w<1000;
+    const years=d?d.years.response.years:[2025];
+    const setYear=y=>{this.setState({year:y,round:'F'});this.go({year:y})};
+    const all=[...years,2020].sort((a,b)=>b-a);
+    const base={cardRows,tableRows:!cardRows,browse:this.state.browse,event:!this.state.browse,tourName:tour==='M'?'ATP':'WTA',year,
+      tours:[['M','ATP'],['F','WTA']].map(([k,l])=>{const on=tour===k;return{label:l,on,bg:on?'var(--ink)':'transparent',fg:on?'var(--bg)':'var(--ink)',pick:()=>{this.setState({tour:k});this.go({tour:k})}}}),
+      years:all,pickYear:e=>setYear(+e.target.value),
+      prevYear:()=>{const i=all.indexOf(year);if(i<all.length-1)setYear(all[i+1])},nextYear:()=>{const i=all.indexOf(year);if(i>0)setYear(all[i-1])},
+      prevAria:'Previous year',nextAria:'Next year',atLatest:year===all[0],nextOp:year===all[0]?0.3:1,
+      champs:[],path:[],rounds:[],roundMatches:[],upsets:[],longest:[],runs:[],leaders:[],nearest:[],meta:{},fin:{},showQ,
+      toggleQ:()=>this.setState(s=>({showQ:!s.showQ,round:s.showQ&&s.round.startsWith('Q')?'R128':s.round}))};
+    if(h){const L=tour==='M'?h.latest_champions_atp.response:h.latest_champions_wta.response;
+      base.champs=L.map(c=>({t:`${cln(c.tournament)} ${c.year}`,w:c.winner_name,l:c.loser_name,level:c.level_name,surface:c.surface,sc:SURF[c.surface][0],sg:SURF[c.surface][1],date:fd(c.date),href:`Tournament.dc.html?event=${slug(cln(c.tournament))}&year=${c.year}&tour=${tour}`}))}
+    const tn=(this.state.t||'wimbledon').split('-').map(x=>x[0].toUpperCase()+x.slice(1)).join(' ');base.tname=tn;const has=year===2025&&(this.state.t||'wimbledon')==='wimbledon';
+    base.hasEdition=has&&!!d;base.noEdition=!has;
+    base.noEdText=year===2020&&tn==='Wimbledon'?'No 2020 edition':`${tn} ${year} isn’t in the sample data`;
+    base.noEdSub=year===2020?'Wimbledon was cancelled in 2020. The nearest editions:':'Only the 2025 recap was captured for this prototype.';
+    base.nearest=(year===2020?[2019,2021]:[2025]).map(y=>({label:`Wimbledon ${y}`,go:()=>{this.setState({t:'wimbledon'});setYear(y);this.go({event:'wimbledon'})}}));
+    if(!d||!has)return base;
+    const R=d.recap.response,M=R.meta;
+    const f=R.matches_by_round[0].matches[0];
+    base.meta={start:fd(M.date),count:`${M.total_matches} matches (127 main draw, 112 qualifying)`};
+    base.fin={w:f.winner_name,wr:`(${f.winner_rank})`,l:f.loser_name,lr:`(${f.loser_rank})`,score:f.score,time:dur(f.time)};
+    const champ=f.winner_name;base.champShort='Sinner';
+    const mrow=(m,rd)=>({date:'',tournament:'Wimbledon',thref:'#',round:rd,roundFull:RND[rd],surface:'Grass',sc:SURF.Grass[0],sg:SURF.Grass[1],winner:(m.winner_name===champ||m.loser_name===champ?'◆ ':'')+m.winner_name,wrank:m.winner_rank?`(${m.winner_rank})`:'(—)',whref:pl(m.winner_name),loser:m.loser_name,lrank:m.loser_rank?`(${m.loser_rank})`:'(—)',lhref:pl(m.loser_name),score:m.score+(m.is_retirement&&!/RET|W\/O/.test(m.score)?' RET':''),time:dur(m.time),result:'',upset:m.is_upset,
+      stats:m.winner_aces==null?null:{w:{aces:m.winner_aces,dfs:m.winner_dfs,pts:m.winner_pts,firsts:m.winner_firsts,fwon:m.winner_fwon,swon:m.winner_swon,saved:m.winner_saved,faced:m.winner_chances},l:{aces:m.loser_aces,dfs:m.loser_dfs,pts:m.loser_pts,firsts:m.loser_firsts,fwon:m.loser_fwon,swon:m.loser_swon,saved:m.loser_saved,faced:m.loser_chances}}});
+    const rs=R.matches_by_round.filter(r=>showQ||!r.round.startsWith('Q'));
+    base.rounds=rs.map(r=>{const on=r.round===round;return{round:r.round,full:RND[r.round],on,bg:on?'var(--ink)':'transparent',fg:on?'var(--bg)':'var(--ink)',bd:on?'var(--ink)':'var(--line)',pick:()=>this.setState({round:r.round})}});
+    const cur=R.matches_by_round.find(r=>r.round===round)||R.matches_by_round[0];
+    base.roundTitle=RND[cur.round];base.roundCount=`${cur.matches.length} of ${FULL[cur.round]} matches in the sample`;
+    base.roundMatches=cur.matches.map(m=>mrow(m,cur.round));
+    const main=R.matches_by_round.filter(r=>!r.round.startsWith('Q'));
+    base.path=[...main].reverse().map(r=>{const m=r.matches.find(x=>x.winner_name===champ);return m?{round:r.round,opp:m.loser_name.split(' ').slice(-1)[0],go:()=>this.setState({round:r.round})}:null}).filter(Boolean);
+    const pool=(showQ?R.matches_by_round:main).flatMap(r=>r.matches.map(m=>({...m,round:r.round})));
+    base.scope=showQ?'Main draw and qualifying':'Main draw only · turn on qualifying above to include it';
+    const ups=showQ?R.biggest_upsets:pool.filter(m=>m.is_upset&&m.winner_rank&&m.loser_rank).map(m=>({...m,rank_diff:m.winner_rank-m.loser_rank})).sort((a,b)=>b.rank_diff-a.rank_diff).slice(0,5);
+    base.upsets=ups.map(u=>({gap:`+${u.rank_diff}`,w:u.winner_name,wr:u.winner_rank,l:u.loser_name,lr:u.loser_rank,round:u.round,score:u.score,wh:pl(u.winner_name),lh:pl(u.loser_name)}));
+    base.longest=R.longest_matches.map(m=>({t:dur(m.time),w:m.winner_name,l:m.loser_name,round:m.round,score:m.score,wh:pl(m.winner_name),lh:pl(m.loser_name)}));
+    base.runs=d.draw_strength.response.filter(r=>r.matches_played>=4).slice(0,5).map(r=>({avg:r.avg_opp_rank.toFixed(1),n:r.player_name,h:pl(r.player_name),d:`${r.matches_played} wins · best beaten #${r.best_opp_rank}`}));
+    if(showQ){const S=R.stats,t=(title,arr,k,fmt)=>({title,rows:arr.map((r,i)=>({i:i+1,n:r.player,h:pl(r.player),v:fmt(r[k])}))});
+      base.leaders=[t('Aces',S.aces,'aces',v=>v),t('Double faults',S.dfs,'dfs',v=>v),t('1st serve won',S.first_serve_won_pct,'first_serve_won_pct',v=>v.toFixed(1)+'%'),t('2nd serve won',S.second_serve_won_pct,'second_serve_won_pct',v=>v.toFixed(1)+'%'),t('Return points won',S.return_win_pct,'return_win_pct',v=>v.toFixed(1)+'%'),t('Break points saved',S.bp_saved,'bp_saved',v=>v)];
+      base.leadScope='Main draw and qualifying · with qualifying included, qualifiers who played three extra rounds top the counting boards';}
+    else{const P={};const add=(n,o)=>{P[n]=P[n]||{n,m:0,aces:0,dfs:0,pts:0,firsts:0,fwon:0,swon:0,saved:0,rpts:0,rwon:0};const p=P[n];p.m++;Object.keys(o).forEach(k=>p[k]+=o[k]||0)};
+      pool.forEach(m=>{if(m.winner_aces==null)return;add(m.winner_name,{aces:m.winner_aces,dfs:m.winner_dfs,pts:m.winner_pts,firsts:m.winner_firsts,fwon:m.winner_fwon,swon:m.winner_swon,saved:m.winner_saved,rpts:m.loser_pts,rwon:m.loser_pts-m.loser_fwon-m.loser_swon});add(m.loser_name,{aces:m.loser_aces,dfs:m.loser_dfs,pts:m.loser_pts,firsts:m.loser_firsts,fwon:m.loser_fwon,swon:m.loser_swon,saved:m.loser_saved,rpts:m.winner_pts,rwon:m.winner_pts-m.winner_fwon-m.winner_swon})});
+      const L=Object.values(P),top=(title,fn,fmt,min)=>({title,rows:L.filter(p=>p.m>=(min||1)).sort((a,b)=>fn(b)-fn(a)).slice(0,5).map((p,i)=>({i:i+1,n:p.n,h:pl(p.n),v:fmt(fn(p))}))});
+      const pc=v=>(v*100).toFixed(1)+'%';
+      base.leaders=[top('Aces',p=>p.aces,v=>v),top('Double faults',p=>p.dfs,v=>v),top('1st serve won',p=>p.fwon/p.firsts,pc,3),top('2nd serve won',p=>p.swon/(p.pts-p.firsts),pc,3),top('Return points won',p=>p.rwon/p.rpts,pc,3),top('Break points saved',p=>p.saved,v=>v)];
+      base.leadScope='Main draw only · percentages need 3+ matches with point data';}
+    return base;
+  }
+}
+</script>
+</body>
+</html>

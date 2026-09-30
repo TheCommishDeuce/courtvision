@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<header style="border-bottom:1px solid var(--line);background:var(--bg);position:relative;z-index:40">
+  <div style="max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px);height:64px;display:flex;align-items:center;gap:clamp(12px,3vw,28px)">
+    <a href="Home.dc.html" aria-label="courtvision home" style="font-family:'Schibsted Grotesk',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.035em;color:var(--ink);text-decoration:none;white-space:nowrap">courtvision</a>
+    <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1;min-width:0;max-width:440px;height:40px;font-size:15px">
+        <dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="header" slash-focus="{{ slash }}" hint-size="100%,40px"></dc-import>
+      </div>
+    </sc-if>
+    <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Main" style="display:flex;gap:2px;margin-left:auto;flex:none">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+          <a href="{{ n.href }}" aria-current="{{ n.cur }}" style="padding:10px 12px;font-size:15px;color:var(--ink);font-weight:{{ n.fw }};text-decoration:{{ n.td }};text-underline-offset:6px;text-decoration-thickness:2px">{{ n.label }}</a>
+        </sc-for>
+      </nav>
+      <div role="group" aria-label="Theme" style="flex:none;display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px">
+        <sc-for list="{{ themes }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.pick }}" aria-pressed="{{ t.on }}" style="border:0;padding:6px 10px;min-height:32px;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-left:auto;display:flex;gap:4px">
+        <button onClick="{{ openSheet }}" aria-label="Search" style="width:44px;height:44px;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;color:var(--ink)">
+          <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><line x1="10.8" y1="10.8" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></line></svg>
+        </button>
+        <button onClick="{{ cycleTheme }}" aria-label="{{ themeAria }}" style="height:44px;padding:0 10px;border:0;background:transparent;cursor:pointer;font-size:13px;color:var(--ink2)">{{ themeLabel }}</button>
+      </div>
+    </sc-if>
+  </div>
+  <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="Main" style="display:flex;border-top:1px solid var(--line2);padding:0 8px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+        <a href="{{ n.href }}" aria-current="{{ n.cur }}" style="flex:1;text-align:center;padding:12px 4px;min-height:44px;font-size:15px;color:var(--ink);font-weight:{{ n.fw }};text-decoration:{{ n.td }};text-underline-offset:6px;text-decoration-thickness:2px">{{ n.label }}</a>
+      </sc-for>
+    </nav>
+  </sc-if>
+  <sc-if value="{{ sheet }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-label="Search" style="position:fixed;inset:0;z-index:100;background:var(--bg);padding:12px 16px;display:flex;flex-direction:column">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1;height:48px;font-size:17px">
+          <dc-import name="SearchBox" style="display:block;width:100%;height:100%" channel="sheet" auto-focus="{{ true }}" initial-query="{{ sheetQuery }}" on-escape="{{ closeSheet }}" hint-size="100%,48px"></dc-import>
+        </div>
+        <button onClick="{{ closeSheet }}" style="height:48px;padding:0 8px;border:0;background:transparent;color:var(--acc);font-size:16px;cursor:pointer">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const NAV=[['records','Records','Records.dc.html'],['tournaments','Tournaments','Tournament.dc.html'],['lab','Lab','Lab.dc.html']];
+class Component extends DCLogic {
+  state={w:typeof window!=='undefined'?window.innerWidth:1280,sheet:false,sheetQuery:'',theme:'system'};
+  componentDidMount(){
+    const p=new URLSearchParams(location.search).get('theme');
+    let t=p||(()=>{try{return localStorage.getItem('cv-theme')}catch(e){return null}})()||'system';
+    this.apply(t,!!p);
+    this.onR=()=>this.setState({w:window.innerWidth});window.addEventListener('resize',this.onR);
+    this.onEvt=e=>{const d=e.detail||{};if(d.channel==='header'&&this.state.w<760)this.setState({sheet:true,sheetQuery:d.q||''});};
+    window.addEventListener('cv-search',this.onEvt);
+    this.onKey=e=>{if(this.state.w<760&&!this.props.noSlash&&e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){e.preventDefault();this.setState({sheet:true,sheetQuery:''});}};
+    window.addEventListener('keydown',this.onKey);
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onR);window.removeEventListener('cv-search',this.onEvt);window.removeEventListener('keydown',this.onKey);}
+  apply(t,fromUrl){
+    const r=document.documentElement;if(t==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
+    if(!fromUrl){try{localStorage.setItem('cv-theme',t)}catch(e){}}
+    this.setState({theme:t});
+  }
+  renderVals(){
+    const phone=this.state.w<760,cur=this.props.current||'';
+    const order=['light','dark','system'],labels={light:'Light',dark:'Dark',system:'Auto'};
+    return {
+      phone,desk:!phone,slash:!this.props.noSlash,sheet:this.state.sheet,sheetQuery:this.state.sheetQuery,
+      nav:NAV.map(([k,l,h])=>({label:l,href:h,cur:k===cur?'page':undefined,fw:k===cur?600:400,td:k===cur?'underline':'none'})),
+      themes:order.map(k=>({label:labels[k],on:this.state.theme===k,bg:this.state.theme===k?'var(--ink)':'transparent',fg:this.state.theme===k?'var(--bg)':'var(--ink2)',pick:()=>this.apply(k)})),
+      themeLabel:labels[this.state.theme],themeAria:`Theme: ${labels[this.state.theme]}. Change theme`,
+      cycleTheme:()=>this.apply(order[(order.indexOf(this.state.theme)+1)%3]),
+      openSheet:()=>this.setState({sheet:true,sheetQuery:''}),
+      closeSheet:()=>this.setState({sheet:false})
+    };
+  }
+}
+</script>
+</body>
+</html>

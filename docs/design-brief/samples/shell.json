@@ -1,0 +1,116 @@
+{
+  "stats": {
+    "request": "GET /api/meta/stats",
+    "params": {},
+    "response": {
+      "total_matches": 1069410,
+      "year_min": 1910,
+      "year_max": 2026,
+      "total_upsets": 299721,
+      "total_tournaments": 17386,
+      "total_players": 38189,
+      "data_through": "2026-08-10",
+      "total_points_played": 49626544
+    }
+  },
+  "players_atp_first_40": {
+    "request": "GET /api/meta/players",
+    "params": {
+      "tour": "M"
+    },
+    "response": {
+      "players": [
+        "A Aguilar",
+        "A Amer",
+        "A Benson",
+        "A Bonet",
+        "A Boss",
+        "A Brogden",
+        "A Caulfield",
+        "A Davis",
+        "A Difrancesco",
+        "A El Ghani",
+        "A Ferguson",
+        "A Fine",
+        "A G Barker",
+        "A Galbraith",
+        "A Hernandez",
+        "A J Gould",
+        "A Jackson",
+        "A James",
+        "A Jammond",
+        "A Laurie Proctor",
+        "A Letherby",
+        "A Luttrell",
+        "A Macdonald",
+        "A March",
+        "A Marquez",
+        "A Mcgrath",
+        "A Newton",
+        "A Noffat",
+        "A Oscroft",
+        "A Ram Kim",
+        "A Robinson",
+        "A S Svensson",
+        "A Simmons",
+        "A Stewart",
+        "A Trenkle",
+        "A Uehara",
+        "A Walker",
+        "A White",
+        "A Whittaker",
+        "AJ Mitha"
+      ]
+    }
+  },
+  "tournaments_atp_first_40": {
+    "request": "GET /api/meta/tournaments",
+    "params": {
+      "tour": "M"
+    },
+    "response": {
+      "tournaments": [
+        "'s-Hertogenbosch",
+        "'s-Hertogenbosch Q",
+        "ATP 's-Hertogenbosch",
+        "ATP Challenger Tour Finals CH",
+        "ATP Stuttgart",
+        "Aachen CH",
+        "Aarhus CH",
+        "Aberavon",
+        "Abidjan 1 CH",
+        "Abidjan 2 CH",
+        "Abidjan Pro",
+        "Acapulco",
+        "Acapulco CH",
+        "Acapulco Q",
+        "Adelaide",
+        "Adelaide 1",
+        "Adelaide 2",
+        "Adelaide CH",
+        "Adelaide Pro",
+        "Adelaide Q",
+        "Adelaide-2",
+        "Adelboden",
+        "Agadir CH",
+        "Agentina F9",
+        "Agri CH",
+        "Aguascalientes CH",
+        "Ahmedabad CH",
+        "Aix En Provence CH",
+        "Aix en Provence",
+        "Aix en Provence CH",
+        "Aix-En-Provence",
+        "Aix-En-Provence CH",
+        "Aix-Les-Baines Pro",
+        "Aix-Les-Bains Pro",
+        "Aix-en-Provence",
+        "Aix-en-Provence CH",
+        "Alamo",
+        "Alamo WCT",
+        "Alassio Pro",
+        "Albany"
+      ]
+    }
+  }
+}

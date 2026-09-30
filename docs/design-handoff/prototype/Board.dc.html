@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>courtvision — screens board</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap">
+<style>body{margin:0;background:oklch(0.9 0.005 80);font-family:'Schibsted Grotesk',system-ui,sans-serif;color:oklch(0.21 0.012 60)}a{color:oklch(0.47 0.16 275)}a:hover{text-decoration:underline}</style>
+</helmet>
+<section data-screen-label="Home" style="padding:64px 64px 32px">
+  <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:44px;margin:0 0 6px">Home</h2>
+  <p style="margin:0 0 28px;font-size:16px;color:oklch(0.45 0.012 60)">Desktop 1280 and phone 390, light and dark. Each frame is the live screen; scroll inside it.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ home }}" as="fr" hint-placeholder-count="4">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:10px">
+        <figcaption style="display:flex;gap:12px;align-items:baseline;font-size:15px"><strong>{{ fr.label }}</strong><a href="{{ fr.src }}" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ fr.src }}</a></figcaption>
+        <iframe src="{{ fr.src }}" title="{{ fr.label }}" style="width:{{ fr.w }};height:{{ fr.h }};border:0;background:#fff;box-shadow:0 1px 0 oklch(0.8 0.01 80),0 20px 50px oklch(0.2 0.02 60 / 0.18)"></iframe>
+      </figure>
+    </sc-for>
+  </div>
+</section>
+<section data-screen-label="Player" style="padding:32px 64px">
+  <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:44px;margin:0 0 6px">Player</h2>
+  <p style="margin:0 0 28px;font-size:16px;color:oklch(0.45 0.012 60)">Jannik Sinner. Filters write to the URL; try Clay + 2023–2026, or Carpet for the empty state.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ player }}" as="fr" hint-placeholder-count="4">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:10px">
+        <figcaption style="display:flex;gap:12px;align-items:baseline;font-size:15px"><strong>{{ fr.label }}</strong><a href="{{ fr.src }}" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ fr.src }}</a></figcaption>
+        <iframe src="{{ fr.src }}" title="{{ fr.label }}" style="width:{{ fr.w }};height:{{ fr.h }};border:0;background:#fff;box-shadow:0 1px 0 oklch(0.8 0.01 80),0 20px 50px oklch(0.2 0.02 60 / 0.18)"></iframe>
+      </figure>
+    </sc-for>
+  </div>
+</section>
+<section data-screen-label="More screens" style="padding:32px 64px">
+  <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:44px;margin:0 0 6px">Matchup · Tournament · Records · Lab</h2>
+  <p style="margin:0 0 28px;font-size:16px;color:oklch(0.45 0.012 60)">Desktop 1280 and phone 390, alternating light and dark.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ more }}" as="fr" hint-placeholder-count="8">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:10px">
+        <figcaption style="display:flex;gap:12px;align-items:baseline;font-size:15px"><strong>{{ fr.label }}</strong><a href="{{ fr.src }}" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ fr.src }}</a></figcaption>
+        <iframe src="{{ fr.src }}" title="{{ fr.label }}" style="width:{{ fr.w }};height:{{ fr.h }};border:0;background:#fff;box-shadow:0 1px 0 oklch(0.8 0.01 80),0 20px 50px oklch(0.2 0.02 60 / 0.18)"></iframe>
+      </figure>
+    </sc-for>
+  </div>
+</section>
+<section data-screen-label="States" style="padding:32px 64px 96px">
+  <h2 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:44px;margin:0 0 6px">States</h2>
+  <p style="margin:0 0 28px;font-size:16px;color:oklch(0.45 0.012 60)">Loading skeletons, a failed block with Retry, empty filters, not found, and a player without point statistics.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ states }}" as="fr" hint-placeholder-count="7">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:10px">
+        <figcaption style="display:flex;gap:12px;align-items:baseline;font-size:15px"><strong>{{ fr.label }}</strong><a href="{{ fr.src }}" target="_blank" style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ fr.src }}</a></figcaption>
+        <iframe src="{{ fr.src }}" title="{{ fr.label }}" style="width:{{ fr.w }};height:{{ fr.h }};border:0;background:#fff;box-shadow:0 1px 0 oklch(0.8 0.01 80),0 20px 50px oklch(0.2 0.02 60 / 0.18)"></iframe>
+      </figure>
+    </sc-for>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const D=(label,src)=>({label,src,w:'1280px',h:'860px'}),P=(label,src)=>({label,src,w:'390px',h:'844px'});
+class Component extends DCLogic {
+  renderVals(){
+    return {
+      more:[D('Matchup · light','Versus.dc.html?theme=light'),P('Matchup · dark','Versus.dc.html?theme=dark'),D('Tournament · dark','Tournament.dc.html?theme=dark&event=wimbledon&year=2025'),P('Tournament · light','Tournament.dc.html?theme=light&event=wimbledon&year=2025'),D('Records · light','Records.dc.html?theme=light'),P('Records full table · dark','Records.dc.html?theme=dark&board=ace_pct'),D('Lab · dark','Lab.dc.html?theme=dark&example=teens-beat-no1'),P('Lab · light','Lab.dc.html?theme=light&example=most-aces-match'),D('About the data','About.dc.html?theme=light')],
+      home:[D('Desktop · light','Home.dc.html?theme=light'),D('Desktop · dark','Home.dc.html?theme=dark'),P('Phone · light','Home.dc.html?theme=light'),P('Phone · dark','Home.dc.html?theme=dark')],
+      player:[D('Desktop · light','Player.dc.html?theme=light'),D('Desktop · dark','Player.dc.html?theme=dark'),P('Phone · light','Player.dc.html?theme=light'),P('Phone · dark','Player.dc.html?theme=dark')],
+      states:[P('Home · loading','Home.dc.html?theme=light&state=loading'),D('Home · block error','Home.dc.html?theme=light&state=error#ups-h'),P('Player · loading','Player.dc.html?theme=dark&state=loading'),D('Player · filters, no matches','Player.dc.html?theme=light&surface=Carpet'),D('Player · filtered (Clay, 2023–2026)','Player.dc.html?theme=dark&surface=Clay&from=2023'),P('Player · not found','Player.dc.html?theme=light&state=notfound&p=jannik-sinnr'),D('Player · Splits failed to load','Player.dc.html?theme=light&state=error'),D('Player · no point statistics','Player.dc.html?theme=dark&state=nostats'),D('Matchup · never met on grass','Versus.dc.html?theme=light&b=rafael-nadal&surface=Grass'),P('Matchup · no pair chosen','Versus.dc.html?theme=light&state=nopair'),P('Matchup · loading','Versus.dc.html?theme=dark&state=loading'),P('Tournaments · no event chosen','Tournament.dc.html?theme=light'),D('Tournament · no 2020 edition','Tournament.dc.html?theme=dark&event=wimbledon&year=2020'),D('Records · no data for filters','Records.dc.html?theme=light&tour=F'),D('Records full table · desktop','Records.dc.html?theme=light&board=wins'),D('Lab · database error','Lab.dc.html?theme=light&state=error'),P('Lab · phone, results','Lab.dc.html?theme=dark&example=slam-upsets')]
+    };
+  }
+}
+</script>
+</body>
+</html>

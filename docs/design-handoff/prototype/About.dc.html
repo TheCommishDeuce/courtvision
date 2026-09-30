@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>About the data — courtvision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:oklch(0.985 0.004 85);--bg2:oklch(0.955 0.006 85);--card:oklch(0.997 0.002 85);--ink:oklch(0.21 0.012 60);--ink2:oklch(0.45 0.012 60);--line:oklch(0.86 0.008 80);--line2:oklch(0.92 0.006 80);--acc:oklch(0.47 0.16 275);--onacc:oklch(0.99 0 0);--loss:oklch(0.5 0.17 28);--hard:oklch(0.5 0.13 245);--clay:oklch(0.54 0.15 42);--grass:oklch(0.5 0.13 145);--carpet:oklch(0.5 0.05 330);--skel:oklch(0.93 0.006 80);--shadow:0 12px 32px oklch(0.2 0.02 60 / 0.12);color-scheme:light}
+:root[data-theme=dark]{--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:oklch(0.175 0.008 60);--bg2:oklch(0.21 0.009 60);--card:oklch(0.205 0.009 60);--ink:oklch(0.94 0.008 80);--ink2:oklch(0.74 0.01 80);--line:oklch(0.34 0.01 70);--line2:oklch(0.27 0.01 70);--acc:oklch(0.76 0.12 275);--onacc:oklch(0.18 0.01 60);--loss:oklch(0.74 0.14 28);--hard:oklch(0.74 0.11 245);--clay:oklch(0.74 0.13 45);--grass:oklch(0.76 0.13 145);--carpet:oklch(0.74 0.05 330);--skel:oklch(0.26 0.01 70);--shadow:0 12px 32px oklch(0 0 0 / 0.5);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+@keyframes cvpulse{0%,100%{opacity:1}50%{opacity:.45}}
+</style>
+</helmet>
+<div data-screen-label="About the data" style="min-height:100vh;display:flex;flex-direction:column">
+  <dc-import name="SiteHeader" hint-size="100%,64px"></dc-import>
+  <main style="width:100%;max-width:820px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(16px,4vw,40px) 0;flex:1">
+    <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:clamp(34px,5vw,52px);letter-spacing:-0.025em;margin:0">About the data</h1>
+    <p style="margin:10px 0 0;font-size:18px;color:var(--ink2)">What the figures cover, what they mean, and where they can mislead.</p>
+
+    <section style="margin-top:40px;padding-top:24px;border-top:2px solid var(--ink)">
+      <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">Coverage</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:16px 24px">
+        <div><div style="font-size:28px;font-weight:700">1,069,410</div><div style="font-size:14px;color:var(--ink2)">matches · ATP 599,831 · WTA 469,579</div></div>
+        <div><div style="font-size:28px;font-weight:700">1910–2026</div><div style="font-size:14px;color:var(--ink2)">dense from the Open era (1968) on</div></div>
+        <div><div style="font-size:28px;font-weight:700">10 Aug 2026</div><div style="font-size:14px;color:var(--ink2)">latest match date in the data</div></div>
+      </div>
+      <p style="margin:18px 0 0;font-size:16px;line-height:1.6">About 38,000 players appear, most of them opponents who played only a few matches. Point statistics (aces, serve points, break points) exist mainly for tour-level matches from the 1990s onwards; older and lower-tier matches often have a score only. Match data comes from Tennis Abstract / Jeff Sackmann.</p>
+    </section>
+
+    <section style="margin-top:40px;padding-top:24px;border-top:1px solid var(--line)">
+      <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">Known caveats</h2>
+      <dl style="margin:0">
+        <div style="padding:14px 0;border-bottom:1px solid var(--line2)"><dt style="font-weight:700">Match durations</dt><dd style="margin:4px 0 0;color:var(--ink2);line-height:1.55">Some are implausible, such as multi-hour straight-sets Challengers. About 19 bad rows sort above Isner–Mahut, so every “longest” list carries a caveat.</dd></div>
+        <div style="padding:14px 0;border-bottom:1px solid var(--line2)"><dt style="font-weight:700">Missing ranks</dt><dd style="margin:4px 0 0;color:var(--ink2);line-height:1.55">Many older and lower-tier matches have no rank. Unranked is shown as —, never 0, and affects upsets, rank gaps and records against the top N.</dd></div>
+        <div style="padding:14px 0;border-bottom:1px solid var(--line2)"><dt style="font-weight:700">Implausible ace counts</dt><dd style="margin:4px 0 0;color:var(--ink2);line-height:1.55">Some lower-tier and WTA stat lines hold impossible ace totals. Single-match ace lists are limited to ATP tour level.</dd></div>
+        <div style="padding:14px 0;border-bottom:1px solid var(--line2)"><dt style="font-weight:700">Qualifying mixed into events</dt><dd style="margin:4px 0 0;color:var(--ink2);line-height:1.55">Tournament pages default to the main draw; qualifying is behind a toggle.</dd></div>
+        <div style="padding:14px 0;border-bottom:1px solid var(--line2)"><dt style="font-weight:700">Thin samples</dt><dd style="margin:4px 0 0;color:var(--ink2);line-height:1.55">Leaderboards need at least 10 matches (counting boards) or 20 matches with point data (rate boards). Any record under 10 matches is marked “low sample”.</dd></div>
+      </dl>
+    </section>
+
+    <section style="margin-top:40px;padding-top:24px;border-top:1px solid var(--line)">
+      <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">Terms</h2>
+      <dl style="margin:0;display:grid;grid-template-columns:minmax(120px,180px) minmax(0,1fr);gap:0 20px">
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Tour level</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">Every main-tour event. Excludes Challenger and ITF.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Rank</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">The official ranking at the time of the match. Lower is better.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Upset</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">The winner was ranked lower than the loser. Only defined when both ranks are known.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Retirement / walkover</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">Retirements (RET) count in records. Walkovers (W/O) were never played and are excluded.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Deciding set</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">The 3rd set in best-of-3, the 5th in best-of-5.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Draw strength</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">Average rank of the opponents a player beat at one event. Lower is tougher.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Percentile vs tour</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">Where a career figure ranks among players on the same tour with enough matches (about 2,500 ATP). 99 = better than 99%.</dd>
+        <dt style="padding:10px 0;border-bottom:1px solid var(--line2);font-weight:600">Serve and return figures</dt><dd style="margin:0;padding:10px 0;border-bottom:1px solid var(--line2);color:var(--ink2)">Computed only over matches with point statistics; that match count is shown next to them.</dd>
+      </dl>
+    </section>
+  </main>
+  <dc-import name="SiteFooter" hint-size="100%,120px"></dc-import>
+</div>
+</x-dc>
+</body>
+</html>
