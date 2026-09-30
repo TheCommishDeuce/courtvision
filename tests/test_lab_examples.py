@@ -1,6 +1,6 @@
 """Every Lab example question must run through the real query path.
 
-The examples live in frontend/src/next/lab/examples.sql and are shown on Home
+The examples live in frontend/src/lab/examples.sql and are shown on Home
 ("Try asking") and in the Lab. They are hand-written SQL over the exposed
 relations, so a schema change could break one silently; this runs each one,
 exactly as the Lab would, against the real schema.
@@ -15,7 +15,7 @@ import pytest
 
 from api.routers import query as q
 
-EXAMPLES = Path("frontend/src/next/lab/examples.sql").read_text()
+EXAMPLES = Path("frontend/src/lab/examples.sql").read_text()
 
 
 def _examples() -> list[tuple[str, str]]:

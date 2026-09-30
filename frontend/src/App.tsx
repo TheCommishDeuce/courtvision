@@ -1,97 +1,64 @@
-import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
-import Navbar from './components/primitives/Navbar';
-import ErrorBoundary from './components/primitives/ErrorBoundary';
-import Spinner from './components/primitives/Spinner';
-import { useMetaStats } from './hooks';
+/** courtvision v1 shell and routes (BUILD.md › Routes). */
+import { lazy, Suspense, useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import SiteFooter from './components/SiteFooter';
+import SiteHeader from './components/SiteHeader';
+import { SkeletonRows } from './components/States';
+import { legacyRedirect } from './lib/legacy';
+import NotFoundPage from './pages/NotFoundPage';
 
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
-const VersusPage = lazy(() => import('./pages/VersusPage'));
-const PlayerPage = lazy(() => import('./pages/PlayerPage'));
-const TournamentPage = lazy(() => import('./pages/TournamentPage'));
-const SearchPage = lazy(() => import('./pages/SearchPage'));
-const RecordsPage = lazy(() => import('./pages/RecordsPage'));
-/** Unlisted design-system specimen — see pages/SpecimenPage.tsx. */
-const SpecimenPage = lazy(() => import('./pages/SpecimenPage'));
+const PlayerPage = lazy(() => import('./pages/player/PlayerPage'));
+const VersusPage = lazy(() => import('./pages/versus/VersusPage'));
+const TournamentPage = lazy(() => import('./pages/tournament/TournamentPage'));
+const RecordsPage = lazy(() => import('./pages/records/RecordsPage'));
+const LabPage = lazy(() => import('./pages/lab/LabPage'));
+const TournamentLatestPage = lazy(() => import('./pages/TournamentLatestPage'));
 
-function PlayerPageRoute() {
-  const [searchParams] = useSearchParams();
-  return <PlayerPage key={searchParams.get('p') ?? '__empty__'} />;
+/** Old links (query-string entity pages, y0/y1) go to their v1 address. */
+function LegacyRedirects() {
+  const { pathname, search } = useLocation();
+  const target = legacyRedirect(pathname, search);
+  return target ? <Navigate replace to={target} /> : null;
 }
 
-/** Keeps the query string when a merged page replaces an old route. */
-function RedirectTo({ to }: { to: string }) {
-  const { search } = useLocation();
-  return <Navigate to={`${to}${search}`} replace />;
-}
-
-function Footer() {
-  const { data: stats } = useMetaStats();
-  return (
-    <footer className="border-t border-rule bg-paper-sunken mt-[var(--space-xl)]">
-      <div className="ba-canvas py-[var(--space-md)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        {/* No max-width: the line is short enough to sit beside the dateline
-            on a desktop, and wrapping it there for no reason looked like a
-            mistake. It still wraps when the viewport actually runs out. */}
-        <p className="ba-cell text-ink-2">
-          Match data from Jeff Sackmann's{' '}
-          <a href="https://www.tennisabstract.com" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
-            Tennis Abstract
-          </a>
-          {' '}and{' '}
-          <a href="https://github.com/JeffSackmann/tennis_atp" target="_blank" rel="noopener noreferrer" className="ba-link font-medium">
-            public datasets
-          </a>
-          — all credit for the underlying data is theirs.
-        </p>
-        <span className="ba-label">
-          {stats?.data_through ? `Data through ${stats.data_through.slice(0, 10)}` : 'courtvision'}
-        </span>
-      </div>
-    </footer>
-  );
-}
-
-function NotFound() {
-  return (
-    <div className="py-[var(--space-2xl)] text-center">
-      <div className="ba-eyebrow mb-2">No such page</div>
-      <h1 className="ba-h2 mb-1">That address isn't part of this site</h1>
-      <p className="ba-body mb-5 max-w-md mx-auto">
-        Check the link, or start from the home page and pick a section.
-      </p>
-      <a href="/" className="ba-btn ba-btn-ghost">Go to home</a>
-    </div>
-  );
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  return null;
 }
 
 export default function App() {
+  const { pathname } = useLocation();
   return (
-    <div className="min-h-dvh bg-paper flex flex-col text-ink">
-      <Navbar />
-      <main className="ba-canvas py-[var(--space-lg)] w-full flex-1">
-        <ErrorBoundary>
-          <Suspense fallback={<Spinner />}>
-            <Routes>
-              <Route path="/"           element={<HomePage />} />
-              <Route path="/versus"     element={<VersusPage />} />
-              <Route path="/player"     element={<PlayerPageRoute />} />
-              <Route path="/tournament" element={<TournamentPage />} />
-              <Route path="/records"    element={<RecordsPage />} />
-              <Route path="/search"     element={<SearchPage />} />
-              <Route path="/_specimen"  element={<SpecimenPage />} />
-
-              {/* Old routes, kept so existing links and bookmarks resolve. */}
-              <Route path="/leaders"    element={<RedirectTo to="/records" />} />
-              <Route path="/h2h"        element={<RedirectTo to="/versus" />} />
-              <Route path="/compare"    element={<RedirectTo to="/versus" />} />
-
-              <Route path="*"           element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </main>
-      <Footer />
+    <div className="cv-app">
+      <LegacyRedirects />
+      <ScrollToTop />
+      {/* Home's hero search owns `/` there. */}
+      <SiteHeader pageOwnsSlash={pathname === '/'} />
+      <Suspense fallback={<main className="cv-main" style={{ paddingTop: 40 }}><SkeletonRows /></main>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/player/:slug" element={<PlayerPage />} />
+          <Route path="/versus" element={<VersusPage />} />
+          <Route path="/versus/:a/:b" element={<VersusPage />} />
+          <Route path="/tournament" element={<TournamentPage />} />
+          <Route path="/tournament/:slug" element={<TournamentLatestPage />} />
+          <Route path="/tournament/:slug/:year" element={<TournamentPage />} />
+          <Route path="/records" element={<RecordsPage />} />
+          <Route path="/lab" element={<LabPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          {/* Retired paths: LegacyRedirects moves them; these keep them off the 404 meanwhile. */}
+          <Route path="/player" element={null} />
+          <Route path="/search" element={null} />
+          <Route path="/leaders" element={null} />
+          <Route path="/h2h" element={null} />
+          <Route path="/compare" element={null} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+      <SiteFooter />
     </div>
   );
 }

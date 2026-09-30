@@ -95,8 +95,8 @@ still need their own tests and reconciliation.
 | Player dossier | `PlayerPage`, player endpoints | Filter scope, missing statistics, partial request failures. |
 | H2H and career comparison | `VersusPage`, H2H/Career sections, h2h/player/compare endpoints | Preserve aligned match filters and explicitly career-wide facts; improve request-state consistency. |
 | Tournament recap and draw strength | `TournamentPage`, tournament endpoints | Resolve the year before requesting a recap; shared round ordering and complete round display. |
-| Player records, match extremes, scatter, nationalities | `RecordsPage`, leaders/analysis endpoints | Shared statistical definitions, cohort freshness, accurate qualification thresholds. |
-| SQL builder, CSV, player-vs-cohort search | `SearchPage`, query/search endpoints | Preserve SQL containment; result/query consistency; test full request/response contracts. |
+| Player records | `RecordsPage`, leaders endpoints | Shared statistical definitions, cohort freshness, accurate qualification thresholds. Match extremes, scatter and nationalities left the UI in v1; their analysis endpoints remain. |
+| SQL Lab, CSV, player splits | `LabPage`, Player › Splits, query/search/player-splits endpoints | Preserve SQL containment; result/query consistency; splits' Lab SQL must keep matching their counts (tested). |
 | Offline scraping and database refresh | `scraper/`, `pipeline/`, CLI entrypoints | Source completeness, safe publication, scraper transport, deterministic deduplication. |
 | Deployment and operation | CI, `deploy/deploy.sh`, systemd reference | Fail-closed gates, reproducibility, rollback, readiness, and externally managed configuration. |
 

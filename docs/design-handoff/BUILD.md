@@ -98,7 +98,7 @@ builds an endpoint for it.
 | B4 ✅ | **`main_draw_only` (default true)** (done; recap also returns each match's `date` and `main_draw_matches` / `qualifying_matches`; rate leaders need 2+ matches) on `/api/tournament/recap` (biggest upsets, longest matches, stat leaders) and `/api/tournament/draw-strength` | Tournament | The draw itself can filter Q1–Q3 on the client; the server-computed lists can't. Without this, Jarry "leads" Wimbledon 2025 aces with 150 |
 | B5 ✅ | **`GET /api/player/splits`** (done: one call, ~0.3 s; each row also returns its relational-search `params` and exact `lab_sql`): every Splits row (opponent / situation / stage groups) with career, 5-year and 52-week W–L in one call; the same filters as the other player endpoints | Player | Fallback until then: fan out 14 `/api/search/relational` calls (it works, it's just slow). Expanding a row still calls `/api/search/relational` for its match list |
 | B6 ✅ | **Storylines rotate daily** (done): `q_storylines` seeds its RNG with the date | Home | — |
-| B7 ✅ | **Lab examples registry** (done: `frontend/src/next/lab/examples.sql` is the single source, parsed by `examples.ts`; `tests/test_lab_examples.py` runs each one through the query path): move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
+| B7 ✅ | **Lab examples registry** (done: `frontend/src/lab/examples.sql` is the single source, parsed by `examples.ts`; `tests/test_lab_examples.py` runs each one through the query path): move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
 | B8 | **Fresh data**: incremental scrape + pipeline. The DB ends 10 Aug 2026 | Launch | Every "data through" line shows it |
 
 ### Done on the client (no backend work)
@@ -132,18 +132,10 @@ builds an endpoint for it.
 Each phase ends green in CI (`pytest`, `tsc -b`, `eslint --max-warnings 0`,
 `vitest`, `vite build`) and deployable.
 
-**Working on the rebuild.** The new app lives in `frontend/src/next/` next to
-the current one, and `src/main.tsx` picks one at build time:
-
-```bash
-npm run dev:next      # the rebuild on :5173 (needs the API on :8000)
-npm run build:next    # production build of the rebuild
-npm run dev / build   # the current site, which is what deploy.sh ships
-```
-
-`import.meta.env.VITE_APP` is replaced at build time, so the default build
-contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
-`/_kit` in the rebuild shows every shared component with live data.
+**Working on the rebuild.** Phases 1–7 were built in `frontend/src/next/`
+behind a build-time switch (`VITE_APP=next`), so `main` stayed deployable with
+the old site. Phase 8 made the rebuild the only app: it now lives in
+`frontend/src/` and `npm run dev` / `build` serve it.
 
 | Phase | Scope | Exit check |
 |---|---|---|
@@ -155,7 +147,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 | **5. Tournament** ✅ | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
 | **6. Records** ✅ | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
 | **7. Lab** ✅ | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
-| **8. Cleanup** | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
+| **8. Cleanup** ✅ | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
 
 Phases 2–7 can run in parallel once phase 1 is merged. Player is the largest
 (the prototype is 57 KB) and sets most shared patterns, so start it first if
@@ -272,3 +264,14 @@ without touching the URL. Every route now has its real page. Changes:
   years, player, order, limit) rather than the old site's per-relation filters.
 - `rank_diff` is described as the gap between the ranks (the prototype said
   "loser rank minus winner rank", which is negative in an upset).
+
+**Phase 8 (cleanup), done 30 Sep 2026.** `src/next` moved up to `src/`; the
+`VITE_APP` switch, `legacyMain.tsx`, the old pages, sections, primitives,
+state, utilities, Courtside CSS, the specimen and the `/_kit` dev page are
+gone; `recharts`, `tailwindcss` and `@tailwindcss/vite` are uninstalled; fonts
+load from `index.html`. Shared code that survived: `api/http.ts`,
+`api/client.ts`, `types/tennis.ts`, `domain/rounds.ts`, and three hooks in
+`hooks/index.ts`. `npm run audit:prod` is clean.
+
+**Before the first deploy of v1:** run the pipeline on the server once
+(tournament names, B3) and restart the API; nothing else server-side changes.

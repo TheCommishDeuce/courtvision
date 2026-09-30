@@ -5,29 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
-    <!-- Applies a stored theme choice before first paint. Without this the
-         page renders in the OS theme and then flips, which on a paper
-         palette is a full-screen flash. -->
+    <!-- Applies a stored theme choice before first paint, so a dark-theme
+         reader doesn't see a light flash. useTheme owns it after that. -->
     <script>
       try {
-        var t = localStorage.getItem('cv-theme');
+        var t = new URLSearchParams(location.search).get('theme') || localStorage.getItem('cv-theme');
         if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-      } catch (e) { /* private mode — fall back to the OS preference */ }
+      } catch (e) { /* private mode: follow the system */ }
     </script>
-    <meta name="description" content="Every professional tennis match on record: head-to-heads, player careers, tournament recaps, and all-time leaderboards across the ATP and WTA tours, built on Jeff Sackmann's datasets." />
-    <meta property="og:title" content="courtvision — professional tennis match archive" />
-    <meta property="og:description" content="Every professional tennis match on record. Filter down to a single match, or query the tables yourself." />
+    <meta name="description" content="Find the story in a century of tennis results: players, head-to-heads, tournaments, records and a SQL Lab over every ATP and WTA match on record." />
+    <meta property="og:title" content="courtvision — find the story in the numbers" />
+    <meta property="og:description" content="Every ATP and WTA match on record: player careers, head-to-heads, tournament recaps, records, and the Lab for your own questions." />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b1119" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#13100d" media="(prefers-color-scheme: dark)" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- The three faces the design system names: Archivo (display and
-         headline figures), Inter (body), JetBrains Mono (labels and column
-         figures). Without this the whole type scale silently falls back. -->
+    <!-- Schibsted Grotesk for everything, IBM Plex Mono for scores, SQL and
+         codes (docs/design-handoff/DESIGN.md › Typography). -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..700&family=Inter:wght@400..600&family=JetBrains+Mono:wght@400..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400..800&display=swap"
     />
     <title>courtvision</title>
   </head>
