@@ -157,10 +157,10 @@ def q_recent_upsets(
 # ---------------------------------------------------------------------------
 
 # Tour-level stat "stories" surfaced on the home page. Each entry mirrors a
-# stat shown on the Leaders tab. Picked randomly each request, restricted to a
-# single randomly-chosen tour (all ATP or all WTA) at main-tour level for the
-# current season, so the shelf reads as a coherent season snapshot instead of
-# random low-tier players.
+# stat shown on the Leaders tab, at main-tour level for the current season, so
+# the shelf reads as a season snapshot instead of random low-tier players. The
+# pick rotates once a day (seeded by the date): a link shared in the morning
+# still shows the same cards that afternoon.
 #
 # source: which Leaders query feeds the stat
 # sort:   column to rank by (descending) within that query result
@@ -217,14 +217,18 @@ _STORY_BOARD = {
 def q_storylines(
     con: duckdb.DuckDBPyConnection,
     limit: int = 4,
+    today: date | None = None,
 ) -> list[dict]:
-    """Random selection of tour-level Leaders stats for the current season.
+    """The day's selection of tour-level Leaders stats for the current season.
 
-    Surfaces a random set of distinct stats from the Leaders tab, each showing
-    this season's leader at main-tour level. The tour (ATP/WTA) is chosen
-    independently per card so the shelf mixes both tours.
+    Surfaces distinct stats from the Leaders tab, each showing this season's
+    leader at main-tour level. The tour (ATP/WTA) is chosen independently per
+    card so the shelf mixes both tours. The choice is seeded by `today`, so it
+    is stable within a day and changes the next.
     """
-    year = date.today().year
+    today = today or date.today()
+    rng = random.Random(today.toordinal())
+    year = today.year
     LEVEL = 'All Tour'
 
     # Lazily fetch each (source, tour) query at most once.
@@ -248,7 +252,7 @@ def q_storylines(
         return df
 
     stats = _STORY_STATS[:]
-    random.shuffle(stats)
+    rng.shuffle(stats)
 
     stories: list[dict] = []
     used_players: set[str] = set()
@@ -256,7 +260,7 @@ def q_storylines(
     for stat in stats:
         if len(stories) >= limit:
             break
-        tour = random.choice(['M', 'F'])
+        tour = rng.choice(['M', 'F'])
         tn = _TOUR_NAME[tour]
         df = source_df(stat['source'], tour)
         if df is None or df.empty or stat['sort'] not in df.columns:
