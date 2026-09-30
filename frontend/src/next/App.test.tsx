@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
@@ -34,7 +34,7 @@ describe('App routes', () => {
 
   it('redirects old player links to their slug address', async () => {
     renderApp('/player?p=Jannik%20Sinner&y0=2023');
-    expect(await screen.findByTestId('location')).toHaveTextContent('/player/jannik-sinner?from=2023');
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/player/jannik-sinner?from=2023'));
   });
 
   it('shows freshness in the footer and the About page', async () => {

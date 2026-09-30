@@ -358,3 +358,29 @@ h1, h2, h3 { margin: 0; }
   .cv-terms { grid-template-columns: 1fr; }
   .cv-terms dt { border-bottom: 0; padding-bottom: 0; }
 }
+
+/* ── Page sections (Player, Matchup, Tournament) ──────────────────────── */
+.cv-page-section { padding: 44px 0; border-top: 1px solid var(--line); }
+.cv-section-note { font-size: 13px; color: var(--ink2); }
+.cv-question { margin: 2px 0 0; }
+/* The filter bar spans the gutter so its rules run edge to edge. */
+.cv-filterbar--bleed {
+  margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter);
+}
+.cv-block-skel { background: var(--skel); border-radius: 4px; }
+.cv-ruled-figure { padding: 14px 0; border-top: 2px solid var(--ink); }
+.cv-figure-label-sm { font-size: 13px; color: var(--ink2); }
+.cv-figure-big { font-size: clamp(22px, 4vw, 32px); font-weight: 600; letter-spacing: -0.01em; }
+.cv-list-row {
+  display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; padding: 9px 0;
+  border-bottom: 1px solid var(--line2); font-size: 15px;
+}
+.cv-list-row a { color: var(--ink); font-weight: 600; }
+.cv-h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+.cv-seg--tiny > button { min-height: 32px; padding: 0 10px; font-size: 13px; color: var(--ink2); }
+.cv-seg--tiny > button[aria-pressed='true'] { color: var(--bg); }
+.cv-disclosure summary { cursor: pointer; color: var(--acc); min-height: 32px; display: flex; align-items: center; }
+.cv-mini-table { margin-top: 6px; font-size: 14px; }
+.cv-mini-row { display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px 0; border-bottom: 1px solid var(--line2); }
+.cv-mini-row > :not(:first-child) { text-align: right; }
+.cv-mini-row--head { font-size: 12px; color: var(--ink2); border-bottom-color: var(--line); }

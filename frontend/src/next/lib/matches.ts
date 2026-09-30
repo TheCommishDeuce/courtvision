@@ -3,7 +3,7 @@
  * rows (h2h, tournament recap, Lab) and player-perspective rows
  * (player_match_view: player_* / o_*).
  */
-import type { PlayerMatchRow } from '../../types/tennis';
+import type { PlayerMatchRow, RelationalMatchRow } from '../../types/tennis';
 import { fmtPct } from './format';
 
 export interface MatchSide {
@@ -123,6 +123,25 @@ export function fromPlayerRow(r: PlayerMatchRow): MatchRowData {
     loser: won ? them : me,
     score: r.score,
     time: n(r.time),
+    upset: r.is_upset,
+  };
+}
+
+/** A /api/search/relational row: p_* is the focal player, o_* the opponent. */
+export function fromRelationalRow(r: RelationalMatchRow): MatchRowData {
+  const me: MatchSide = {
+    name: r.player_name, rank: n(r.player_rank), aces: n(r.p_aces), dfs: n(r.p_dfs), pts: n(r.p_pts),
+    firsts: n(r.p_firsts), fwon: n(r.p_fwon), swon: n(r.p_swon), saved: n(r.p_saved), faced: n(r.p_chances),
+  };
+  const them: MatchSide = {
+    name: r.opponent_name, rank: n(r.opponent_rank), aces: n(r.o_aces), dfs: n(r.o_dfs), pts: n(r.o_pts),
+    firsts: n(r.o_firsts), fwon: n(r.o_fwon), swon: n(r.o_swon), saved: n(r.o_saved), faced: n(r.o_chances),
+  };
+  const won = r.result === 'W';
+  return {
+    key: `${r.date}|${r.round}|${r.player_name}|${r.opponent_name}`,
+    result: r.result, date: r.date, tournament: r.tournament, tour: r.tour, year: r.year, round: r.round,
+    surface: r.surface, winner: won ? me : them, loser: won ? them : me, score: r.score, time: n(r.time),
     upset: r.is_upset,
   };
 }

@@ -11,6 +11,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
 const KitPage = lazy(() => import('./pages/KitPage'));
+const PlayerPage = lazy(() => import('./pages/player/PlayerPage'));
 const TournamentLatestPage = lazy(() => import('./pages/TournamentLatestPage'));
 
 /** Old links (query-string entity pages, y0/y1) go to their v1 address. */
@@ -37,7 +38,7 @@ export default function App() {
       <Suspense fallback={<main className="cv-main" style={{ paddingTop: 40 }}><SkeletonRows /></main>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/player/:slug" element={<PlaceholderPage title="Player" phase={3} />} />
+          <Route path="/player/:slug" element={<PlayerPage />} />
           <Route path="/versus" element={<PlaceholderPage title="Matchup" phase={4} />} />
           <Route path="/versus/:a/:b" element={<PlaceholderPage title="Matchup" phase={4} />} />
           <Route path="/tournament" element={<PlaceholderPage title="Tournaments" phase={5} />} />

@@ -15,4 +15,10 @@ describe('URL filters', () => {
     const next = writeFilters(prev, { ...defaults, surface: 'All', from: 2020 }, defaults);
     expect(next.toString()).toBe('board=wins&from=2020');
   });
+
+  it('leaves params it does not own alone', () => {
+    const prev = new URLSearchParams('tour=F&surface=Clay');
+    const next = writeFilters(prev, { ...defaults, surface: 'All' }, defaults, ['surface', 'level', 'from', 'to']);
+    expect(next.toString()).toBe('tour=F');
+  });
 });
