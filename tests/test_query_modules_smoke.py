@@ -10,6 +10,7 @@ from db.queries import (
     q_common_opponents,
     q_h2h,
     q_leaders_wins,
+    q_meta_stats,
     q_match_search,
     q_player_matches,
     q_tournament_years,
@@ -68,6 +69,9 @@ def con() -> duckdb.DuckDBPyConnection:
 
 def test_meta_query_module_smoke(con: duckdb.DuckDBPyConnection) -> None:
     assert q_all_player_names(con, tour="M") == ["Alice Ace", "Bob Base", "Cara Court"]
+    stats = q_meta_stats(con)
+    assert (stats["total_matches"], stats["total_matches_atp"], stats["total_matches_wta"]) == (3, 3, 0)
+    assert stats["data_through"] == "2025-02-01"
 
 
 def test_h2h_query_module_smoke(con: duckdb.DuckDBPyConnection) -> None:

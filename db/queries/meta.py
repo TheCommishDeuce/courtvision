@@ -83,7 +83,9 @@ def q_meta_stats(con: duckdb.DuckDBPyConnection) -> dict:
                SUM(CASE WHEN is_upset THEN 1 ELSE 0 END)      AS total_upsets,
                COUNT(DISTINCT tournament)                      AS total_tournaments,
                MAX(date)                                       AS data_through,
-               SUM(COALESCE(winner_pts, 0) + COALESCE(loser_pts, 0)) AS total_points_played
+               SUM(COALESCE(winner_pts, 0) + COALESCE(loser_pts, 0)) AS total_points_played,
+               COUNT(*) FILTER (WHERE tour = 'M')              AS total_matches_atp,
+               COUNT(*) FILTER (WHERE tour = 'F')              AS total_matches_wta
         FROM matches_main
     """).fetchone()
     player_count = con.execute(
@@ -98,6 +100,8 @@ def q_meta_stats(con: duckdb.DuckDBPyConnection) -> dict:
         'total_players':      int(player_count or 0),
         'data_through':       str(row[5]) if row[5] else None,
         'total_points_played': int(round(row[6] or 0)),
+        'total_matches_atp':  int(row[7] or 0),
+        'total_matches_wta':  int(row[8] or 0),
     }
 
 
