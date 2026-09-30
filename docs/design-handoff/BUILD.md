@@ -153,7 +153,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 | **3. Player** ✅ | Every block; Splits via fan-out, switched to B5 when it lands | Matches `Player.dc.html` incl. `?state=loading/error/notfound/nostats` and `?surface=Carpet` |
 | **4. Matchup** ✅ | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
 | **5. Tournament** ✅ | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
-| **6. Records** | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
+| **6. Records** ✅ | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
 | **7. Lab** | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
 | **8. Cleanup** | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
 
@@ -250,3 +250,11 @@ storylines, stat leaders; missing years offer the nearest editions. URL state:
   said "beaten".
 - Dates in the draw are the event's start date: the data has no day of play.
 - The default main-draw scope also applies on the old site's tournament page.
+
+**Phase 6 (Records), done 30 Sep 2026.** 24 boards in three groups (registry
+in `lib/records.ts`), each a fixed-height top ten with its qualifier; "Full
+table" opens the whole source at `?board=<id>`, sortable by any column
+(`&sort=<col>&dir=asc|desc`, natural direction omitted), paged 50 at a time,
+cards with a sort picker on phones. Defaults: ATP · tour level · current
+season, left out of the URL, so Home's storyline links land exactly on their
+board. No backend changes.

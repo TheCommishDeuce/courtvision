@@ -1,0 +1,44 @@
+/* Records (prototype/Records.dc.html). */
+.rc-top { padding: clamp(28px, 5vw, 48px) 0 20px; }
+.rc-back { border: 0; background: transparent; padding: 0; min-height: 36px; color: var(--acc); cursor: pointer; font-size: 14px; }
+.rc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 20px; }
+.rc-board { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 4px; background: var(--card); padding: 14px 16px 12px; min-width: 0; }
+.rc-board-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 0 0 8px;
+  border: 0; border-bottom: 1px solid var(--ink); background: transparent; cursor: pointer; color: var(--ink); text-align: left; width: 100%;
+}
+.rc-board-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.rc-board-head span { font-size: 13px; color: var(--acc); white-space: nowrap; }
+.rc-list { list-style: none; margin: 0; padding: 0; min-height: 380px; }
+.rc-row { display: flex; gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--line2); font-size: 14px; min-height: 37px; }
+.rc-row a { color: var(--ink); }
+.rc-rank { width: 18px; flex: none; font-size: 12px; color: var(--ink2); }
+.rc-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.rc-detail { display: block; font-size: 12px; color: var(--ink2); }
+.rc-val { font-weight: 700; white-space: nowrap; }
+.rc-foot { margin: 8px 0 0; font-size: 12px; color: var(--ink2); }
+
+.rc-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; }
+.rc-table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+.rc-table th { background: var(--bg2); border-bottom: 1px solid var(--ink); padding: 0; font-size: 12px; color: var(--ink2); font-weight: 600; }
+.rc-table th button {
+  all: unset; cursor: pointer; display: block; box-sizing: border-box; width: 100%; padding: 10px 12px; white-space: nowrap;
+}
+.rc-table th button:focus-visible { outline: 2px solid var(--acc); outline-offset: -2px; }
+.rc-table th[aria-sort='ascending'] button, .rc-table th[aria-sort='descending'] button { color: var(--ink); font-weight: 700; }
+.rc-table td { padding: 10px 12px; border-bottom: 1px solid var(--line2); white-space: nowrap; background: var(--card); }
+.rc-table a { color: var(--ink); font-weight: 600; }
+.rc-sticky { position: sticky; left: 0; z-index: 1; }
+.rc-sticky-2 { position: sticky; left: 44px; z-index: 1; }
+.rc-num { text-align: right; }
+.rc-sorted { font-weight: 700; }
+.rc-pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: 14px; }
+
+.rc-cards { display: flex; flex-direction: column; }
+.rc-card { padding: 14px 0; border-bottom: 1px solid var(--line2); }
+.rc-card-top { display: flex; gap: 10px; align-items: baseline; }
+.rc-card-top a { color: var(--ink); font-weight: 650; flex: 1; min-width: 0; }
+.rc-card-fig { font-size: 20px; font-weight: 700; }
+.rc-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; margin-top: 8px; font-size: 13px; }
+.rc-card-grid dt { color: var(--ink2); font-size: 11px; }
+.rc-card-grid dd { margin: 0; font-weight: 600; }

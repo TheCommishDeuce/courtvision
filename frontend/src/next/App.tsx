@@ -14,6 +14,7 @@ const KitPage = lazy(() => import('./pages/KitPage'));
 const PlayerPage = lazy(() => import('./pages/player/PlayerPage'));
 const VersusPage = lazy(() => import('./pages/versus/VersusPage'));
 const TournamentPage = lazy(() => import('./pages/tournament/TournamentPage'));
+const RecordsPage = lazy(() => import('./pages/records/RecordsPage'));
 const TournamentLatestPage = lazy(() => import('./pages/TournamentLatestPage'));
 
 /** Old links (query-string entity pages, y0/y1) go to their v1 address. */
@@ -46,7 +47,7 @@ export default function App() {
           <Route path="/tournament" element={<TournamentPage />} />
           <Route path="/tournament/:slug" element={<TournamentLatestPage />} />
           <Route path="/tournament/:slug/:year" element={<TournamentPage />} />
-          <Route path="/records" element={<PlaceholderPage title="Records" phase={6} />} />
+          <Route path="/records" element={<RecordsPage />} />
           <Route path="/lab" element={<PlaceholderPage title="Lab" phase={7} />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/_kit" element={<KitPage />} />
