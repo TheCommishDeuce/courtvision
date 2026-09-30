@@ -402,6 +402,8 @@ export interface TournamentMeta {
   level: string | null;
   level_name: string | null;
   total_matches: number;
+  main_draw_matches?: number;
+  qualifying_matches?: number;
   total_upsets: number;
 }
 
@@ -415,6 +417,7 @@ export interface KeyMatch {
 }
 
 export interface TournamentMatchRow {
+  date?: string;
   round: string;
   winner_name: string;
   winner_rank: number | null;

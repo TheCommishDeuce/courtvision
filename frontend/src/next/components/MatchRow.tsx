@@ -71,7 +71,10 @@ export function MatchRow({ m, card }: { m: MatchRowData; card: boolean }) {
     <div className="cv-match">
       {!card ? (
         <div className="cv-match-desk" onClick={toggle}>
-          <span>{m.result && <ResultChip result={m.result} />}</span>
+          <span>
+            {m.result && <ResultChip result={m.result} />}
+            {!m.result && m.mark && <span title={m.mark.label} aria-label={m.mark.label} style={{ color: 'var(--acc)' }}>{m.mark.glyph}</span>}
+          </span>
           <span className="cv-muted" style={{ whiteSpace: 'nowrap' }}>{fmtDate(m.date)}</span>
           <EventLink m={m} className="cv-match-names" />
           <abbr title={roundName(m.round)} className="cv-match-round">{m.round}</abbr>
@@ -91,6 +94,7 @@ export function MatchRow({ m, card }: { m: MatchRowData; card: boolean }) {
         <div className="cv-match-card" onClick={toggle}>
           <div className="cv-match-card-meta">
             {m.result && <ResultChip result={m.result} />}
+            {!m.result && m.mark && <span title={m.mark.label} aria-label={m.mark.label} style={{ color: 'var(--acc)' }}>{m.mark.glyph}</span>}
             <span style={{ whiteSpace: 'nowrap' }}>{fmtDate(m.date)}</span>
             <EventLink m={m} className="cv-match-card-event" />
             <span className="cv-mono">{m.round}</span>

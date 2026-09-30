@@ -95,7 +95,7 @@ builds an endpoint for it.
 
 | # | Work | Screen | Notes |
 |---|---|---|---|
-| B4 | **`main_draw_only` (default true)** on `/api/tournament/recap` (biggest upsets, longest matches, stat leaders) and `/api/tournament/draw-strength` | Tournament | The draw itself can filter Q1–Q3 on the client; the server-computed lists can't. Without this, Jarry "leads" Wimbledon 2025 aces with 150 |
+| B4 ✅ | **`main_draw_only` (default true)** (done; recap also returns each match's `date` and `main_draw_matches` / `qualifying_matches`; rate leaders need 2+ matches) on `/api/tournament/recap` (biggest upsets, longest matches, stat leaders) and `/api/tournament/draw-strength` | Tournament | The draw itself can filter Q1–Q3 on the client; the server-computed lists can't. Without this, Jarry "leads" Wimbledon 2025 aces with 150 |
 | B5 ✅ | **`GET /api/player/splits`** (done: one call, ~0.3 s; each row also returns its relational-search `params` and exact `lab_sql`): every Splits row (opponent / situation / stage groups) with career, 5-year and 52-week W–L in one call; the same filters as the other player endpoints | Player | Fallback until then: fan out 14 `/api/search/relational` calls (it works, it's just slow). Expanding a row still calls `/api/search/relational` for its match list |
 | B6 ✅ | **Storylines rotate daily** (done): `q_storylines` seeds its RNG with the date | Home | — |
 | B7 ✅ | **Lab examples registry** (done: `frontend/src/next/lab/examples.sql` is the single source, parsed by `examples.ts`; `tests/test_lab_examples.py` runs each one through the query path): move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
@@ -152,7 +152,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 | **2. Home** ✅ | All five blocks; B7 examples | Matches `Home.dc.html` incl. its error state |
 | **3. Player** ✅ | Every block; Splits via fan-out, switched to B5 when it lands | Matches `Player.dc.html` incl. `?state=loading/error/notfound/nostats` and `?surface=Carpet` |
 | **4. Matchup** ✅ | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
-| **5. Tournament** | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
+| **5. Tournament** ✅ | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
 | **6. Records** | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
 | **7. Lab** | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
 | **8. Cleanup** | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
@@ -237,3 +237,16 @@ and the two careers (always the whole career, better figure marked). Never
 met, different tours and unknown slugs each get a plain message. Short names
 fall back to initials for shared surnames (the Williams sisters). No backend
 changes: the career rows reuse the Player endpoints.
+
+**Phase 5 (Tournament), done 30 Sep 2026.** Browse (events-only search, tour
+toggle, latest champions across weeks) and the edition page: tour switch when
+the event exists on both tours, year arrows and jump list, the final, the
+draw by round (Final first; the champion's matches marked ◆ and a path strip
+that opens each round), a qualifying toggle that also recomputes the lists,
+storylines, stat leaders; missing years offer the nearest editions. URL state:
+`?tour=`, `?qualifying=1`, `?round=`. Changes:
+- "Toughest runs" is the average rank of opponents **faced** (what
+  draw-strength measures), for players with 3+ main-draw matches; the prototype
+  said "beaten".
+- Dates in the draw are the event's start date: the data has no day of play.
+- The default main-draw scope also applies on the old site's tournament page.

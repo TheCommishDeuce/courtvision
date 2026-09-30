@@ -13,6 +13,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const KitPage = lazy(() => import('./pages/KitPage'));
 const PlayerPage = lazy(() => import('./pages/player/PlayerPage'));
 const VersusPage = lazy(() => import('./pages/versus/VersusPage'));
+const TournamentPage = lazy(() => import('./pages/tournament/TournamentPage'));
 const TournamentLatestPage = lazy(() => import('./pages/TournamentLatestPage'));
 
 /** Old links (query-string entity pages, y0/y1) go to their v1 address. */
@@ -42,9 +43,9 @@ export default function App() {
           <Route path="/player/:slug" element={<PlayerPage />} />
           <Route path="/versus" element={<VersusPage />} />
           <Route path="/versus/:a/:b" element={<VersusPage />} />
-          <Route path="/tournament" element={<PlaceholderPage title="Tournaments" phase={5} />} />
+          <Route path="/tournament" element={<TournamentPage />} />
           <Route path="/tournament/:slug" element={<TournamentLatestPage />} />
-          <Route path="/tournament/:slug/:year" element={<PlaceholderPage title="Tournament" phase={5} />} />
+          <Route path="/tournament/:slug/:year" element={<TournamentPage />} />
           <Route path="/records" element={<PlaceholderPage title="Records" phase={6} />} />
           <Route path="/lab" element={<PlaceholderPage title="Lab" phase={7} />} />
           <Route path="/about" element={<AboutPage />} />

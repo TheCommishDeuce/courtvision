@@ -34,6 +34,8 @@ export interface MatchRowData {
   score: string;
   time?: number | null;
   upset?: boolean;
+  /** A mark in the result column when there is no W/L, e.g. ◆ for the champion's matches. */
+  mark?: { glyph: string; label: string };
 }
 
 type Num = number | null | undefined;
