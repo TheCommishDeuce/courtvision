@@ -132,17 +132,30 @@ builds an endpoint for it.
 Each phase ends green in CI (`pytest`, `tsc -b`, `eslint --max-warnings 0`,
 `vitest`, `vite build`) and deployable.
 
+**Working on the rebuild.** The new app lives in `frontend/src/next/` next to
+the current one, and `src/main.tsx` picks one at build time:
+
+```bash
+npm run dev:next      # the rebuild on :5173 (needs the API on :8000)
+npm run build:next    # production build of the rebuild
+npm run dev / build   # the current site, which is what deploy.sh ships
+```
+
+`import.meta.env.VITE_APP` is replaced at build time, so the default build
+contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
+`/_kit` in the rebuild shows every shared component with live data.
+
 | Phase | Scope | Exit check |
 |---|---|---|
 | **0. Backend prerequisites** | B3 → B2 → B1, B6, B8 (start the scrape early, it's slow) | New endpoints covered by tests in the style of `tests/test_query_modules_smoke.py`, going through `TestClient` with the gate headers (`tests/test_dashboard_access.py`) |
-| **1. Foundation** | Tokens + fonts, theme switch, `SiteHeader`, `SiteFooter`, `SearchBox` (all variants), `FilterBar`, `MatchRow`, `Record`, state blocks, the router with every route and legacy redirect, `/about` | Every component matches its `prototype/*.dc.html` in light and dark at 390 and 1280 px; there's no sideways scroll at 320 px |
+| **1. Foundation** ✅ | Tokens + fonts, theme switch, `SiteHeader`, `SiteFooter`, `SearchBox` (all variants), `FilterBar`, `MatchRow`, `Record`, state blocks, the router with every route and legacy redirect, `/about` | Every component matches its `prototype/*.dc.html` in light and dark at 390 and 1280 px; there's no sideways scroll at 320 px |
 | **2. Home** | All five blocks; B7 examples | Matches `Home.dc.html` incl. its error state |
 | **3. Player** | Every block; Splits via fan-out, switched to B5 when it lands | Matches `Player.dc.html` incl. `?state=loading/error/notfound/nostats` and `?surface=Carpet` |
 | **4. Matchup** | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
 | **5. Tournament** | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
 | **6. Records** | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
 | **7. Lab** | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
-| **8. Cleanup** | Delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
+| **8. Cleanup** | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
 
 Phases 2–7 can run in parallel once phase 1 is merged. Player is the largest
 (the prototype is 57 KB) and sets most shared patterns, so start it first if
@@ -167,3 +180,20 @@ there's one pair of hands.
 4. **Google Fonts** is the only third-party request the new design adds (same
    as today). If a CSP is ever introduced, allow `fonts.googleapis.com` and
    `fonts.gstatic.com`.
+
+---
+
+## Phase notes
+
+**Phase 1 (foundation), done 30 Sep 2026.** Tokens, header (desktop + phone
+sheet), footer, SearchBox (all / players picker / events), FilterBar,
+MatchRow + stats panel, Record, states, CopyButton, `/about`, every route
+(later screens are placeholders), legacy redirects (`lib/legacy.ts`). Visual
+comparison with the prototypes still has to be done in a browser; the
+automated checks cover behaviour. Deviations from the prototype:
+- FilterBar level options are **per tour** and use API values (`All Tour`,
+  `ATP 250/500`, `WTA 500`…), because the data can't split ATP 250 from 500.
+- URL filters use `from` / `to` (the old site used `y0` / `y1`, which redirect).
+  Values equal to the page's defaults are left out of the URL.
+- Player links carry no `?tour=`; a slug on both tours is resolved on the
+  Player page (phase 3).

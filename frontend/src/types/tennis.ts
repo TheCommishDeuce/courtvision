@@ -566,6 +566,8 @@ export interface MetaStats {
   total_players: number;
   data_through?: string;
   total_points_played?: number;
+  total_matches_atp?: number;
+  total_matches_wta?: number;
 }
 
 // Career milestones

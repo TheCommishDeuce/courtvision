@@ -1,20 +1,9 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import './index.css';
-import App from './App.tsx';
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 5 * 60 * 1000, retry: 1 } },
-});
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StrictMode>
-);
+// Two apps share this entry while the v1 rebuild is in progress
+// (docs/design-handoff/BUILD.md). `npm run dev` / `npm run build` ship the
+// current site; `npm run dev:next` / `build:next` the rebuild. Phase 8 makes
+// the rebuild the only app and deletes this switch.
+if (import.meta.env.VITE_APP === 'next') {
+  void import('./next/main');
+} else {
+  void import('./legacyMain');
+}
