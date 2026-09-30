@@ -60,8 +60,12 @@ def q_tournament_draw_strength(
     tournament: str,
     year: Optional[int] = None,
     tour: Optional[str] = None,
+    main_draw_only: bool = True,
 ) -> 'pd.DataFrame':
+    """Average rank of the opponents each player faced (2+ matches), toughest first."""
     conditions = ["tournament = $1", "level_name != 'Tour Finals'"]
+    if main_draw_only:
+        conditions.append("round NOT IN ('Q1', 'Q2', 'Q3', 'ER')")
     params: list = [tournament]
     idx = 2
     if year:

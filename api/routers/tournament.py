@@ -49,6 +49,7 @@ def get_recap(
     tournament: str = Query(..., description="Tournament display name, e.g. Roland Garros."),
     year: Optional[int] = Query(None, description="Tournament season to recap. If omitted, query behavior follows the database helper default."),
     tour: Optional[Literal["M", "F"]] = Query(None, description="Optional tour filter: M for ATP men, F for WTA women."),
+    main_draw_only: bool = Query(True, description="Compute longest matches, biggest upsets and stat leaders over the main draw only. The round-by-round draw always includes qualifying."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     """Return a tournament recap with round-by-round matches, longest matches, biggest upsets, and stat leaders."""
@@ -62,7 +63,8 @@ def get_recap(
             "matches_by_round": [],
             "longest_matches": [],
             "biggest_upsets": [],
-            "stats": {"aces": [], "first_in_pct": [], "bp_saved": [], "return_win_pct": []},
+            "stats": {"aces": [], "dfs": [], "first_serve_won_pct": [], "second_serve_won_pct": [],
+                      "return_win_pct": [], "bp_saved": []},
         }
 
     # ── Meta ────────────────────────────────────────────────────────────────
@@ -78,12 +80,17 @@ def get_recap(
         "level": level_val,
         "level_name": level_name_val,
         "total_matches": len(df),
+        "main_draw_matches": int((~df["round"].isin(QUALY_ROUNDS)).sum()),
+        "qualifying_matches": int(df["round"].isin(QUALY_ROUNDS).sum()),
         "total_upsets": int(df["is_upset"].sum()) if "is_upset" in df.columns else 0,
     }
+    # The lists below describe the event; qualifying buries it (a 150-ace
+    # "leader" who played three extra rounds, Q1 upsets of 700 places).
+    scope = df[~df["round"].isin(QUALY_ROUNDS)] if main_draw_only else df
 
     # ── Matches by round (Final first) ─────────────────────────────────────
     df["_ord"] = df["round"].map(ROUND_SORT_ORDER).fillna(99)
-    match_cols = ["round", "winner_name", "winner_rank", "loser_name",
+    match_cols = ["date", "round", "winner_name", "winner_rank", "loser_name",
                   "loser_rank", "score", "time", "is_upset", "is_retirement",
                   "winner_aces", "loser_aces", "winner_dfs", "loser_dfs",
                   "winner_pts", "loser_pts", "winner_firsts", "loser_firsts",
@@ -102,19 +109,22 @@ def get_recap(
 
     # ── Longest matches (all rounds) ────────────────────────────────────────
     longest = (
-        df[df["time"].notna()]
+        scope[scope["time"].notna()]
         .nlargest(5, "time")[["round", "winner_name", "loser_name", "time", "score"]]
     )
 
     # ── Biggest upsets ──────────────────────────────────────────────────────
-    # Main draw first; allow qualy if rank_diff > 200
+    # Main draw first; with qualifying in scope, only its dramatic upsets (gap > 200)
     main_mask = df["round"].isin(MAIN_DRAW_ROUNDS)
     upset_mask = df["is_upset"] == True
     qualy_mask = df["round"].isin(QUALY_ROUNDS)
 
     main_upsets = df[upset_mask & main_mask].copy()
-    qualy_upsets = df[upset_mask & qualy_mask & (df["rank_diff"] > 200)].copy()
-    all_upsets = pd.concat([main_upsets, qualy_upsets]).drop_duplicates()
+    if main_draw_only:
+        all_upsets = main_upsets
+    else:
+        qualy_upsets = df[upset_mask & qualy_mask & (df["rank_diff"] > 200)].copy()
+        all_upsets = pd.concat([main_upsets, qualy_upsets]).drop_duplicates()
 
     if not all_upsets.empty:
         all_upsets["_ord2"] = all_upsets["round"].map(ROUND_SORT_ORDER).fillna(99)
@@ -125,7 +135,7 @@ def get_recap(
         biggest_upsets = df.iloc[0:0]
 
     # ── Per-player stats leaders ─────────────────────────────────────────────
-    stats = _compute_stats_leaders(df)
+    stats = _compute_stats_leaders(scope)
 
     return {
         "meta": meta,
@@ -141,10 +151,11 @@ def get_draw_strength(
     tournament: str = Query(..., description="Tournament display name."),
     year: Optional[int] = Query(None, description="Tournament season to analyze."),
     tour: Optional[Literal["M", "F"]] = Query(None, description="Optional tour filter: M for ATP men, F for WTA women."),
+    main_draw_only: bool = Query(True, description="Count main-draw matches only."),
     con: duckdb.DuckDBPyConnection = Depends(get_db),
 ):
     """Rank players in a tournament by average opponent rank faced."""
-    df = q_tournament_draw_strength(con, tournament=tournament, year=year, tour=tour)
+    df = q_tournament_draw_strength(con, tournament=tournament, year=year, tour=tour, main_draw_only=main_draw_only)
     return df_to_records(df)
 
 
@@ -184,6 +195,7 @@ def _compute_stats_leaders(df: pd.DataFrame) -> dict:
     combined = pd.concat([w, l], ignore_index=True)
 
     agg = combined.groupby("player").agg(
+        matches=("serve_pts", "size"),
         aces=("aces", "sum"),
         dfs=("dfs", "sum"),
         firsts=("firsts", "sum"),
@@ -209,14 +221,17 @@ def _compute_stats_leaders(df: pd.DataFrame) -> dict:
 
     def top5(df, col, ascending=False):
         return df_to_records(
-            df.dropna(subset=[col]).sort_values(col, ascending=ascending).head(5)[["player", col]]
+            df.dropna(subset=[col]).sort_values(col, ascending=ascending).head(5)[["player", col, "matches"]]
         )
 
+    # A rate from a single match (a first-round loser's 90% on first serve)
+    # is noise; rates need two matches with statistics.
+    rated = agg[agg["matches"] >= 2]
     return {
         "aces": top5(agg, "aces"),
         "dfs": top5(agg, "dfs"),
-        "first_serve_won_pct": top5(agg, "first_serve_won_pct"),
-        "second_serve_won_pct": top5(agg, "second_serve_won_pct"),
-        "return_win_pct": top5(agg, "return_win_pct"),
+        "first_serve_won_pct": top5(rated, "first_serve_won_pct"),
+        "second_serve_won_pct": top5(rated, "second_serve_won_pct"),
+        "return_win_pct": top5(rated, "return_win_pct"),
         "bp_saved": top5(agg, "bp_saved"),
     }
