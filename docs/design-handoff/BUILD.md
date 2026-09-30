@@ -154,7 +154,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 | **4. Matchup** ✅ | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
 | **5. Tournament** ✅ | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
 | **6. Records** ✅ | Grid + full table | Matches `Records.dc.html` incl. `?board=ace_pct` |
-| **7. Lab** | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
+| **7. Lab** ✅ | Examples, builder, editor with highlighting, results, CSV, schema drawer | Matches `Lab.dc.html` incl. `?state=error`; the deploy smoke test still sees `DROP` rejected with a 400 |
 | **8. Cleanup** | Make `src/next` the only app: drop the `VITE_APP` switch and `legacyMain.tsx`, move the fonts from `styles.css`'s `@import` into `index.html`, then delete the old pages, sections, primitives, `recharts`, Courtside CSS; rewrite `AGENTS.md` §8 (Frontend) for the new design system | `rg Courtside` and dead-import checks come back clean |
 
 Phases 2–7 can run in parallel once phase 1 is merged. Player is the largest
@@ -258,3 +258,17 @@ table" opens the whole source at `?board=<id>`, sortable by any column
 cards with a sort picker on phones. Defaults: ATP · tour level · current
 season, left out of the URL, so Home's storyline links land exactly on their
 board. No backend changes.
+
+**Phase 7 (Lab), done 30 Sep 2026.** Example questions (load and run), a
+compact builder on the shared filter vocabulary (`lab/builder.ts`), an editor
+with highlighting (transparent textarea over a highlighted `<pre>`), ⌘/Ctrl+
+Enter, Tab indents and Esc leaves the editor, a client pre-check that mirrors
+the server's rules (`lab/sqlText.ts`), database errors verbatim, results
+sortable client-side with player names linked, CSV download, and the schema
+with plain-English column meanings (a drawer on phones; select a column to
+insert it). URL: `?example=<id>` or `?sql=`; the default example loads
+without touching the URL. Every route now has its real page. Changes:
+- The builder is the design's compact one (relation, tour, surface, level,
+  years, player, order, limit) rather than the old site's per-relation filters.
+- `rank_diff` is described as the gap between the ranks (the prototype said
+  "loser rank minus winner rank", which is negative in an upset).
