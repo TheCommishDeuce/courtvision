@@ -1,0 +1,58 @@
+/* Home (prototype/Home.dc.html). */
+.home-hero { padding: clamp(40px, 8vw, 88px) 0 clamp(40px, 6vw, 64px); }
+.home-hero h1 {
+  font-weight: 700; font-size: clamp(38px, 6.4vw, 68px); line-height: 1; letter-spacing: -0.025em;
+  max-width: 13ch; text-wrap: balance;
+}
+.home-hero-search { margin-top: 28px; max-width: 720px; height: 60px; font-size: 19px; }
+.home-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.home-chip {
+  min-height: 40px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+  background: transparent; cursor: pointer; font-size: 14px; color: var(--ink);
+}
+.home-chip:hover { border-color: var(--ink2); background: var(--bg2); }
+.home-fresh { margin: 28px 0 0; font-family: var(--mono); font-size: 13px; color: var(--ink2); }
+.home-sub { font-size: 14px; color: var(--ink2); }
+
+.home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.home-card {
+  display: flex; flex-direction: column; gap: 10px; padding: 20px; min-height: 218px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); text-decoration: none;
+}
+.home-card:hover { border-color: var(--ink2); text-decoration: none; }
+.home-card--skel { border-color: var(--line2); background: transparent; }
+.home-card-top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink2); }
+.home-card-label { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+.home-card-headline { font-size: 22px; line-height: 1.15; font-weight: 700; text-wrap: balance; }
+.home-card-value { font-size: 42px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
+.home-card-detail { font-size: 14px; color: var(--ink2); margin-top: auto; }
+.home-card-more { font-size: 14px; color: var(--acc); }
+
+.home-questions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); column-gap: 40px; }
+.home-question {
+  display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line2);
+  color: var(--ink); text-decoration: none;
+}
+.home-question:hover { color: var(--acc); text-decoration: none; }
+.home-question-text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.home-question-q { font-size: 18px; line-height: 1.3; font-weight: 500; text-wrap: pretty; }
+.home-question-teaser { font-size: 14px; color: var(--ink2); }
+.home-arrow { font-size: 18px; color: var(--acc); }
+.home-more { display: inline-block; margin-top: 18px; font-size: 15px; font-weight: 500; }
+
+.home-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 32px 48px; }
+.home-col-head { padding-bottom: 8px; border-bottom: 1px solid var(--ink); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
+.home-row { padding: 12px 0; border-bottom: 1px solid var(--line2); display: flex; flex-direction: column; gap: 4px; }
+.home-row a { color: var(--ink); }
+.home-row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--ink2); }
+.home-row-event { font-size: 15px; font-weight: 600; }
+.home-row-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; font-size: 15px; }
+.home-row-score { font-family: var(--mono); font-size: 13px; color: var(--ink2); margin-left: auto; }
+.home-winner { font-weight: 650; }
+
+.home-upset { display: flex; gap: 16px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line2); }
+.home-upset a { color: var(--ink); }
+.home-gap { flex: none; width: 60px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
+.home-upset-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.home-upset-meta { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 13px; color: var(--ink2); }
+.home-upset-meta a { color: var(--ink2); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }

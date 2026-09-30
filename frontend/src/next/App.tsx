@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 const KitPage = lazy(() => import('./pages/KitPage'));
 const TournamentLatestPage = lazy(() => import('./pages/TournamentLatestPage'));
 
@@ -35,7 +36,7 @@ export default function App() {
       <SiteHeader pageOwnsSlash={pathname === '/'} />
       <Suspense fallback={<main className="cv-main" style={{ paddingTop: 40 }}><SkeletonRows /></main>}>
         <Routes>
-          <Route path="/" element={<PlaceholderPage title="Home" phase={2} />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/player/:slug" element={<PlaceholderPage title="Player" phase={3} />} />
           <Route path="/versus" element={<PlaceholderPage title="Matchup" phase={4} />} />
           <Route path="/versus/:a/:b" element={<PlaceholderPage title="Matchup" phase={4} />} />

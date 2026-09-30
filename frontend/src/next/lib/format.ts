@@ -17,6 +17,12 @@ export function fmtDate(iso: string | null | undefined): string {
   return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
+/** "2026-08-10" → "10 Aug": for lists that are all recent. */
+export function fmtDayMonth(iso: string | null | undefined): string {
+  const m = iso ? /^\d{4}-(\d{2})-(\d{2})/.exec(iso) : null;
+  return m ? `${Number(m[2])} ${MONTHS[Number(m[1]) - 1]}` : '—';
+}
+
 /** Minutes → "h:mm". */
 export function fmtDuration(minutes: number | null | undefined): string {
   if (minutes == null || !Number.isFinite(minutes) || minutes <= 0) return '—';

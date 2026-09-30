@@ -98,7 +98,7 @@ builds an endpoint for it.
 | B4 | **`main_draw_only` (default true)** on `/api/tournament/recap` (biggest upsets, longest matches, stat leaders) and `/api/tournament/draw-strength` | Tournament | The draw itself can filter Q1–Q3 on the client; the server-computed lists can't. Without this, Jarry "leads" Wimbledon 2025 aces with 150 |
 | B5 | **`GET /api/player/splits`**: every Splits row (opponent / situation / stage groups) with career, 5-year and 52-week W–L in one call; the same filters as the other player endpoints | Player | Fallback until then: fan out 14 `/api/search/relational` calls (it works, it's just slow). Expanding a row still calls `/api/search/relational` for its match list |
 | B6 ✅ | **Storylines rotate daily** (done): `q_storylines` seeds its RNG with the date | Home | — |
-| B7 | **Lab examples registry**: move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
+| B7 ✅ | **Lab examples registry** (done: `frontend/src/next/lab/examples.sql` is the single source, parsed by `examples.ts`; `tests/test_lab_examples.py` runs each one through the query path): move the six queries in `../design-brief/samples/lab-examples.sql` into the app (static TS config is enough) | Home, Lab | `?example=<id>` resolves against it |
 | B8 | **Fresh data**: incremental scrape + pipeline. The DB ends 10 Aug 2026 | Launch | Every "data through" line shows it |
 
 ### Done on the client (no backend work)
@@ -149,7 +149,7 @@ contains no rebuild code (checked in phase 1). Phase 8 removes the switch.
 |---|---|---|
 | **0. Backend prerequisites** | B3 → B2 → B1, B6, B8 (start the scrape early, it's slow) | New endpoints covered by tests in the style of `tests/test_query_modules_smoke.py`, going through `TestClient` with the gate headers (`tests/test_dashboard_access.py`) |
 | **1. Foundation** ✅ | Tokens + fonts, theme switch, `SiteHeader`, `SiteFooter`, `SearchBox` (all variants), `FilterBar`, `MatchRow`, `Record`, state blocks, the router with every route and legacy redirect, `/about` | Every component matches its `prototype/*.dc.html` in light and dark at 390 and 1280 px; there's no sideways scroll at 320 px |
-| **2. Home** | All five blocks; B7 examples | Matches `Home.dc.html` incl. its error state |
+| **2. Home** ✅ | All five blocks; B7 examples | Matches `Home.dc.html` incl. its error state |
 | **3. Player** | Every block; Splits via fan-out, switched to B5 when it lands | Matches `Player.dc.html` incl. `?state=loading/error/notfound/nostats` and `?surface=Carpet` |
 | **4. Matchup** | Picker, headline, splits, momentum, meetings, careers | Matches `Versus.dc.html` incl. never met / no pair |
 | **5. Tournament** | Browse + event, B4 | Matches `Tournament.dc.html` incl. `year=2020` |
@@ -197,3 +197,18 @@ automated checks cover behaviour. Deviations from the prototype:
   Values equal to the page's defaults are left out of the URL.
 - Player links carry no `?tour=`; a slug on both tours is resolved on the
   Player page (phase 3).
+
+**Phase 2 (Home), done 30 Sep 2026.** Hero search with chips and freshness,
+Leading this season (storyline links translated to v1 Records URLs), Try
+asking (from the examples registry), Latest champions and Recent upsets for
+both tours, each block with its own skeleton and retry. Changes:
+- `/api/tournament/recent-champions` gained `span=recent` (the latest
+  tour-level finals across weeks). The default `span=week` returned only that
+  week's events (4 WTA finals). The old site still uses the default.
+- Teasers read "e.g. …" rather than the prototype's "Latest: …" so they stay
+  true after a data refresh.
+- The upsets caption said "gap = loser's rank minus winner's"; it's the other
+  way round (#484 d. #109 is a gap of 375).
+- Data gap seen here: the latest tour-level final in the DB is Roland Garros
+  2026 although `data_through` is 10 Aug 2026; grass-season finals are missing
+  until the scrape is refreshed (B8).

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtDate, fmtDuration, fmtInt, fmtPct, fmtRank, fmtRankParen, record, roundName } from './format';
+import { fmtDate, fmtDayMonth, fmtDuration, fmtInt, fmtPct, fmtRank, fmtRankParen, record, roundName } from './format';
 
 describe('format', () => {
   it('formats counts, percentages and dates', () => {
@@ -9,6 +9,7 @@ describe('format', () => {
     expect(fmtDate('2026-08-10')).toBe('10 Aug 2026');
     expect(fmtDate('2026-05-25T00:00:00')).toBe('25 May 2026');
     expect(fmtDate(null)).toBe('—');
+    expect(fmtDayMonth('2026-06-08T00:00:00')).toBe('8 Jun');
   });
 
   it('formats durations as h:mm', () => {
