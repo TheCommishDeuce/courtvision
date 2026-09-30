@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from pipeline.tournaments import canonicalize_tournaments
+
 logger = logging.getLogger(__name__)
 
 CSV_COLUMNS_ORDER = [
@@ -189,7 +191,9 @@ def merge_all_tours_from_parquets(
     """
     Load all per-player parquets written by the scraper, collapse name
     spellings (see canonicalize_names), recompute unique_match_key,
-    deduplicate, and return a combined DataFrame.
+    deduplicate, collapse tournament spellings (see
+    pipeline.tournaments.canonicalize_tournaments), and return a combined
+    DataFrame.
     """
     files = list(atp_dir.glob('*.parquet')) + list(wta_dir.glob('*.parquet'))
     if not files:
@@ -220,7 +224,8 @@ def merge_all_tours_from_parquets(
     combined = combined.drop_duplicates(subset=['unique_match_key'])
     logger.info(f"Parquet dedup: {before} → {len(combined)} rows")
 
-    return combined
+    # After dedup: the surviving copy of a match may carry any spelling.
+    return canonicalize_tournaments(combined)
 
 
 def incremental_new_keys(df: pd.DataFrame, existing_keys: set) -> pd.DataFrame:

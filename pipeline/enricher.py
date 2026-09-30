@@ -12,6 +12,7 @@ LEVEL_NAME_MAP = {
     'D':    'Davis Cup',       # overridden to 'BJK Cup' for WTA below
     'T':    'Team',
     'O':    'Olympics',
+    'Q':    'Qualifying',      # stand-alone qualifying event with no main-draw parent that year
     # WTA main tour (modern + historical, merged into equivalent tiers)
     'PM':   'Masters 1000',    # WTA Premier Mandatory → Masters 1000 equivalent
     'P':    'WTA 500',         # WTA Premier → WTA 500 equivalent
